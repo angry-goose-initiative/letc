@@ -22,8 +22,8 @@ initial begin
     $dumpvars(0, firsttb);
 
     clk = 1'b0;
-    rst_n = 1'b1;
-    #1 rst_n = 1'b0;
+    rst_n = 1'b0;
+    #1 rst_n = 1'b1;
 
     repeat(1000) begin
         #1 clk = ~clk;

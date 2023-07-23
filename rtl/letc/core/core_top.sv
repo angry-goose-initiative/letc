@@ -1,5 +1,5 @@
 /*
- * File:    letc_top.sv
+ * File:    core_top.sv
  * Brief:   TODO
  *
  * Copyright (C) 2023 John Jekel and Nick Chan
@@ -11,7 +11,7 @@
 
 import letc_pkg::*;
 
-module letc_top (
+module core_top (
     input clk,
     input rst_n
 
@@ -19,7 +19,7 @@ module letc_top (
 
 );
 
-core_top core_top_instance (.*);
+core_control core_control_instance (.*);
 
 //TODO all of the inner goodness
 

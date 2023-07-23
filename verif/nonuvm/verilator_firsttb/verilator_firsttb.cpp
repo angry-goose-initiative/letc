@@ -26,7 +26,7 @@
  * Static Variables
  * --------------------------------------------------------------------------------------------- */
 
-static uint64_t simulation_time = 0;//Used to keep track of simulation time for dumping a wave file
+static double simulation_time = 0.0;//Used to keep track of simulation time for dumping a wave file
 
 /* ------------------------------------------------------------------------------------------------
  * Function Declarations
@@ -46,34 +46,15 @@ int main(int argc, char** argv) {
     std::unique_ptr<Vverilator_firsttb> testbench(new Vverilator_firsttb);//Instantiate the verilator_firsttb module for simulation
     Verilated::traceEverOn(true);//Needed to support dumping
 
-    //Simulation
-    /*testbench->eval();//Update simulation
-    ++simulation_time;//Increment time counter
-
-    //Reset all registers
-    testbench->n_rst_async = 0;
-    testbench->eval();//Update simulation
-    ++simulation_time;//Increment time counter
-    testbench->n_rst_async = 1;
-    testbench->eval();//Update simulation
-    ++simulation_time;//Increment time counter
-    */
-
-    //Toggle the clock repeadetly
-    while (!Verilated::gotFinish()) {//Run simulation until $finish() is called in SystemVerilog
-        //testbench->clk = 1;//Set clock high
+    //Simulation loop (until $finish)
+    while (!Verilated::gotFinish()) {
         testbench->eval();//Update simulation
-        ++simulation_time;//Increment time counter
-
-        /*testbench->clk = 0;//Set clock high
-        testbench->eval();//Update simulation
-        ++simulation_time;//Increment time counter
-        */
+        simulation_time += 1.0;//Increment time counter
     }
 
     return 0;
 }
 
 double sc_time_stamp() {//Callback used by Verilator for dumping (it expects this symbol)
-    return (double)(simulation_time);
+    return simulation_time;
 }
