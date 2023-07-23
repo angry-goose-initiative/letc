@@ -1,3 +1,3 @@
 #!/bin/bash
 
-vvp /tmp/firsttb
+vvp /tmp/firsttb -fst
