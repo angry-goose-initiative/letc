@@ -1,6 +1,6 @@
 /*
- * File:    reg_file.sv
- * Brief:   The register file
+ * File:    core_gen_imm.sv
+ * Brief:   Generates the immediate value
  *
  * Copyright (C) 2023 John Jekel and Nick Chan
  * See the LICENSE file at the root of the project for licensing info.
@@ -9,14 +9,12 @@
  *
 */
 
-module reg_file (
+module core_gen_imm (
     input clk,
     input rst_n,
-    input logic [4:0] rs1,
-    input logic [4:0] rs2
+    input logic [31:0] instruction,
+    output logic [31:0] immediate
     // TODO other ports
 );
-
-logic [31:0] registers [31:1];
 
 endmodule
