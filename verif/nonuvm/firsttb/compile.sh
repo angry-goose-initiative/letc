@@ -1,6 +1,7 @@
 #!/bin/bash
 
 FILES="firsttb.sv ../../../rtl/letc/letc_pkg.svh ../../../rtl/letc/letc_top.sv"
+FILES="$FILES ../../../rtl/letc/core/core_pkg.svh"
 FILES="$FILES ../../../rtl/letc/core/core_top.sv"
 FILES="$FILES ../../../rtl/letc/core/core_alu.sv"
 FILES="$FILES ../../../rtl/letc/core/core_control.sv"

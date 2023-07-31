@@ -9,13 +9,15 @@
  *
 */
 
-module core_alu (
+module core_alu
+    import core_pkg::*;
+(
     input clk,
     input rst_n,
-    input word_t op1, // Operand 1
-    input word_t op2, // Operand 2
-    input logic [3:0] opcode,
-    output word_t result
+    input word_t alu_operand_1,
+    input word_t alu_operand_2,
+    input aluop_e alu_operation,
+    output word_t alu_result
     // TODO other ports
 );
 

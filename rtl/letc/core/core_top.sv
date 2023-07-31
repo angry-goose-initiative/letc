@@ -9,9 +9,8 @@
  *
 */
 
-
 module core_top
-    import letc_pkg::*;
+    import core_pkg::*;
 (
     input clk,
     input rst_n
@@ -26,24 +25,33 @@ module core_top
 
 //Register file
 reg_index_t rd_index;
-word_t rd;
-logic rd_write_enable;
+word_t      rd;
+logic       rd_write_enable;
 reg_index_t rs1_index;
-word_t rs1;
+word_t      rs1;
 reg_index_t rs2_index;
-word_t rs2;
+word_t      rs2;
 
 //Decode
-instr_t instruction;
+word_t instruction;
 word_t immediate;
+logic  illegal_instr;
+//TODO others
+
+//ALU
+word_t  alu_operand_1;
+word_t  alu_operand_2;
+aluop_e alu_operation;
+word_t  alu_result;
 
 /* ------------------------------------------------------------------------------------------------
  * Module Instantiations
  * --------------------------------------------------------------------------------------------- */
+
 core_control  core_control_instance (.*);
-core_alu      core_alu_instance     (/*TODO*/);
+core_alu      core_alu_instance     (.*);
 core_decode   core_decode_instance  (.*);
 core_reg_file core_reg_file_instance(.*);
-core_mmu      core_mmu_instance     (/*TODO*/);
+core_mmu      core_mmu_instance     (.*);
 
 endmodule : core_top

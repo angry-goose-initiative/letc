@@ -2,6 +2,7 @@
 #Based on script from vgacpu
 
 FILES="-I ../../../rtl/letc/letc_pkg.svh -I ../../../rtl/letc/letc_top.sv"
+FILES="$FILES -I ../../../rtl/letc/core/core_pkg.svh"
 FILES="$FILES -I ../../../rtl/letc/core/core_top.sv"
 FILES="$FILES -I ../../../rtl/letc/core/core_alu.sv"
 FILES="$FILES -I ../../../rtl/letc/core/core_control.sv"

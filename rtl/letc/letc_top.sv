@@ -9,8 +9,6 @@
  *
 */
 
-import letc_pkg::*;
-
 module letc_top (
     input clk,
     input rst_n

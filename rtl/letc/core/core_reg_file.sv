@@ -10,23 +10,23 @@
 */
 
 module core_reg_file
-    import letc_pkg::*;
+    import core_pkg::*;
 (
     input clk,
     input rst_n,
 
     //rd write port
     input reg_index_t rd_index,
-    input word_t rd,
-    input logic rd_write_enable,
+    input word_t      rd,
+    input logic       rd_write_enable,
 
     //rs1 read port
     input reg_index_t rs1_index,
-    output word_t rs1,
+    output word_t     rs1,
     
     //rs2 read port
     input reg_index_t rs2_index,
-    output word_t rs2
+    output word_t     rs2
 );
 
 //The registers
@@ -41,7 +41,7 @@ always_ff @(posedge clk, negedge rst_n) begin : rd_write_port
         end : reset
     end else begin//posedge clk
         for (int reg_index = 1; reg_index < 32; ++reg_index) begin : rd_write
-            if (rd_write_enable && (reg_index == rd_index)) begin
+            if (rd_write_enable && (reg_index[4:0] == rd_index)) begin
                 register[reg_index] <= rd;
             end
         end : rd_write

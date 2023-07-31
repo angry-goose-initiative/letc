@@ -10,7 +10,7 @@
 */
 
 module core_control
-    import letc_pkg::*;
+    import core_pkg::*;
 (
     input clk,
     input rst_n,
@@ -61,6 +61,7 @@ always_comb begin : next_state_logic
         FINISH_CURRENT_AND_FETCH_NEXT: begin
             next_state = HALT;//TODO
         end
+        default: next_state = HALT;//We entered an illegal state, so halt
     endcase
 end : next_state_logic
 
@@ -87,6 +88,7 @@ always_comb begin : control_signal_logic
         FINISH_CURRENT_AND_FETCH_NEXT: begin
             //rd_write_enable = ?;//TODO this will depend on the instruction
         end
+        default: begin end//Illegal state, so do nothing
     endcase
 end : control_signal_logic
 
