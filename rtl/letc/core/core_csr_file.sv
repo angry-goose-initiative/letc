@@ -14,7 +14,7 @@ module core_csr_file
 (
     input clk,
     input rst_n,
-    input logic [11:0] csr_sel,//TODO should be make an enum for this?
+    input logic [11:0] csr_sel,//TODO should we make an enum for this?
     output word_t csr_data_out,
     
     // Implicitly read CSRs

@@ -44,7 +44,9 @@ word_t      rs2;
 rd_src_e rd_src;
 
 //CSRs
+logic [11:0] csr_sel;//TODO should we make an enum for this?
 word_t csr_data_out;
+word_t csr_mstatus;
 
 //Decode
 word_t instruction;
@@ -73,6 +75,6 @@ core_decode             core_decode_instance            (.*);
 core_reg_file_src_mux   core_reg_file_src_mux_instance  (.*);
 core_reg_file           core_reg_file_instance          (.*);
 core_mmu                core_mmu_instance               (.*);
-core_csr_file           core_csr_file_instance          (/*TODO*/);
+core_csr_file           core_csr_file_instance          (.*);
 
 endmodule : core_top
