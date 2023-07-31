@@ -42,4 +42,4 @@ assign test_enum = TEST_ENUM_1;
 assign test_struct.a = 8'hFF;
 assign test_struct.b = 8'ha5;
 
-endmodule
+endmodule : letc_top

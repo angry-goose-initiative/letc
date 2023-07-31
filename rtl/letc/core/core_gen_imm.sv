@@ -9,11 +9,11 @@
  *
 */
 
-module core_gen_imm (
-    input clk,
-    input rst_n,
-    input logic [31:0] instruction,
-    output logic [31:0] immediate
+module core_gen_imm
+    import letc_pkg::*;
+(
+    input instr_t instruction,//TODO we should let decode do more of the work for us
+    output word_t immediate
     // TODO other ports
 );
 
