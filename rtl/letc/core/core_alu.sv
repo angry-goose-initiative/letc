@@ -9,7 +9,9 @@
  *
 */
 
-module core_alu (
+module core_alu
+    import letc_pkg::*;
+(
     input clk,
     input rst_n,
     input word_t op1, // Operand 1
