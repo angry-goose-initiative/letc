@@ -9,9 +9,10 @@
  *
 */
 
-import letc_pkg::*;
 
-module core_top (
+module core_top
+    import letc_pkg::*;
+(
     input clk,
     input rst_n
 
@@ -19,27 +20,24 @@ module core_top (
 
 );
 
-core_control core_control_instance (.*);
+/* ------------------------------------------------------------------------------------------------
+ * Connections
+ * --------------------------------------------------------------------------------------------- */
+reg_index_t rd_index;
+word_t rd;
+logic rd_write_enable;
+reg_index_t rs1_index;
+word_t rs1;
+reg_index_t rs2_index;
+word_t rs2;
 
-//TODO all of the inner goodness
+/* ------------------------------------------------------------------------------------------------
+ * Module Instantiations
+ * --------------------------------------------------------------------------------------------- */
+core_control  core_control_instance (.*);
+core_alu      core_alu_instance     (/*TODO*/);
+core_gen_imm  core_gen_imm_instance (/*TODO*/);
+core_reg_file core_reg_file_instance(.*);
+core_mmu      core_mmu_instance     (/*TODO*/);
 
-typedef enum {
-    TEST_ENUM_0,
-    TEST_ENUM_1,
-    TEST_ENUM_2
-} test_enum_t;
-
-typedef struct packed {
-    logic [7:0] a;
-    logic [7:0] b;
-} test_struct_t;
-
-test_enum_t test_enum;
-
-test_struct_t test_struct;
-
-assign test_enum = TEST_ENUM_1;
-assign test_struct.a = 8'hFF;
-assign test_struct.b = 8'ha5;
-
-endmodule
+endmodule : core_top

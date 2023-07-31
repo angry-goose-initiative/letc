@@ -12,11 +12,11 @@
 module core_alu (
     input clk,
     input rst_n,
-    input logic [31:0] op1, // Operand 1
-    input logic [31:0] op2, // Operand 2
+    input word_t op1, // Operand 1
+    input word_t op2, // Operand 2
     input logic [3:0] opcode,
-    output logic [31:0] result
+    output word_t result
     // TODO other ports
 );
 
-endmodule
+endmodule : core_alu

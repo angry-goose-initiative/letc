@@ -17,4 +17,4 @@ module core_gen_imm (
     // TODO other ports
 );
 
-endmodule
+endmodule : core_gen_imm

@@ -11,8 +11,8 @@
 
 module core_mmu (
     input clk,
-    input rst_n,
+    input rst_n
     // TODO other ports
 );
 
-endmodule
+endmodule : core_mmu

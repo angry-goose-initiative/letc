@@ -1,6 +1,6 @@
 /*
  * File:    core_control.sv
- * Brief:   TODO
+ * Brief:   State machine and control logic for LETC Core
  *
  * Copyright (C) 2023 John Jekel and Nick Chan
  * See the LICENSE file at the root of the project for licensing info.
@@ -9,9 +9,9 @@
  *
 */
 
-import letc_pkg::*;
-
-module core_control (
+module core_control
+    import letc_pkg::*;
+(
     input clk,
     input rst_n
 
@@ -19,47 +19,15 @@ module core_control (
 
 );
 
-//TODO all of the inner goodness
-
-typedef enum logic [1:0] {
-    INIT,
+typedef enum {
     FETCH,
-    DECODE,
-    EXECUTE
-    //TODO this will likely change in the future
+    LOAD_CYCLE_1,
+    //TODO any other additional states needed by various instructions
+    FINISH_CURRENT_AND_FETCH_NEXT 
 } state_e;
 
 state_e state, next_state;
 
-always_ff @(posedge clk, negedge rst_n) begin
-    if (!rst_n) begin
-        state <= INIT;
-    end else begin
-        state <= next_state;
-    end
-end
+//TODO all of the inner goodness
 
-always_comb begin
-    next_state = state_e'(state + 2'b1);//TESTING
-    /*
-    case (state)
-        INIT: begin
-            //TODO
-        end
-        FETCH: begin
-            //TODO
-        end
-        DECODE: begin
-            //TODO
-        end
-        EXECUTE: begin
-            //TODO
-        end
-        default: begin
-            //TODO
-        end
-    endcase
-    */
-end
-
-endmodule
+endmodule : core_control

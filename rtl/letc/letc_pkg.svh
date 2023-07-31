@@ -24,6 +24,10 @@ package letc_pkg;
         SYSTEM = 5'b11100, RESERVED_3 = 5'b11101, CUSTOM_3 = 5'b11110,   BGE80 = 5'b11111
     } opcode_e;
 
+    typedef logic [31:0] word_t;
+    typedef logic [15:0] halfword_t;
+    typedef logic [7:0]  byte_t;
+
     /*package mem_pkg;
     //TODO perhaps move this to a different file?
     endpackage
@@ -32,4 +36,4 @@ package letc_pkg;
 
     //TODO
 
-endpackage
+endpackage : letc_pkg
