@@ -12,20 +12,20 @@
 module core_alu_src_mux
     import core_pkg::*;
 (
-    // op1
-    input logic [2:0] op1_sel,
-    input word_t reg1, // value in rs1
-    input word_t data_mem, // data memory
-    input word_t pc, // program counter
-    output word_t op1, // Operand 1
+    //ALU operand 1 mux IO
+    input  alu_op1_src_e alu_op1_src,
+    input  word_t        rs1,
+    input  word_t        dcache_data_out,
+    input  word_t        current_pc,
+    output word_t        alu_operand_1,
 
-    // op2
-    input logic [2:0] op2_sel,
-    input word_t reg2, // value in rs2
-    input word_t saved_reg2,
-    input word_t imm, // immediate value
-    input word_t csr, // CSR
-    output word_t op2 // Operand 2
+    //ALU operand 2 mux IO
+    input  alu_op2_src_e alu_op2_src,
+    input  word_t        rs2,
+    input  word_t        saved_rs2,//Temporary register for atomics
+    input  word_t        immediate,
+    input  word_t        csr_data_out,
+    output word_t        alu_operand_2
 );
 
 endmodule : core_alu_src_mux

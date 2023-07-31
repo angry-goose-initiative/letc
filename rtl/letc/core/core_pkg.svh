@@ -37,5 +37,13 @@ package core_pkg;
         RD_FROM_CSR,
         RD_FROM_MEM_LOAD
     } rd_src_e;
+    typedef enum logic [1:0] {
+        ALUOPSRC1TODO
+        //TODO
+    } alu_op1_src_e;
+    typedef enum logic [2:0] {
+        ALUOPSRC2TODO
+        //TODO
+    } alu_op2_src_e;
 
 endpackage : core_pkg

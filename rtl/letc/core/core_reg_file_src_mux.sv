@@ -13,11 +13,11 @@ module core_reg_file_src_mux
     import core_pkg::*;
 (
     input  rd_src_e rd_src,
-    input  word_t data_mem,
-    input  word_t pc_plus_4,
-    input  word_t alu,
-    input  word_t csr,
-    output word_t rd,
+    input  word_t   dcache_data_out,
+    input  word_t   next_seq_pc,
+    input  word_t   alu_result,
+    input  word_t   csr_data_out,
+    output word_t   rd
 );
 
 endmodule : core_reg_file_src_mux
