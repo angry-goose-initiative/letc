@@ -10,14 +10,14 @@
 */
 
 module core_reg_file_src_mux
-    import letc_pkg::*;
+    import core_pkg::*;
 (
-    input logic [1:0] sel,
-    input word_t data_mem,
-    input word_t pc_plus_4,
-    input word_t alu,
-    input word_t csr,
-    output word_t dout,
+    input  rd_src_e rd_src,
+    input  word_t data_mem,
+    input  word_t pc_plus_4,
+    input  word_t alu,
+    input  word_t csr,
+    output word_t rd,
 );
 
 endmodule : core_reg_file_src_mux

@@ -10,13 +10,13 @@
 */
 
 module core_alu_src_mux
-    import letc_pkg::*;
+    import core_pkg::*;
 (
     // op1
     input logic [2:0] op1_sel,
     input word_t reg1, // value in rs1
     input word_t data_mem, // data memory
-    input word_t pc // program counter
+    input word_t pc, // program counter
     output word_t op1, // Operand 1
 
     // op2

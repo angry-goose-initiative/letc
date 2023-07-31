@@ -10,7 +10,7 @@
 */
 
 module core_csr_file
-    import letc_pkg::*;
+    import core_pkg::*;
 (
     input clk,
     input rst_n,

@@ -31,5 +31,11 @@ package core_pkg;
     typedef enum logic [2:0] {
         INSTR_FORMAT_R, INSTR_FORMAT_I, INSTR_FORMAT_S, INSTR_FORMAT_B, INSTR_FORMAT_U, INSTR_FORMAT_J, INSTR_FORMAT_UIMM
     } instr_format_e;
+    typedef enum logic [1:0] {
+        RD_FROM_NEXT_SEQ_PC,
+        RD_FROM_ALU_RESULT,
+        RD_FROM_CSR,
+        RD_FROM_MEM_LOAD
+    } rd_src_e;
 
 endpackage : core_pkg
