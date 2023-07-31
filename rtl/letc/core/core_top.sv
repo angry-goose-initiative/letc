@@ -48,10 +48,13 @@ word_t  alu_result;
  * Module Instantiations
  * --------------------------------------------------------------------------------------------- */
 
-core_control  core_control_instance (.*);
-core_alu      core_alu_instance     (.*);
-core_decode   core_decode_instance  (.*);
-core_reg_file core_reg_file_instance(.*);
-core_mmu      core_mmu_instance     (.*);
+core_control            core_control_instance (.*);
+core_alu_src_mux        core_alu_src_mux_instance       (/*TODO*/);
+core_alu                core_alu_instance     (.*);
+core_decode             core_decode_instance  (.*);
+core_reg_file_src_mux   core_reg_file_src_mux_instance  (/*TODO*/);
+core_reg_file           core_reg_file_instance(.*);
+core_mmu                core_mmu_instance     (.*);
+core_csr_file           core_csr_file_instance          (/*TODO*/);
 
 endmodule : core_top
