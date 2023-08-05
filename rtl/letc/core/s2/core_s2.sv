@@ -9,7 +9,7 @@
  *
 */
 
-module core_s2_top
+module core_s2
     import core_pkg::*;
 (
     input clk,
@@ -22,6 +22,12 @@ module core_s2_top
 /* ------------------------------------------------------------------------------------------------
  * Connections
  * --------------------------------------------------------------------------------------------- */
+
+//?
+word_t current_pc;//PC?
+word_t next_seq_pc;//PC?
+word_t saved_rs2;//?
+logic  halt_req;//Control?
 
 //Memory
 word_t dcache_data_out;
@@ -58,19 +64,17 @@ word_t  alu_result;
 
 //ALU source mux
 alu_op1_src_e alu_op1_src;
-alu_op1_src_e alu_op2_src;
+alu_op2_src_e alu_op2_src;
 
 /* ------------------------------------------------------------------------------------------------
  * Module Instantiations
  * --------------------------------------------------------------------------------------------- */
 
-core_control            core_control_instance           (.*);
-core_alu_src_mux        core_alu_src_mux_instance       (.*);
-core_alu                core_alu_instance               (.*);
-core_decode             core_decode_instance            (.*);
-core_reg_file_src_mux   core_reg_file_src_mux_instance  (.*);
-core_reg_file           core_reg_file_instance          (.*);
-core_mmu                core_mmu_instance               (.*);
-core_csr_file           core_csr_file_instance          (.*);
+core_s2_control            core_s2_control_inst           (.*);
+core_s2_alu_src_mux        core_s2_alu_src_mux_inst       (.*);
+core_s2_alu                core_s2_alu_inst               (.*);
+core_s2_decode             core_s2_decode_inst            (.*);
+core_s2_reg_file_src_mux   core_s2_reg_file_src_mux_inst  (.*);
+core_s2_reg_file           core_s2_reg_file_inst          (.*);
 
-endmodule : core_s2_top
+endmodule : core_s2

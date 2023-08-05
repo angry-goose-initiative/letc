@@ -70,9 +70,10 @@ alu_op1_src_e alu_op2_src;
  * Module Instantiations
  * --------------------------------------------------------------------------------------------- */
 
-core_s1_top             core_s1_top_inst (.*);
+core_s1       core_s1_inst (.*);
+core_s2       core_s2_inst (.*);
 
-core_mmu                core_mmu_instance               (.*);
-core_csr_file           core_csr_file_instance          (.*);
+core_mmu      core_mmu_instance      (.*);
+core_csr_file core_csr_file_instance (.*);
 
 endmodule : core_top

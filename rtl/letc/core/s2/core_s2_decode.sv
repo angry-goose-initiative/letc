@@ -52,7 +52,7 @@ end : check_if_opcode_supported
 
 //Determine if the instruction is illegal
 //TODO we should check other fields too in addition to the opcode
-assign illegal_instr = unsupported_opcode || (instruction[1:0] != 2'b11) || (instruction == 32'd0) || (instruction == 32'dFFFFFFFF);
+assign illegal_instr = unsupported_opcode || (instruction[1:0] != 2'b11) || (instruction == 32'd0) || (instruction == 32'hFFFFFFFF);
 
 //Determine the instruction format
 instr_format_e instr_format;
@@ -81,6 +81,6 @@ assign halt_req = opcode == OPCODE_CUSTOM_0;
 
 //TODO other inner goodness (to generate command signals for control, the ALU, muxes, etc)
 
-core_gen_imm core_gen_imm_instance (.*);
+core_s2_gen_imm core_s2_gen_imm_inst (.*);
 
 endmodule : core_s2_decode
