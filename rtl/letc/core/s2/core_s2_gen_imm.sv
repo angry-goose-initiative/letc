@@ -1,5 +1,5 @@
 /*
- * File:    core_gen_imm.sv
+ * File:    core_s2_gen_imm.sv
  * Brief:   Generates the immediate value
  *
  * Copyright (C) 2023 John Jekel and Nick Chan
@@ -9,7 +9,7 @@
  *
 */
 
-module core_gen_imm
+module core_s2_gen_imm
     import core_pkg::*;
 (
     input  word_t         instruction,
@@ -46,4 +46,4 @@ always_comb begin : immediate_mux
     endcase
 end : immediate_mux
 
-endmodule : core_gen_imm
+endmodule : core_s2_gen_imm

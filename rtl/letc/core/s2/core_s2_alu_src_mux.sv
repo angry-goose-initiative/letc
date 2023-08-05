@@ -1,5 +1,5 @@
 /*
- * File:    core_alu_src_mux.sv
+ * File:    core_s2_alu_src_mux.sv
  * Brief:   The ALU source mux
  *
  * Copyright (C) 2023 John Jekel and Nick Chan
@@ -9,7 +9,7 @@
  *
 */
 
-module core_alu_src_mux
+module core_s2_alu_src_mux
     import core_pkg::*;
 (
     //ALU operand 1 mux IO
@@ -28,4 +28,4 @@ module core_alu_src_mux
     output word_t        alu_operand_2
 );
 
-endmodule : core_alu_src_mux
+endmodule : core_s2_alu_src_mux

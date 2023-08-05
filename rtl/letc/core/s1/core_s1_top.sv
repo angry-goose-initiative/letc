@@ -1,5 +1,5 @@
 /*
- * File:    core_top.sv
+ * File:    core_s1_top.sv
  * Brief:   TODO
  *
  * Copyright (C) 2023 John Jekel and Nick Chan
@@ -9,7 +9,7 @@
  *
 */
 
-module core_top
+module core_s1_top
     import core_pkg::*;
 (
     input clk,
@@ -23,12 +23,6 @@ module core_top
  * Connections
  * --------------------------------------------------------------------------------------------- */
 
-//?
-word_t current_pc;//PC?
-word_t next_seq_pc;//PC?
-word_t saved_rs2;//?
-logic  halt_req;//Control?
-
 //Memory
 word_t dcache_data_out;
 
@@ -41,38 +35,18 @@ word_t      rs1;
 reg_index_t rs2_index;
 word_t      rs2;
 
-//Register file source mux
-rd_src_e rd_src;
-
-//CSRs
-logic [11:0] csr_sel;//TODO should we make an enum for this?
-word_t csr_data_out;
-word_t csr_mstatus;
-
-//Decode
-word_t instruction;
-word_t immediate;
-word_t uimm;
-logic  illegal_instr;
-//TODO others
-
-//ALU
-word_t  alu_operand_1;
-word_t  alu_operand_2;
-aluop_e alu_operation;
-word_t  alu_result;
-
-//ALU source mux
-alu_op1_src_e alu_op1_src;
-alu_op1_src_e alu_op2_src;
 
 /* ------------------------------------------------------------------------------------------------
  * Module Instantiations
  * --------------------------------------------------------------------------------------------- */
 
-core_s1_top             core_s1_top_inst (.*);
-
+core_control            core_control_instance           (.*);
+core_alu_src_mux        core_alu_src_mux_instance       (.*);
+core_alu                core_alu_instance               (.*);
+core_decode             core_decode_instance            (.*);
+core_reg_file_src_mux   core_reg_file_src_mux_instance  (.*);
+core_reg_file           core_reg_file_instance          (.*);
 core_mmu                core_mmu_instance               (.*);
 core_csr_file           core_csr_file_instance          (.*);
 
-endmodule : core_top
+endmodule : core_s1_top
