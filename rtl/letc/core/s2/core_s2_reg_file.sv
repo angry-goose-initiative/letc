@@ -1,5 +1,5 @@
 /*
- * File:    reg_file.sv
+ * File:    core_s2_reg_file.sv
  * Brief:   The register file
  *
  * Copyright (C) 2023 John Jekel and Nick Chan
@@ -9,7 +9,7 @@
  *
 */
 
-module core_reg_file
+module core_s2_reg_file
     import core_pkg::*;
 (
     input clk,
@@ -54,4 +54,4 @@ assign rs1 = (rs1_index == 5'd0) ? '0 : register[rs1_index];
 //rs2 read port
 assign rs2 = (rs2_index == 5'd0) ? '0 : register[rs2_index];
 
-endmodule : core_reg_file
+endmodule : core_s2_reg_file

@@ -1,5 +1,5 @@
 /*
- * File:    core_reg_file_src_mux.sv
+ * File:    core_s2_reg_file_src_mux.sv
  * Brief:   The register file source mux
  *
  * Copyright (C) 2023 John Jekel and Nick Chan
@@ -9,7 +9,7 @@
  *
 */
 
-module core_reg_file_src_mux
+module core_s2_reg_file_src_mux
     import core_pkg::*;
 (
     input  rd_src_e rd_src,
@@ -20,4 +20,4 @@ module core_reg_file_src_mux
     output word_t   rd
 );
 
-endmodule : core_reg_file_src_mux
+endmodule : core_s2_reg_file_src_mux

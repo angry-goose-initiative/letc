@@ -1,5 +1,5 @@
 /*
- * File:    core_top.sv
+ * File:    core_s2_top.sv
  * Brief:   TODO
  *
  * Copyright (C) 2023 John Jekel and Nick Chan
@@ -9,7 +9,7 @@
  *
 */
 
-module core_top
+module core_s2_top
     import core_pkg::*;
 (
     input clk,
@@ -22,12 +22,6 @@ module core_top
 /* ------------------------------------------------------------------------------------------------
  * Connections
  * --------------------------------------------------------------------------------------------- */
-
-//?
-word_t current_pc;//PC?
-word_t next_seq_pc;//PC?
-word_t saved_rs2;//?
-logic  halt_req;//Control?
 
 //Memory
 word_t dcache_data_out;
@@ -70,9 +64,13 @@ alu_op1_src_e alu_op2_src;
  * Module Instantiations
  * --------------------------------------------------------------------------------------------- */
 
-core_s1_top             core_s1_top_inst (.*);
-
+core_control            core_control_instance           (.*);
+core_alu_src_mux        core_alu_src_mux_instance       (.*);
+core_alu                core_alu_instance               (.*);
+core_decode             core_decode_instance            (.*);
+core_reg_file_src_mux   core_reg_file_src_mux_instance  (.*);
+core_reg_file           core_reg_file_instance          (.*);
 core_mmu                core_mmu_instance               (.*);
 core_csr_file           core_csr_file_instance          (.*);
 
-endmodule : core_top
+endmodule : core_s2_top

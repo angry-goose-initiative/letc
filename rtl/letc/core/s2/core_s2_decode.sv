@@ -1,5 +1,5 @@
 /*
- * File:    core_decode.sv
+ * File:    core_s2_decode.sv
  * Brief:   TODO
  *
  * Copyright (C) 2023 John Jekel and Nick Chan
@@ -9,7 +9,7 @@
  *
 */
 
-module core_decode
+module core_s2_decode
     import core_pkg::*;
 (
     input clk,
@@ -83,4 +83,4 @@ assign halt_req = opcode == OPCODE_CUSTOM_0;
 
 core_gen_imm core_gen_imm_instance (.*);
 
-endmodule : core_decode
+endmodule : core_s2_decode

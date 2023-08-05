@@ -1,5 +1,5 @@
 /*
- * File:    core_control.sv
+ * File:    core_s2_control.sv
  * Brief:   State machine and control logic for LETC Core
  *
  * Copyright (C) 2023 John Jekel and Nick Chan
@@ -9,7 +9,7 @@
  *
 */
 
-module core_control
+module core_s2_control
     import core_pkg::*;
 (
     input clk,
@@ -92,4 +92,4 @@ always_comb begin : control_signal_logic
     endcase
 end : control_signal_logic
 
-endmodule : core_control
+endmodule : core_s2_control
