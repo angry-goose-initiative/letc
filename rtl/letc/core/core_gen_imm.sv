@@ -12,25 +12,38 @@
 module core_gen_imm
     import core_pkg::*;
 (
-    input  word_t instruction,//TODO we should let decode do more of the work for us
-    output word_t immediate
+    input  word_t         instruction,
+    input  instr_format_e instr_format,
+    output word_t         immediate,
+    output word_t         uimm
     // TODO other ports
 );
 
+//For the CSR uimm, we always provide it, treating CSR instructions as I-type so we get _that_ immediate too since both are needed
+assign uimm  = {'0, instruction[19:15]};//NOT sign extended
+
+//Regular immediates
 word_t imm_i;
 word_t imm_s;
 word_t imm_b;
 word_t imm_u;
 word_t imm_j;
-word_t uimm;
-
 assign imm_i = {{20{instruction[31]}}, instruction[31:20]};
 assign imm_s = {{20{instruction[31]}}, instruction[31:25], instruction[11:7]};
 assign imm_b = {{19{instruction[31]}}, instruction[31],    instruction[7],  instruction[30:25], instruction[11:8], 1'b0};
 assign imm_u = {instruction[31:12], 12'h000};
 assign imm_j = {{12{instruction[31]}}, instruction[19:12], instruction[20], instruction[30:21], 1'b0};
-assign uimm  = {'0, instruction[19:15]};//NOT sign extended
 
-//TODO immediate mux based on instruction format
+//Regular immediate mux based on instruction format
+always_comb begin : immediate_mux
+    unique case (instr_format)
+        INSTR_FORMAT_I: immediate = imm_i;
+        INSTR_FORMAT_S: immediate = imm_s;
+        INSTR_FORMAT_B: immediate = imm_b;
+        INSTR_FORMAT_U: immediate = imm_u;
+        INSTR_FORMAT_J: immediate = imm_j;
+        default: immediate = 32'hDEADBEEF;
+    endcase
+end : immediate_mux
 
 endmodule : core_gen_imm

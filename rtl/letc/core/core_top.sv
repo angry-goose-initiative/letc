@@ -51,6 +51,7 @@ word_t csr_mstatus;
 //Decode
 word_t instruction;
 word_t immediate;
+word_t uimm;
 logic  illegal_instr;
 //TODO others
 

@@ -21,6 +21,7 @@ module core_decode
     //Decoded info out
     //TODO others
     output word_t  immediate,
+    output word_t  uimm,
     output aluop_e alu_operation,
     output logic   illegal_instr
 );
@@ -42,13 +43,25 @@ always_comb begin : check_if_opcode_supported
             unsupported_opcode = 1'b1;
         end
     endcase
-end
+end : check_if_opcode_supported
 
 //Determine if the instruction is illegal
 //TODO we should check other fields too in addition to the opcode
 assign illegal_instr = unsupported_opcode || (instruction[1:0] != 2'b11);
 
-//TODO the inner goodness
+//Determine the instruction format
+instr_format_e instr_format;
+always_comb begin : determine_instr_format
+    unique case(opcode)
+        //TODO 
+        default: begin
+            instr_format = INSTR_FORMAT_UNKNOWN;
+        end 
+    endcase
+end : determine_instr_format
+
+//TODO other inner goodness (to generate command signals for control, the ALU, muxes, etc)
+
 core_gen_imm core_gen_imm_instance (.*);
 
 endmodule : core_decode
