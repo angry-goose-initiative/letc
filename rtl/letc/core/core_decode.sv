@@ -27,16 +27,21 @@ module core_decode
 
 //Decode the opcode
 opcode_e opcode;
-assign opcode = instruction[6:2];
+assign opcode = opcode_e'(instruction[6:2]);
 
 //Determine if we don't support the opcode
 logic unsupported_opcode;
 always_comb begin : check_if_opcode_supported
-    unsupported_opcode = 1'd0;//TODO
-    /*unique case(opcode) begin
-        
-    end
-    */
+    unique case(opcode)
+        OPCODE_LOAD, OPCODE_MISC_MEM, OPCODE_OP_IMM, OPCODE_AUIPC,
+        OPCODE_STORE, OPCODE_AMO, OPCODE_OP, OPCODE_LUI,
+        OPCODE_BRANCH, OPCODE_JALR, OPCODE_JAL, OPCODE_SYSTEM: begin
+            unsupported_opcode = 1'b0;
+        end
+        default: begin
+            unsupported_opcode = 1'b1;
+        end
+    endcase
 end
 
 //Determine if the instruction is illegal
