@@ -24,9 +24,10 @@ module core_top
  * --------------------------------------------------------------------------------------------- */
 
 //?
-word_t current_pc;
-word_t next_seq_pc;
-word_t saved_rs2;
+word_t current_pc;//PC?
+word_t next_seq_pc;//PC?
+word_t saved_rs2;//?
+logic  halt_req;//Control?
 
 //Memory
 word_t dcache_data_out;
