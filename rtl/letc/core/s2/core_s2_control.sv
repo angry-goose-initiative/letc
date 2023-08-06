@@ -19,7 +19,7 @@ module core_s2_control
     //TODO other ports (for Mealy and next-state logic inputs)
 
     //Control signals out
-    output  logic   rd_write_enable
+    output  logic   rd_we
     //TODO others
 );
 
@@ -70,7 +70,7 @@ end : next_state_logic
  * Control logic (Mealy)
  * --------------------------------------------------------------------------------------------- */
 always_comb begin : control_signal_logic
-    rd_write_enable = 0;
+    rd_we = 0;
     unique case (state)
         INIT: begin
             //In the future we may do more things in INIT
@@ -87,7 +87,7 @@ always_comb begin : control_signal_logic
         end
         //TODO any other additional states needed by various instructions
         FINISH_CURRENT_AND_FETCH_NEXT: begin
-            //rd_write_enable = ?;//TODO this will depend on the instruction
+            //rd_we = ?;//TODO this will depend on the instruction
         end
         default: begin end//Illegal state, so do nothing
     endcase

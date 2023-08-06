@@ -36,7 +36,7 @@ word_t dcache_data_out;
 //Register file
 reg_index_t rd_index;
 word_t      rd;
-logic       rd_write_enable;
+logic       rd_we;
 reg_index_t rs1_index;
 word_t      rs1;
 reg_index_t rs2_index;

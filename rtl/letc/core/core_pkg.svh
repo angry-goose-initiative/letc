@@ -11,6 +11,11 @@
 
 package core_pkg;
 
+typedef enum logic [1:0] {
+    U_MODE = 2'b00,
+    S_MODE = 2'b01,
+    M_MODE = 2'b11
+} prv_mode_t;
 typedef logic [4:0] reg_index_t;
 typedef enum logic [4:0] {
     OPCODE_LOAD   = 5'b00000, OPCODE_LOAD_FP    = 5'b00001, OPCODE_CUSTOM_0   = 5'b00010, OPCODE_MISC_MEM = 5'b00011,

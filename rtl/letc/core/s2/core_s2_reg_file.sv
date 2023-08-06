@@ -19,7 +19,7 @@ module core_s2_reg_file
     //rd write port
     input   reg_index_t rd_index,
     input   word_t      rd,
-    input   logic       rd_write_enable,
+    input   logic       rd_we,
 
     //rs1 read port
     input   reg_index_t rs1_index,
@@ -42,7 +42,7 @@ always_ff @(posedge clk, negedge rst_n) begin : rd_write_port
         end : reset
     end else begin//posedge clk
         for (int reg_index = 1; reg_index < 32; ++reg_index) begin : rd_write
-            if (rd_write_enable && (rd_index == reg_index[4:0])) begin
+            if (rd_we && (rd_index == reg_index[4:0])) begin
                 register[reg_index] <= rd;
             end
         end : rd_write
