@@ -39,9 +39,9 @@ module core_csr_file
 
     //Implicitly written CSRs (ordered by address ascending)
     input   word_t          csr_sepc_in,
-    input   logic           csr_sepc_we
+    input   logic           csr_sepc_we,
     input   word_t          csr_scause_in,
-    input   logic           csr_scause_we
+    input   logic           csr_scause_we,
     input   word_t          csr_stval_in,//TODO maybe not have this?
     input   logic           csr_stval_we,//TODO ^
     //TODO sip?

@@ -44,6 +44,25 @@ word_t          csr_mideleg;
 word_t          csr_mie;
 word_t          csr_mtvec;
 
+//Implicitly written CSRs (ordered by address ascending)
+word_t          csr_sepc_in;
+logic           csr_sepc_we;
+word_t          csr_scause_in;
+logic           csr_scause_we;
+word_t          csr_stval_in;//TODO maybe not have this?
+logic           csr_stval_we;//TODO ^
+//TODO sip?
+word_t          csr_mstatus_in;//TODO this likely needs to be broken into its individual fields
+logic           csr_mstatus_we;
+word_t          csr_mepc_in;
+logic           csr_mepc_we;
+word_t          csr_mcause_in;
+logic           csr_mcause_we;
+//TODO mtval?
+//TODO mip?
+//TODO minst?
+//TODO others
+
 /* ------------------------------------------------------------------------------------------------
  * Module Instantiations
  * --------------------------------------------------------------------------------------------- */
