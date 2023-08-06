@@ -12,18 +12,18 @@
 module core_s2_decode
     import core_pkg::*;
 (
-    input clk,
-    input rst_n,
+    input   logic   clk,
+    input   logic   rst_n,
 
     //Instruction in
-    input word_t instruction,
+    input   word_t  instruction,
 
     //Decoded info out
-    output logic   illegal_instr,
-    output logic   halt_req,
-    output word_t  immediate,
-    output word_t  uimm,
-    output aluop_e alu_operation
+    output  logic   illegal_instr,
+    output  logic   halt_req,
+    output  word_t  immediate,
+    output  word_t  uimm,
+    output  aluop_e alu_operation
     //TODO others
 );
 

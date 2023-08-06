@@ -1,5 +1,5 @@
 /*
- * File:    core_top.sv
+ * File:    core_s1_top.sv
  * Brief:   TODO
  *
  * Copyright (C) 2023 John Jekel and Nick Chan
@@ -9,11 +9,11 @@
  *
 */
 
-module core_top
+module core_s1_top
     import core_pkg::*;
 (
-    input clk,
-    input rst_n
+    input   logic   clk,
+    input   logic   rst_n
 
     //TODO other ports
 
@@ -23,18 +23,12 @@ module core_top
  * Connections
  * --------------------------------------------------------------------------------------------- */
 
-//CSRs
-logic [11:0] csr_sel;//TODO should we make an enum for this?
-word_t csr_data_out;
-word_t csr_mstatus;
+//TODO
 
 /* ------------------------------------------------------------------------------------------------
  * Module Instantiations
  * --------------------------------------------------------------------------------------------- */
 
-core_s1_top             core_s1_top_inst    (.*);
-sore_s2_top             core_s2_top_inst    (.*);
-core_mmu                core_mmu_inst       (.*);
-core_csr_file           core_csr_file_inst  (.*);
+core_control    core_control_instance   (.*);
 
-endmodule : core_top
+endmodule : core_s1_top
