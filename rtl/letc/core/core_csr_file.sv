@@ -18,7 +18,7 @@ module core_csr_file
     output  word_t          csr_data_out,
     
     // Implicitly read CSRs
-    output  word_t          csr_mstatus
+    output  word_t          csr_mstatus,
     output  word_t          csr_satp
 
     //TODO others

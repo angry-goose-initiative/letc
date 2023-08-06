@@ -9,7 +9,9 @@
  *
 */
 
-module core_mmu (
+module core_mmu
+    import core_pkg::*;
+(
     input   logic   clk,
     input   logic   rst_n,
 

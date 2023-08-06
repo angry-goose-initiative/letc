@@ -1,7 +1,9 @@
 #!/bin/bash
 #Based on script from vgacpu
 
-FILES="-I ../../../rtl/letc/letc_pkg.svh -I ../../../rtl/letc/letc_top.sv"
+FILES="-I ../../../rtl/letc/letc_pkg.svh"
+FILES="$FILES -I ../../../rtl/letc/limp_pkg.svh"
+FILES="$FILES -I ../../../rtl/letc/letc_top.sv"
 FILES="$FILES -I ../../../rtl/letc/core/core_pkg.svh"
 FILES="$FILES -I ../../../rtl/letc/core/core_top.sv"
 FILES="$FILES -I ../../../rtl/letc/core/core_csr_file.sv"
