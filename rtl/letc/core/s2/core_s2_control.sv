@@ -12,13 +12,13 @@
 module core_s2_control
     import core_pkg::*;
 (
-    input clk,
-    input rst_n,
+    input   logic   clk,
+    input   logic   rst_n,
 
     //TODO other ports (for Mealy and next-state logic inputs)
 
     //Control signals out
-    output logic rd_write_enable
+    output  logic   rd_write_enable
     //TODO others
 );
 

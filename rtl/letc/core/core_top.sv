@@ -12,8 +12,8 @@
 module core_top
     import core_pkg::*;
 (
-    input clk,
-    input rst_n
+    input   logic   clk,
+    input   logic   rst_n
 
     //TODO other ports
 
@@ -32,8 +32,8 @@ word_t csr_mstatus;
  * Module Instantiations
  * --------------------------------------------------------------------------------------------- */
 
-core_s1_top             core_s1_top_inst    (.*);
-sore_s2_top             core_s2_top_inst    (.*);
+core_s1                 core_s1_inst        (.*);
+core_s2                 core_s2_inst        (.*);
 core_mmu                core_mmu_inst       (.*);
 core_csr_file           core_csr_file_inst  (.*);
 

@@ -10,8 +10,8 @@
 */
 
 module core_mmu (
-    input clk,
-    input rst_n
+    input   logic   clk,
+    input   logic   rst_n
     // TODO other ports
 );
 

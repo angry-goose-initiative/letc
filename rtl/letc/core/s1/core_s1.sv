@@ -12,8 +12,8 @@
 module core_s1
     import core_pkg::*;
 (
-    input clk,
-    input rst_n
+    input   logic   clk,
+    input   logic   rst_n
 
     //TODO other ports
 
@@ -29,6 +29,6 @@ module core_s1
  * Module Instantiations
  * --------------------------------------------------------------------------------------------- */
 
-core_s1_control            core_s1_control_instance           (.*);
+core_s1_control core_s1_control_instance    (.*);
 
 endmodule : core_s1

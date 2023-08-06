@@ -12,21 +12,21 @@
 module core_s2_reg_file
     import core_pkg::*;
 (
-    input clk,
-    input rst_n,
+    input   logic       clk,
+    input   logic       rst_n,
 
     //rd write port
-    input reg_index_t rd_index,
-    input word_t      rd,
-    input logic       rd_write_enable,
+    input   reg_index_t rd_index,
+    input   word_t      rd,
+    input   logic       rd_write_enable,
 
     //rs1 read port
-    input reg_index_t rs1_index,
-    output word_t     rs1,
+    input   reg_index_t rs1_index,
+    output  word_t      rs1,
     
     //rs2 read port
-    input reg_index_t rs2_index,
-    output word_t     rs2
+    input   reg_index_t rs2_index,
+    output  word_t      rs2
 );
 
 //The registers

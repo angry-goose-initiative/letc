@@ -10,8 +10,8 @@
 */
 
 module letc_top (
-    input clk,
-    input rst_n
+    input   logic   clk,
+    input   logic   rst_n
 
     //TODO other ports
 

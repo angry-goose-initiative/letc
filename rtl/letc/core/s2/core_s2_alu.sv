@@ -12,10 +12,10 @@
 module core_s2_alu
     import core_pkg::*;
 (
-    input word_t alu_operand_1,
-    input word_t alu_operand_2,
-    input aluop_e alu_operation,
-    output word_t alu_result
+    input   word_t  alu_operand_1,
+    input   word_t  alu_operand_2,
+    input   aluop_e alu_operation,
+    output  word_t  alu_result
 );
 
 //TODO

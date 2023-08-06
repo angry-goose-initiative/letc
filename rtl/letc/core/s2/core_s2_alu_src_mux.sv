@@ -28,6 +28,10 @@ module core_s2_alu_src_mux
     output  word_t          alu_operand_2
 );
 
+//ALU operand 1 mux
+//TODO
+
+//ALU operand 2 mux
 //TODO
 
 endmodule : core_s2_alu_src_mux

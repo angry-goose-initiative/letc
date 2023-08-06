@@ -11,6 +11,19 @@
 
 package core_pkg;
 
+    //FIXME this dosn't work
+    /*
+    import letc_pkg::paddr_t;
+    import letc_pkg::word_t;
+    import letc_pkg::halfword_t;
+    import letc_pkg::byte_t;
+    */
+    //Workaround
+    typedef letc_pkg::paddr_t    paddr_t;
+    typedef letc_pkg::word_t     word_t;
+    typedef letc_pkg::halfword_t halfword_t;
+    typedef letc_pkg::byte_t     byte_t;
+
     typedef logic [4:0] reg_index_t;
     typedef enum logic [4:0] {
         OPCODE_LOAD   = 5'b00000, OPCODE_LOAD_FP    = 5'b00001, OPCODE_CUSTOM_0   = 5'b00010, OPCODE_MISC_MEM = 5'b00011,
@@ -22,9 +35,6 @@ package core_pkg;
         OPCODE_BRANCH = 5'b11000, OPCODE_JALR       = 5'b11001, OPCODE_RESERVED_1 = 5'b11010, OPCODE_JAL      = 5'b11011,
         OPCODE_SYSTEM = 5'b11100, OPCODE_RESERVED_3 = 5'b11101, OPCODE_CUSTOM_3   = 5'b11110, OPCODE_BGE80    = 5'b11111
     } opcode_e;
-    typedef logic [31:0] word_t;
-    typedef logic [15:0] halfword_t;
-    typedef logic [7:0]  byte_t;
     typedef enum logic [2:0] {
         ALUOPTODO//TODO
     } aluop_e;

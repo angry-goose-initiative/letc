@@ -12,8 +12,8 @@
 module core_s2
     import core_pkg::*;
 (
-    input clk,
-    input rst_n
+    input   logic   clk,
+    input   logic   rst_n
 
     //TODO other ports
 
