@@ -18,4 +18,6 @@ module core_s2_alu
     output word_t alu_result
 );
 
+//TODO
+
 endmodule : core_s2_alu

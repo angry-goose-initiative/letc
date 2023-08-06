@@ -1,5 +1,5 @@
 /*
- * File:    core_s1_top.sv
+ * File:    core_s1.sv
  * Brief:   TODO
  *
  * Copyright (C) 2023 John Jekel and Nick Chan

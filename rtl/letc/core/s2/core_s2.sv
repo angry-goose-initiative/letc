@@ -1,5 +1,5 @@
 /*
- * File:    core_s2_top.sv
+ * File:    core_s2.sv
  * Brief:   TODO
  *
  * Copyright (C) 2023 John Jekel and Nick Chan
@@ -70,11 +70,11 @@ alu_op2_src_e alu_op2_src;
  * Module Instantiations
  * --------------------------------------------------------------------------------------------- */
 
-core_s2_control            core_s2_control_inst           (.*);
-core_s2_alu_src_mux        core_s2_alu_src_mux_inst       (.*);
-core_s2_alu                core_s2_alu_inst               (.*);
-core_s2_decode             core_s2_decode_inst            (.*);
-core_s2_reg_file_src_mux   core_s2_reg_file_src_mux_inst  (.*);
-core_s2_reg_file           core_s2_reg_file_inst          (.*);
+core_s2_control          core_s2_control_inst          (.*);
+core_s2_alu_src_mux      core_s2_alu_src_mux_inst      (.*);
+core_s2_alu              core_s2_alu_inst              (.*);
+core_s2_decode           core_s2_decode_inst           (.*);
+core_s2_reg_file_src_mux core_s2_reg_file_src_mux_inst (.*);
+core_s2_reg_file         core_s2_reg_file_inst         (.*);
 
 endmodule : core_s2

@@ -41,7 +41,7 @@ always_ff @(posedge clk, negedge rst_n) begin : rd_write_port
         end : reset
     end else begin//posedge clk
         for (int reg_index = 1; reg_index < 32; ++reg_index) begin : rd_write
-            if (rd_write_enable && (reg_index[4:0] == rd_index)) begin
+            if (rd_write_enable && (rd_index == reg_index[4:0])) begin
                 register[reg_index] <= rd;
             end
         end : rd_write

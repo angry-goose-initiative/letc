@@ -1,6 +1,6 @@
 /*
  * File:    core_s2_gen_imm.sv
- * Brief:   Generates the immediate value
+ * Brief:   Generates immediate values
  *
  * Copyright (C) 2023 John Jekel and Nick Chan
  * See the LICENSE file at the root of the project for licensing info.

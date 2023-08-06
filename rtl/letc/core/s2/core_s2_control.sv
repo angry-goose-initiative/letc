@@ -1,6 +1,6 @@
 /*
  * File:    core_s2_control.sv
- * Brief:   State machine and control logic for LETC Core
+ * Brief:   State machine and control logic for LETC Core Stage 2
  *
  * Copyright (C) 2023 John Jekel and Nick Chan
  * See the LICENSE file at the root of the project for licensing info.
