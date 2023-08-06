@@ -15,13 +15,13 @@ module core_s2_gen_imm
 (
     input   word_t          instruction,
     input   instr_format_e  instr_format,
-    output  word_t          immediate,
-    output  word_t          uimm
+    output  word_t          imm,
+    output  word_t          csr_uimm
     // TODO other ports
 );
 
 //For the CSR uimm, we always provide it, treating CSR instructions as I-type so we get _that_ immediate too since both are needed
-assign uimm  = {27'd0, instruction[19:15]};//NOT sign extended
+assign csr_uimm  = {27'd0, instruction[19:15]};//NOT sign extended
 
 //Regular immediates
 word_t imm_i;
@@ -38,12 +38,12 @@ assign imm_j = {{12{instruction[31]}}, instruction[19:12], instruction[20], inst
 //Regular immediate mux based on instruction format
 always_comb begin : immediate_mux
     unique case (instr_format)
-        INSTR_FORMAT_I: immediate = imm_i;
-        INSTR_FORMAT_S: immediate = imm_s;
-        INSTR_FORMAT_B: immediate = imm_b;
-        INSTR_FORMAT_U: immediate = imm_u;
-        INSTR_FORMAT_J: immediate = imm_j;
-        default: immediate = 32'hDEADBEEF;
+        INSTR_FORMAT_I: imm = imm_i;
+        INSTR_FORMAT_S: imm = imm_s;
+        INSTR_FORMAT_B: imm = imm_b;
+        INSTR_FORMAT_U: imm = imm_u;
+        INSTR_FORMAT_J: imm = imm_j;
+        default: imm = 32'hDEADBEEF;
     endcase
 end : immediate_mux
 

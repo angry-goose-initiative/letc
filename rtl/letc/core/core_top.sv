@@ -35,14 +35,14 @@ prv_mode_t      prv_mode_wd;
 logic           prv_mode_we;
 
 //Implicitly read CSRs (ordered by address ascending)
-word_t          csr_sie_val;
-word_t          csr_stvec_val;
-word_t          csr_satp_val;
-word_t          csr_mstatus_val;
-word_t          csr_medeleg_val;
-word_t          csr_mideleg_val;
-word_t          csr_mie_val;
-word_t          csr_mtvec_val;
+word_t          csr_sie_ff;
+word_t          csr_stvec_ff;
+word_t          csr_satp_ff;
+word_t          csr_mstatus_ff;
+word_t          csr_medeleg_ff;
+word_t          csr_mideleg_ff;
+word_t          csr_mie_ff;
+word_t          csr_mtvec_ff;
 
 //Implicitly written CSRs (ordered by address ascending)
 word_t          csr_sepc_wd;

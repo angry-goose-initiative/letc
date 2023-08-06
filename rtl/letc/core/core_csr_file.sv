@@ -24,15 +24,15 @@ module core_csr_file
     input   logic           prv_mode_we,
     
     //Implicitly read CSRs (ordered by address ascending)
-    output  word_t          csr_sie_val,
-    output  word_t          csr_stvec_val,
+    output  word_t          csr_sie_ff,
+    output  word_t          csr_stvec_ff,
     //TODO sip?
-    output  word_t          csr_satp_val,
-    output  word_t          csr_mstatus_val,
-    output  word_t          csr_medeleg_val,
-    output  word_t          csr_mideleg_val,
-    output  word_t          csr_mie_val,
-    output  word_t          csr_mtvec_val,
+    output  word_t          csr_satp_ff,
+    output  word_t          csr_mstatus_ff,
+    output  word_t          csr_medeleg_ff,
+    output  word_t          csr_mideleg_ff,
+    output  word_t          csr_mie_ff,
+    output  word_t          csr_mtvec_ff,
     //TODO mip?
     //TODO minst?
     //TODO others

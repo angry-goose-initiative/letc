@@ -17,8 +17,8 @@ module core_mmu
     input   logic   rst_n,
 
     //Implicitly read CSRs
-    input   word_t  csr_mstatus_val,
-    input   word_t  csr_satp_val
+    input   word_t  csr_mstatus_ff,
+    input   word_t  csr_satp_ff
 
     //TODO other ports
 );

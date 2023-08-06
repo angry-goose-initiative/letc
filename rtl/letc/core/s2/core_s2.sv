@@ -34,13 +34,13 @@ logic  halt_req;//Control?
 word_t dcache_data_out;
 
 //Register file
-reg_index_t rd_index;
+reg_idx_t   rd_idx;
 word_t      rd_wd;
 logic       rd_we;
-reg_index_t rs1_index;
-word_t      rs1_val;
-reg_index_t rs2_index;
-word_t      rs2_val;
+reg_idx_t   rs1_idx;
+word_t      rs1_ff;
+reg_idx_t   rs2_idx;
+word_t      rs2_ff;
 
 //Register file source mux
 rd_src_e rd_src;
@@ -51,8 +51,8 @@ word_t csr_data_out;
 
 //Decode
 word_t instruction;
-word_t immediate;
-word_t uimm;
+word_t imm;
+word_t csr_uimm;
 logic  illegal_instr;
 //TODO others
 
