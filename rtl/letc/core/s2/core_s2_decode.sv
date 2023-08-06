@@ -19,11 +19,14 @@ module core_s2_decode
     input   word_t  instruction,
 
     //Decoded info out
-    output  logic   illegal_instr,
-    output  logic   halt_req,
-    output  word_t  immediate,
-    output  word_t  uimm,
-    output  aluop_e alu_operation
+    output  logic       illegal_instr,
+    output  logic       halt_req,
+    output  word_t      immediate,
+    output  word_t      uimm,
+    output  aluop_e     alu_operation,
+    output  reg_index_t rd_index,
+    output  reg_index_t rs1_index,
+    output  reg_index_t rs2_index
     //TODO others
 );
 
@@ -78,6 +81,10 @@ end : determine_instr_format
  * --------------------------------------------------------------------------------------------- */
 
 assign halt_req = opcode == OPCODE_CUSTOM_0;
+
+assign rd_index  = instruction[11:7];
+assign rs1_index = instruction[19:15];
+assign rs2_index = instruction[24:20];
 
 //TODO other inner goodness (to generate command signals for control, the ALU, muxes, etc)
 

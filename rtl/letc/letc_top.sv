@@ -9,7 +9,9 @@
  *
 */
 
-module letc_top (
+module letc_top
+    import letc_pkg::*;
+(
     input   logic   clk,
     input   logic   rst_n
 
