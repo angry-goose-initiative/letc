@@ -21,7 +21,7 @@ module core_s2_gen_imm
 );
 
 //For the CSR uimm, we always provide it, treating CSR instructions as I-type so we get _that_ immediate too since both are needed
-assign uimm  = {'0, instruction[19:15]};//NOT sign extended
+assign uimm  = {27'd0, instruction[19:15]};//NOT sign extended
 
 //Regular immediates
 word_t imm_i;

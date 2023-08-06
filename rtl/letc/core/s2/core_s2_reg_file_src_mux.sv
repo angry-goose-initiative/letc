@@ -21,13 +21,13 @@ module core_s2_reg_file_src_mux
     output  word_t      rd
 );
 
-always_comb begin : rf_mux
+always_comb begin : rd_mux
     unique case(rd_src)
         RD_FROM_NEXT_SEQ_PC:    rd = next_seq_pc;
         RD_FROM_ALU_RESULT:     rd = alu_result;
         RD_FROM_CSR:            rd = csr_data_out;
         RD_FROM_MEM_LOAD:       rd = dcache_data_out;
     endcase
-end : rf_mux
+end : rd_mux
 
 endmodule : core_s2_reg_file_src_mux
