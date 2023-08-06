@@ -31,18 +31,18 @@ word_t          csr_data_out;
 
 //Privilege mode
 prv_mode_t      prv_mode;
-prv_mode_t      prv_mode_in;
+prv_mode_t      prv_mode_wd;
 logic           prv_mode_we;
 
 //Implicitly read CSRs (ordered by address ascending)
-word_t          csr_sie;
-word_t          csr_stvec;
-word_t          csr_satp;
-word_t          csr_mstatus;
-word_t          csr_medeleg;
-word_t          csr_mideleg;
-word_t          csr_mie;
-word_t          csr_mtvec;
+word_t          csr_sie_val;
+word_t          csr_stvec_val;
+word_t          csr_satp_val;
+word_t          csr_mstatus_val;
+word_t          csr_medeleg_val;
+word_t          csr_mideleg_val;
+word_t          csr_mie_val;
+word_t          csr_mtvec_val;
 
 /* ------------------------------------------------------------------------------------------------
  * Module Instantiations

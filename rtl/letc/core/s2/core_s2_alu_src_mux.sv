@@ -15,14 +15,14 @@ module core_s2_alu_src_mux
 (
     //ALU operand 1 mux IO
     input   alu_op1_src_e   alu_op1_src,
-    input   word_t          rs1,
+    input   word_t          rs1_val,
     input   word_t          dcache_data_out,
     input   word_t          current_pc,
     output  word_t          alu_operand_1,
 
     //ALU operand 2 mux IO
     input   alu_op2_src_e   alu_op2_src,
-    input   word_t          rs2,
+    input   word_t          rs2_val,
     input   word_t          saved_rs2,//Temporary register for atomics NOTE we will likely remove this since we will only do the write back when the instruction finishes
     input   word_t          immediate,
     input   word_t          csr_data_out,

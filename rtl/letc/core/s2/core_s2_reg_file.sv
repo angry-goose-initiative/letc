@@ -18,16 +18,16 @@ module core_s2_reg_file
 
     //rd write port
     input   reg_index_t rd_index,
-    input   word_t      rd,
+    input   word_t      rd_wd,
     input   logic       rd_we,
 
     //rs1 read port
     input   reg_index_t rs1_index,
-    output  word_t      rs1,
+    output  word_t      rs1_val,
     
     //rs2 read port
     input   reg_index_t rs2_index,
-    output  word_t      rs2
+    output  word_t      rs2_val
 );
 
 //The registers
@@ -43,16 +43,16 @@ always_ff @(posedge clk, negedge rst_n) begin : rd_write_port
     end else begin//posedge clk
         for (int reg_index = 1; reg_index < 32; ++reg_index) begin : rd_write
             if (rd_we && (rd_index == reg_index[4:0])) begin
-                register[reg_index] <= rd;
+                register[reg_index] <= rd_wd;
             end
         end : rd_write
     end
 end : rd_write_port
 
 //rs1 read port
-assign rs1 = (rs1_index == 5'd0) ? '0 : register[rs1_index];
+assign rs1_val = (rs1_index == 5'd0) ? '0 : register[rs1_index];
 
 //rs2 read port
-assign rs2 = (rs2_index == 5'd0) ? '0 : register[rs2_index];
+assign rs2_val = (rs2_index == 5'd0) ? '0 : register[rs2_index];
 
 endmodule : core_s2_reg_file

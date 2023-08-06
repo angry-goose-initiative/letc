@@ -16,9 +16,9 @@ module core_mmu
     input   logic   clk,
     input   logic   rst_n,
 
-    //CSR
-    input   word_t  csr_mstatus,
-    input   word_t  csr_satp
+    //Implicitly read CSRs
+    input   word_t  csr_mstatus_val,
+    input   word_t  csr_satp_val
 
     //TODO other ports
 );

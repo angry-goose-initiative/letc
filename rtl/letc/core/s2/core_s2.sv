@@ -35,12 +35,12 @@ word_t dcache_data_out;
 
 //Register file
 reg_index_t rd_index;
-word_t      rd;
+word_t      rd_wd;
 logic       rd_we;
 reg_index_t rs1_index;
-word_t      rs1;
+word_t      rs1_val;
 reg_index_t rs2_index;
-word_t      rs2;
+word_t      rs2_val;
 
 //Register file source mux
 rd_src_e rd_src;
@@ -48,7 +48,6 @@ rd_src_e rd_src;
 //CSRs
 logic [11:0] csr_sel;//TODO should we make an enum for this?
 word_t csr_data_out;
-word_t csr_mstatus;
 
 //Decode
 word_t instruction;

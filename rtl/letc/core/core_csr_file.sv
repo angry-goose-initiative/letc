@@ -24,32 +24,32 @@ module core_csr_file
     input   logic           prv_mode_we,
     
     //Implicitly read CSRs (ordered by address ascending)
-    output  word_t          csr_sie,
-    output  word_t          csr_stvec,
+    output  word_t          csr_sie_val,
+    output  word_t          csr_stvec_val,
     //TODO sip?
-    output  word_t          csr_satp,
-    output  word_t          csr_mstatus,
-    output  word_t          csr_medeleg,
-    output  word_t          csr_mideleg,
-    output  word_t          csr_mie,
-    output  word_t          csr_mtvec,
+    output  word_t          csr_satp_val,
+    output  word_t          csr_mstatus_val,
+    output  word_t          csr_medeleg_val,
+    output  word_t          csr_mideleg_val,
+    output  word_t          csr_mie_val,
+    output  word_t          csr_mtvec_val,
     //TODO mip?
     //TODO minst?
     //TODO others
 
     //Implicitly written CSRs (ordered by address ascending)
-    input   word_t          csr_sepc_in,
+    input   word_t          csr_sepc_wd,
     input   logic           csr_sepc_we
-    input   word_t          csr_scause_in,
+    input   word_t          csr_scause_wd,
     input   logic           csr_scause_we
-    input   word_t          csr_stval_in,//TODO maybe not have this?
+    input   word_t          csr_stval_wd,//TODO maybe not have this?
     input   logic           csr_stval_we,//TODO ^
     //TODO sip?
-    input   word_t          csr_mstatus_in,//TODO this likely needs to be broken into its individual fields
+    input   word_t          csr_mstatus_wd,//TODO this likely needs to be broken into its individual fields
     input   logic           csr_mstatus_we,
-    input   word_t          csr_mepc_in,
+    input   word_t          csr_mepc_wd,
     input   logic           csr_mepc_we,
-    input   word_t          csr_mcause_in,
+    input   word_t          csr_mcause_wd,
     input   logic           csr_mcause_we
     //TODO mtval?
     //TODO mip?
