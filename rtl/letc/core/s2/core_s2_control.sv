@@ -1,6 +1,6 @@
 /*
  * File:    core_s2_control.sv
- * Brief:   State machine and control logic for LETC Core Stage 2
+ * Brief:   Control and decode state machine for LETC Core Stage 2
  *
  * Copyright (C) 2023 John Jekel and Nick Chan
  * See the LICENSE file at the root of the project for licensing info.
@@ -16,12 +16,77 @@ module core_s2_control
     input   logic   clk,
     input   logic   rst_n,
 
-    //TODO other ports (for Mealy and next-state logic inputs)
+    //Instruction in
+    input   word_t  instruction,
+
+    //Stage 1 signals in
+    //TODO
+
+    //Stage 1 signals out
+    //TODO
 
     //Control signals out
-    output  logic   rd_we
+    output  logic       illegal_instr,
+    output  logic       halt_req,
+    output  aluop_e     alu_operation,
+    output  reg_idx_t   rd_idx,
+    output  reg_idx_t   rs1_idx,
+    output  reg_idx_t   rs2_idx,
+    output  logic       rd_we,
     //TODO others
+
+    //Immediates out
+    output  word_t      imm,
+    output  word_t      csr_uimm
 );
+
+//TODO better combine control and decode logic
+
+/* ------------------------------------------------------------------------------------------------
+ * Decode logic
+ * --------------------------------------------------------------------------------------------- */
+
+//Decode the opcode
+opcode_e opcode;
+assign opcode = opcode_e'(instruction[6:2]);
+
+//Determine if we don't support the opcode
+logic unsupported_opcode;
+always_comb begin : check_if_opcode_supported
+    unique case(opcode)
+        OPCODE_LOAD, OPCODE_CUSTOM_0, OPCODE_MISC_MEM, OPCODE_OP_IMM,
+        OPCODE_AUIPC, OPCODE_STORE, OPCODE_AMO, OPCODE_OP, OPCODE_LUI,
+        OPCODE_BRANCH, OPCODE_JALR, OPCODE_JAL, OPCODE_SYSTEM: begin
+            unsupported_opcode = 1'b0;
+        end
+        default: begin
+            unsupported_opcode = 1'b1;
+        end
+    endcase
+end : check_if_opcode_supported
+
+//Determine if the instruction is illegal
+//TODO we should check other fields too in addition to the opcode
+assign illegal_instr = unsupported_opcode || (instruction[1:0] != 2'b11) || (instruction == 32'd0) || (instruction == 32'hFFFFFFFF);
+
+//Determine the instruction format
+instr_format_e instr_format;
+always_comb begin : determine_instr_format
+    unique case(opcode)
+        OPCODE_OP, OPCODE_AMO:                                    instr_format = INSTR_FORMAT_R;
+        OPCODE_LOAD, OPCODE_MISC_MEM, OPCODE_OP_IMM, OPCODE_JALR: instr_format = INSTR_FORMAT_I;
+        OPCODE_STORE:                                             instr_format = INSTR_FORMAT_S;
+        OPCODE_BRANCH:                                            instr_format = INSTR_FORMAT_B;
+        OPCODE_LUI, OPCODE_AUIPC:                                 instr_format = INSTR_FORMAT_U;
+        OPCODE_JAL:                                               instr_format = INSTR_FORMAT_J;
+        OPCODE_SYSTEM: begin
+            //TODO CSRs, ecall, ebreak, mret, sret, wfi, sfence.vma, etc
+            instr_format = INSTR_FORMAT_OTHER;//TODO system can vary wildly depending on funct3/funct7
+        end
+        OPCODE_CUSTOM_0: instr_format = INSTR_FORMAT_OTHER;//TODO this may change if we add custom instructions
+        default: instr_format = INSTR_FORMAT_OTHER;
+    endcase
+end : determine_instr_format
 
 /* ------------------------------------------------------------------------------------------------
  * State machine
@@ -67,7 +132,7 @@ always_comb begin : next_state_logic
 end : next_state_logic
 
 /* ------------------------------------------------------------------------------------------------
- * Control logic (Mealy)
+ * Control signal output logic (Mealy)
  * --------------------------------------------------------------------------------------------- */
 always_comb begin : control_signal_logic
     rd_we = 0;
@@ -92,5 +157,24 @@ always_comb begin : control_signal_logic
         default: begin end//Illegal state, so do nothing
     endcase
 end : control_signal_logic
+
+/* ------------------------------------------------------------------------------------------------
+ * Immediate Formation
+ * --------------------------------------------------------------------------------------------- */
+//TODO probably move this outside of control
+core_s2_gen_imm core_s2_gen_imm_inst (.*);
+
+/* ------------------------------------------------------------------------------------------------
+ * Output logic
+ * --------------------------------------------------------------------------------------------- */
+//TODO organize where this ends up
+
+assign halt_req = opcode == OPCODE_CUSTOM_0;
+
+assign rd_idx  = instruction[11:7];
+assign rs1_idx = instruction[19:15];
+assign rs2_idx = instruction[24:20];
+
+//TODO other inner goodness (to generate command signals for control, the ALU, muxes, etc)
 
 endmodule : core_s2_control

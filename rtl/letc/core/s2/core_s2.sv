@@ -49,7 +49,7 @@ rd_src_e rd_src;
 logic [11:0] csr_sel;//TODO should we make an enum for this?
 word_t csr_data_out;
 
-//Decode
+//Control
 word_t instruction;
 word_t imm;
 word_t csr_uimm;
@@ -73,7 +73,6 @@ alu_op2_src_e alu_op2_src;
 core_s2_control          core_s2_control_inst          (.*);
 core_s2_alu_src_mux      core_s2_alu_src_mux_inst      (.*);
 core_s2_alu              core_s2_alu_inst              (.*);
-core_s2_decode           core_s2_decode_inst           (.*);
 core_s2_reg_file_src_mux core_s2_reg_file_src_mux_inst (.*);
 core_s2_reg_file         core_s2_reg_file_inst         (.*);
 

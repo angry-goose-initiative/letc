@@ -57,10 +57,10 @@ always_ff @(posedge clk, negedge rst_n) begin : rd_write_port
     end
 end : rd_write_port
 
-//rs1 read port
+//rs1 read port (32-to-1 mux)
 assign rs1_ff = (rs1_idx == 5'd0) ? '0 : register[rs1_idx];
 
-//rs2 read port
+//rs2 read port (32-to-1 mux)
 assign rs2_ff = (rs2_idx == 5'd0) ? '0 : register[rs2_idx];
 
 endmodule : core_s2_reg_file
