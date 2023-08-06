@@ -31,32 +31,32 @@ word_t          csr_data_out;
 
 //Privilege mode
 prv_mode_t      prv_mode;
-prv_mode_t      prv_mode_in;
+prv_mode_t      prv_mode_wd;
 logic           prv_mode_we;
 
 //Implicitly read CSRs (ordered by address ascending)
-word_t          csr_sie;
-word_t          csr_stvec;
-word_t          csr_satp;
-word_t          csr_mstatus;
-word_t          csr_medeleg;
-word_t          csr_mideleg;
-word_t          csr_mie;
-word_t          csr_mtvec;
+word_t          csr_sie_val;
+word_t          csr_stvec_val;
+word_t          csr_satp_val;
+word_t          csr_mstatus_val;
+word_t          csr_medeleg_val;
+word_t          csr_mideleg_val;
+word_t          csr_mie_val;
+word_t          csr_mtvec_val;
 
 //Implicitly written CSRs (ordered by address ascending)
-word_t          csr_sepc_in;
+word_t          csr_sepc_wd;
 logic           csr_sepc_we;
-word_t          csr_scause_in;
+word_t          csr_scause_wd;
 logic           csr_scause_we;
-word_t          csr_stval_in;//TODO maybe not have this?
+word_t          csr_stval_wd;//TODO maybe not have this?
 logic           csr_stval_we;//TODO ^
 //TODO sip?
-word_t          csr_mstatus_in;//TODO this likely needs to be broken into its individual fields
+word_t          csr_mstatus_wd;//TODO this likely needs to be broken into its individual fields
 logic           csr_mstatus_we;
-word_t          csr_mepc_in;
+word_t          csr_mepc_wd;
 logic           csr_mepc_we;
-word_t          csr_mcause_in;
+word_t          csr_mcause_wd;
 logic           csr_mcause_we;
 //TODO mtval?
 //TODO mip?
