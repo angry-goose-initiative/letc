@@ -10,6 +10,7 @@
 */
 
 module core_s2_decode
+    import letc_pkg::*;
     import core_pkg::*;
 (
     input   logic   clk,

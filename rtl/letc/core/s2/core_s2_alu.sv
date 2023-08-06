@@ -10,6 +10,7 @@
 */
 
 module core_s2_alu
+    import letc_pkg::*;
     import core_pkg::*;
 (
     input   word_t  alu_operand_1,

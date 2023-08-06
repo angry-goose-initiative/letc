@@ -10,6 +10,7 @@
 */
 
 module core_s2_gen_imm
+    import letc_pkg::*;
     import core_pkg::*;
 (
     input   word_t          instruction,

@@ -11,19 +11,6 @@
 
 package core_pkg;
 
-//FIXME this dosn't work
-/*
-import letc_pkg::paddr_t;
-import letc_pkg::word_t;
-import letc_pkg::halfword_t;
-import letc_pkg::byte_t;
-*/
-//Workaround
-typedef letc_pkg::paddr_t    paddr_t;
-typedef letc_pkg::word_t     word_t;
-typedef letc_pkg::halfword_t halfword_t;
-typedef letc_pkg::byte_t     byte_t;
-
 typedef logic [4:0] reg_index_t;
 typedef enum logic [4:0] {
     OPCODE_LOAD   = 5'b00000, OPCODE_LOAD_FP    = 5'b00001, OPCODE_CUSTOM_0   = 5'b00010, OPCODE_MISC_MEM = 5'b00011,

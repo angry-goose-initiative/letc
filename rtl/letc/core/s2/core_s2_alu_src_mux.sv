@@ -10,6 +10,7 @@
 */
 
 module core_s2_alu_src_mux
+    import letc_pkg::*;
     import core_pkg::*;
 (
     //ALU operand 1 mux IO

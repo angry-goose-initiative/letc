@@ -10,6 +10,7 @@
 */
 
 module core_top
+    import letc_pkg::*;
     import core_pkg::*;
 (
     input   logic   clk,
