@@ -27,6 +27,7 @@ module core_top
 logic [11:0] csr_sel;//TODO should we make an enum for this?
 word_t csr_data_out;
 word_t csr_mstatus;
+word_t csr_satp;
 
 /* ------------------------------------------------------------------------------------------------
  * Module Instantiations

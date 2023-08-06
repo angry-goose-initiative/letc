@@ -12,10 +12,10 @@
 module core_s2_gen_imm
     import core_pkg::*;
 (
-    input  word_t         instruction,
-    input  instr_format_e instr_format,
-    output word_t         immediate,
-    output word_t         uimm
+    input   word_t          instruction,
+    input   instr_format_e  instr_format,
+    output  word_t          immediate,
+    output  word_t          uimm
     // TODO other ports
 );
 

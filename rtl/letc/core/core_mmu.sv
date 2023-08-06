@@ -11,8 +11,13 @@
 
 module core_mmu (
     input   logic   clk,
-    input   logic   rst_n
-    // TODO other ports
+    input   logic   rst_n,
+
+    //CSR
+    input   word_t  csr_mstatus,
+    input   word_t  csr_satp
+
+    //TODO other ports
 );
 
 endmodule : core_mmu

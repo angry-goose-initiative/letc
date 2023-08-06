@@ -29,6 +29,6 @@ module core_s1
  * Module Instantiations
  * --------------------------------------------------------------------------------------------- */
 
-core_s1_control core_s1_control_instance    (.*);
+core_s1_control core_s1_control_inst    (.*);
 
 endmodule : core_s1
