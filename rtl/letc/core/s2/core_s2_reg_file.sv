@@ -33,6 +33,14 @@ module core_s2_reg_file
 //The registers
 word_t [31:1] register;//DON'T USE UNPACKED (we aren't inferring FPGA SRAMs here, so it would be bad practice)
 
+//rd_write_port decoder (5-to-32)
+logic [31:1] register_we;
+always_comb begin : rd_write_port_decoder
+    for (int reg_idx = 1; reg_idx < 32; ++reg_idx) begin
+        register_we[reg_idx] = rd_we && (rd_idx == reg_idx[4:0]);
+    end
+end : rd_write_port_decoder
+
 //rd write port
 always_ff @(posedge clk, negedge rst_n) begin : rd_write_port
     if (!rst_n) begin
@@ -42,7 +50,7 @@ always_ff @(posedge clk, negedge rst_n) begin : rd_write_port
         end : reset
     end else begin//posedge clk
         for (int reg_idx = 1; reg_idx < 32; ++reg_idx) begin : rd_write
-            if (rd_we && (rd_idx == reg_idx[4:0])) begin
+            if (register_we[reg_idx]) begin
                 register[reg_idx] <= rd_wd;
             end
         end : rd_write
