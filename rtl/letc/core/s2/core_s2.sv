@@ -28,7 +28,6 @@ module core_s2
 word_t current_pc;//PC?
 word_t next_seq_pc;//PC?
 word_t saved_rs2;//?
-logic  halt_req;//Control?
 
 //Memory
 word_t dcache_data_out;
@@ -53,7 +52,8 @@ word_t csr_data_out;
 word_t instruction;
 word_t imm;
 word_t csr_uimm;
-logic  illegal_instr;
+logic  illegal_instr;//TODO this will go to the trap priority controller via core_top
+instr_format_e instr_format;
 //TODO others
 
 //ALU
@@ -70,10 +70,11 @@ alu_op2_src_e alu_op2_src;
  * Module Instantiations
  * --------------------------------------------------------------------------------------------- */
 
-core_s2_control          core_s2_control_inst          (.*);
-core_s2_alu_src_mux      core_s2_alu_src_mux_inst      (.*);
-core_s2_alu              core_s2_alu_inst              (.*);
-core_s2_reg_file_src_mux core_s2_reg_file_src_mux_inst (.*);
-core_s2_reg_file         core_s2_reg_file_inst         (.*);
+core_s2_control             core_s2_control_inst            (.*);
+core_s2_alu_src_mux         core_s2_alu_src_mux_inst        (.*);
+core_s2_alu                 core_s2_alu_inst                (.*);
+core_s2_reg_file_src_mux    core_s2_reg_file_src_mux_inst   (.*);
+core_s2_reg_file            core_s2_reg_file_inst           (.*);
+core_s2_gen_imm             core_s2_gen_imm_inst            (.*);
 
 endmodule : core_s2

@@ -31,7 +31,7 @@ module core_s2_reg_file
 );
 
 //The registers
-word_t [31:1] register;//DON'T USE UNPACKED (we aren't inferring FPGA SRAMs here, so it would be bad practice)
+word_t [31:1] register_ff;//DON'T USE UNPACKED (we aren't inferring FPGA SRAMs here, so it would be bad practice)
 
 //rd_write_port decoder (5-to-32)
 logic [31:1] register_we;
@@ -46,21 +46,21 @@ always_ff @(posedge clk, negedge rst_n) begin : rd_write_port
     if (!rst_n) begin
         //Reset all except x0 to garbage values to aid debugging
         for (int reg_idx = 1; reg_idx < 32; ++reg_idx) begin : reset
-            register[reg_idx] <= 32'hDEADBEEF;
+            register_ff[reg_idx] <= 32'hDEADBEEF;
         end : reset
     end else begin//posedge clk
         for (int reg_idx = 1; reg_idx < 32; ++reg_idx) begin : rd_write
             if (register_we[reg_idx]) begin
-                register[reg_idx] <= rd_wd;
+                register_ff[reg_idx] <= rd_wd;
             end
         end : rd_write
     end
 end : rd_write_port
 
 //rs1 read port (32-to-1 mux)
-assign rs1_ff = (rs1_idx == 5'd0) ? '0 : register[rs1_idx];
+assign rs1_ff = (rs1_idx == 5'd0) ? '0 : register_ff[rs1_idx];
 
 //rs2 read port (32-to-1 mux)
-assign rs2_ff = (rs2_idx == 5'd0) ? '0 : register[rs2_idx];
+assign rs2_ff = (rs2_idx == 5'd0) ? '0 : register_ff[rs2_idx];
 
 endmodule : core_s2_reg_file

@@ -26,32 +26,80 @@ module core_s2_control
     //TODO
 
     //Control signals out
-    output  logic       illegal_instr,
-    output  logic       halt_req,
-    output  aluop_e     alu_operation,
-    output  reg_idx_t   rd_idx,
-    output  reg_idx_t   rs1_idx,
-    output  reg_idx_t   rs2_idx,
-    output  logic       rd_we,
+    output  logic           illegal_instr,
+    output  instr_format_e  instr_format,
+    output  aluop_e         alu_operation,
+    output  reg_idx_t       rd_idx,
+    output  reg_idx_t       rs1_idx,
+    output  reg_idx_t       rs2_idx,
+    output  logic           rd_we
     //TODO others
-
-    //Immediates out
-    output  word_t      imm,
-    output  word_t      csr_uimm
 );
 
-//TODO better combine control and decode logic
+/* ------------------------------------------------------------------------------------------------
+ * Internal connections and state
+ * --------------------------------------------------------------------------------------------- */
+
+typedef enum logic [2:0] {
+    INIT,
+    HALT,
+    FETCH_NEXT,
+    WAIT_ON_L1DCACHE,
+    //TODO any other additional states needed by various instructions
+    FINISH_CURRENT_AND_FETCH_NEXT 
+} state_e;
+state_e state_ff, next_state;
+
+opcode_e opcode;
+
+logic halt_req;
+logic unsupported_opcode;
 
 /* ------------------------------------------------------------------------------------------------
- * Decode logic
+ * State machine logic
+ * --------------------------------------------------------------------------------------------- */
+
+always_ff @(posedge clk, negedge rst_n) begin : state_seq_logic
+    if (!rst_n) begin
+        state_ff <= INIT;
+    end else begin
+        state_ff <= next_state;
+    end
+end : state_seq_logic
+
+always_comb begin : next_state_logic
+    if (halt_req) begin
+        next_state = HALT;
+    end else begin
+        unique case (state_ff)
+            INIT: begin
+                //In the future we may do more things in INIT
+                next_state = FETCH_NEXT;
+            end
+            HALT: next_state = HALT;
+            FETCH_NEXT: begin
+                next_state = HALT;//TODO
+            end
+            WAIT_ON_L1DCACHE: begin
+                next_state = HALT;//TODO
+            end
+            //TODO any other additional states needed by various instructions
+            FINISH_CURRENT_AND_FETCH_NEXT: begin
+                next_state = HALT;//TODO
+            end
+            default: next_state = HALT;//We entered an illegal state, so halt
+        endcase
+    end
+end : next_state_logic
+
+/* ------------------------------------------------------------------------------------------------
+ * Control signal output logic / Decode logic (Mealy)
  * --------------------------------------------------------------------------------------------- */
 
 //Decode the opcode
-opcode_e opcode;
 assign opcode = opcode_e'(instruction[6:2]);
 
 //Determine if we don't support the opcode
-logic unsupported_opcode;
 always_comb begin : check_if_opcode_supported
     unique case(opcode)
         OPCODE_LOAD, OPCODE_CUSTOM_0, OPCODE_MISC_MEM, OPCODE_OP_IMM,
@@ -70,7 +118,6 @@ end : check_if_opcode_supported
 assign illegal_instr = unsupported_opcode || (instruction[1:0] != 2'b11) || (instruction == 32'd0) || (instruction == 32'hFFFFFFFF);
 
 //Determine the instruction format
-instr_format_e instr_format;
 always_comb begin : determine_instr_format
     unique case(opcode)
         OPCODE_OP, OPCODE_AMO:                                    instr_format = INSTR_FORMAT_R;
@@ -88,55 +135,9 @@ always_comb begin : determine_instr_format
     endcase
 end : determine_instr_format
 
-/* ------------------------------------------------------------------------------------------------
- * State machine
- * --------------------------------------------------------------------------------------------- */
-typedef enum logic [2:0] {
-    INIT,
-    HALT,
-    FETCH_NEXT,
-    WAIT_ON_L1DCACHE,
-    //TODO any other additional states needed by various instructions
-    FINISH_CURRENT_AND_FETCH_NEXT 
-} state_e;
-
-state_e state, next_state;
-
-always_ff @(posedge clk, negedge rst_n) begin : state_ff
-    if (!rst_n) begin
-        state <= INIT;
-    end else begin
-        state <= next_state;
-    end
-end : state_ff
-
-always_comb begin : next_state_logic
-    unique case (state)
-        INIT: begin
-            //In the future we may do more things in INIT
-            next_state = FETCH_NEXT;
-        end
-        HALT: next_state = HALT;
-        FETCH_NEXT: begin
-            next_state = HALT;//TODO
-        end
-        WAIT_ON_L1DCACHE: begin
-            next_state = HALT;//TODO
-        end
-        //TODO any other additional states needed by various instructions
-        FINISH_CURRENT_AND_FETCH_NEXT: begin
-            next_state = HALT;//TODO
-        end
-        default: next_state = HALT;//We entered an illegal state, so halt
-    endcase
-end : next_state_logic
-
-/* ------------------------------------------------------------------------------------------------
- * Control signal output logic (Mealy)
- * --------------------------------------------------------------------------------------------- */
 always_comb begin : control_signal_logic
     rd_we = 0;
-    unique case (state)
+    unique case (state_ff)
         INIT: begin
             //In the future we may do more things in INIT
             //TODO other control signals
@@ -158,15 +159,6 @@ always_comb begin : control_signal_logic
     endcase
 end : control_signal_logic
 
-/* ------------------------------------------------------------------------------------------------
- * Immediate Formation
- * --------------------------------------------------------------------------------------------- */
-//TODO probably move this outside of control
-core_s2_gen_imm core_s2_gen_imm_inst (.*);
-
-/* ------------------------------------------------------------------------------------------------
- * Output logic
- * --------------------------------------------------------------------------------------------- */
 //TODO organize where this ends up
 
 assign halt_req = opcode == OPCODE_CUSTOM_0;
