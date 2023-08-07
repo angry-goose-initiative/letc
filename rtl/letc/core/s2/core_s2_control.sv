@@ -28,7 +28,7 @@ module core_s2_control
     //Control signals out
     output  logic           illegal_instr,
     output  instr_format_e  instr_format,
-    output  aluop_e         alu_operation,
+    output  alu_op_e        alu_operation,
     output  reg_idx_t       rd_idx,
     output  reg_idx_t       rs1_idx,
     output  reg_idx_t       rs2_idx,

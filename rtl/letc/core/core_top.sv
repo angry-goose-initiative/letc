@@ -30,7 +30,7 @@ logic [11:0]    csr_sel;//TODO should we make an enum for this?
 word_t          csr_data_out;
 
 //Privilege mode
-prv_mode_t      prv_mode;
+prv_mode_t      prv_mode_ff;
 prv_mode_t      prv_mode_wd;
 logic           prv_mode_we;
 
@@ -67,6 +67,10 @@ logic           invalidate_fetch;
 
 word_t          branch_target;
 logic           branch_en;
+
+//?
+word_t          csr_wd;
+logic           csr_we;
 
 /* ------------------------------------------------------------------------------------------------
  * Module Instantiations

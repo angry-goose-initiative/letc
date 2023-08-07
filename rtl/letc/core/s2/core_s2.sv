@@ -17,7 +17,7 @@ module core_s2
     input   logic           rst_n,
 
     output  word_t          branch_target,
-    output  logic           branch_en
+    output  logic           branch_en,
 
     //CSR
     input   word_t          csr_data_out,
@@ -62,10 +62,10 @@ cmp_op_e        cmp_operation;
 //TODO others
 
 //ALU
-word_t  alu_operand_1;
-word_t  alu_operand_2;
-aluop_e alu_operation;
-word_t  alu_result;
+word_t      alu_operand_1;
+word_t      alu_operand_2;
+alu_op_e    alu_operation;
+word_t      alu_result;
 
 //ALU source mux
 alu_op1_src_e alu_op1_src;
