@@ -19,7 +19,7 @@ module core_csr_file
     output  word_t          csr_data_out,
 
     //Privilege mode
-    output  prv_mode_t      prv_mode,
+    output  prv_mode_t      prv_mode_ff,
     input   prv_mode_t      prv_mode_wd,
     input   logic           prv_mode_we,
     

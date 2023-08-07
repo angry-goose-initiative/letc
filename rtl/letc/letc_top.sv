@@ -1,6 +1,6 @@
 /*
  * File:    letc_top.sv
- * Brief:   TODO
+ * Brief:   The top-level file for LETC SOC
  *
  * Copyright (C) 2023 John Jekel and Nick Chan
  * See the LICENSE file at the root of the project for licensing info.
@@ -19,8 +19,16 @@ module letc_top
 
 );
 
-core_top core_top_instance (.*);
+/* ------------------------------------------------------------------------------------------------
+ * Connections
+ * --------------------------------------------------------------------------------------------- */
 
-//TODO all of the inner goodness
+ //TODO
+
+/* ------------------------------------------------------------------------------------------------
+ * Module Instantiations
+ * --------------------------------------------------------------------------------------------- */
+
+core_top core_top_instance (.*);
 
 endmodule : letc_top

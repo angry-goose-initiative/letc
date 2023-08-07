@@ -1,5 +1,5 @@
 /*
- * File:    top_basys3.sv
+ * File:    basys3_wrapper.sv
  * Brief:   Connects LETC to Basys 3 board
  *
  * Copyright (C) 2023 John Jekel and Nick Chan
@@ -9,12 +9,12 @@
  *
 */
 
-module top_basys3 (
-    input clk
+module basys3_wrapper (
+    input   logic   clk
 );
 
 letc_top letc_top_inst (
     .clk(clk)
 )
 
-endmodule
+endmodule : basys3_wrapper

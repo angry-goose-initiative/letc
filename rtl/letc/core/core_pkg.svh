@@ -28,8 +28,17 @@ typedef enum logic [4:0] {
     OPCODE_SYSTEM = 5'b11100, OPCODE_RESERVED_3 = 5'b11101, OPCODE_CUSTOM_3   = 5'b11110, OPCODE_BGE80    = 5'b11111
 } opcode_e;
 typedef enum logic [2:0] {
-    ALUOPTODO//TODO
-} aluop_e;
+    ALU_OP_TODO//TODO
+} alu_op_e;
+//Comparison opearations are based on funct3 of branch instructions
+typedef enum logic [2:0] {
+    CMP_OP_EQ   = 3'b000,
+    CMP_OP_NE   = 3'b001,
+    CMP_OP_GE   = 3'b101,
+    CMP_OP_GEU  = 3'b111,
+    CMP_OP_LT   = 3'b100,
+    CMP_OP_LTU  = 3'b110
+} cmp_op_e;
 typedef enum logic [2:0] {
     INSTR_FORMAT_R, INSTR_FORMAT_I, INSTR_FORMAT_S, INSTR_FORMAT_B,
     INSTR_FORMAT_U, INSTR_FORMAT_J, INSTR_FORMAT_UIMM, INSTR_FORMAT_OTHER
@@ -44,7 +53,7 @@ typedef enum logic [1:0] {
     ALUOPSRC1TODO
     //TODO
 } alu_op1_src_e;
-typedef enum logic [2:0] {
+typedef enum logic [1:0] {
     ALUOPSRC2TODO
     //TODO
 } alu_op2_src_e;

@@ -63,13 +63,19 @@ logic           csr_mcause_we;
 //TODO minst?
 //TODO others
 
+logic           invalidate_fetch;
+
+word_t          branch_target;
+logic           branch_en;
+
 /* ------------------------------------------------------------------------------------------------
  * Module Instantiations
  * --------------------------------------------------------------------------------------------- */
 
-core_s1         core_s1_inst        (.*);
-core_s2         core_s2_inst        (.*);
-core_mmu        core_mmu_inst       (.*);
-core_csr_file   core_csr_file_inst  (.*);
+core_master_control core_master_control_inst    (.*);
+core_s1             core_s1_inst                (.*);
+core_s2             core_s2_inst                (.*);
+core_mmu            core_mmu_inst               (.*);
+core_csr_file       core_csr_file_inst          (.*);
 
 endmodule : core_top
