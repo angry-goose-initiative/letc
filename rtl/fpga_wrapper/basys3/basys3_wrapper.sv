@@ -15,6 +15,6 @@ module basys3_wrapper (
 
 letc_top letc_top_inst (
     .clk(clk)
-)
+);
 
 endmodule : basys3_wrapper
