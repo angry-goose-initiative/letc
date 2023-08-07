@@ -29,10 +29,29 @@ module core_s2_alu_src_mux
     output  word_t          alu_operand_2
 );
 
+typedef enum logic [1:0] {
+    ALU_OP2_SRC_RS2,
+    ALU_OP2_SRC_IMM,
+    ALU_OP2_SRC_CSR_DATA_OUT
+} alu_op2_src_e;
+
 //ALU operand 1 mux
-//TODO
+always_comb begin : op1_mux
+    unique case (alu_op1_src)
+        ALU_OP1_SRC_RS1:                alu_operand_1 = rs1_ff;
+        ALU_OP1_SRC_PC:                 alu_operand_1 = pc_ff;
+        ALU_OP1_SRC_CSR_UIMM:           alu_operand_1 = csr_uimm;
+        ALU_OP1_SRC_DCACHE_DATA_OUT:    alu_operand_1 = dcache_data_out;
+    endcase
+end : op1_mux
 
 //ALU operand 2 mux
-//TODO
+always_comb begin : op2_mux
+    unique case (alu_op2_src)
+        ALU_OP2_SRC_RS2:            alu_operand_2 = rs2_ff;
+        ALU_OP2_SRC_IMM:            alu_operand_2 = imm;
+        ALU_OP2_SRC_CSR_DATA_OUT:   alu_operand_2 = csr_data_out;
+    endcase
+end : op2_mux
 
 endmodule : core_s2_alu_src_mux

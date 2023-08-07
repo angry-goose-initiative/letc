@@ -22,7 +22,7 @@ module core_s2_reg_file_src_mux
 );
 
 always_comb begin : rd_mux
-    unique case(rd_src)
+    unique case (rd_src)
         RD_FROM_NEXT_SEQ_PC:    rd_wd = next_seq_pc;
         RD_FROM_ALU_RESULT:     rd_wd = alu_result;
         RD_FROM_CSR:            rd_wd = csr_data_out;

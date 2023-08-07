@@ -24,6 +24,7 @@ module core_csr_file
     input   logic           prv_mode_we,
     
     //Implicitly read CSRs (ordered by address ascending)
+    //TODO move these into a struct
     output  word_t          csr_sie_ff,
     output  word_t          csr_stvec_ff,
     //TODO sip?
@@ -38,6 +39,7 @@ module core_csr_file
     //TODO others
 
     //Implicitly written CSRs (ordered by address ascending)
+    //TODO move these into a struct
     input   word_t          csr_sepc_wd,
     input   logic           csr_sepc_we,
     input   word_t          csr_scause_wd,

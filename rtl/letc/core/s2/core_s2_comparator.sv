@@ -7,6 +7,8 @@
  *
  * TODO longer description
  *
+ * Partily based on JZJCoreF's BranchALU.sv
+ *
 */
 
 module core_s2_comparator
@@ -19,6 +21,16 @@ module core_s2_comparator
     output  logic       branch_en
 );
 
-//TODO
+//Mux branch_en depending on the comparison and the values of rs1 and rs2
+always_comb begin : comparator_mux
+    unique case (cmp_operation)
+        CMP_OP_EQ:  branch_en = rs1_ff == rs2_ff;
+        CMP_OP_NE:  branch_en = rs1_ff != rs2_ff;
+        CMP_OP_LT:  branch_en = signed'(rs1_ff) < signed'(rs2_ff);
+        CMP_OP_GE:  branch_en = signed'(rs1_ff) >= signed'(rs2_ff);
+        CMP_OP_LTU: branch_en = rs1_ff < rs2_ff;
+        CMP_OP_GEU: branch_en = rs1_ff >= rs2_ff;
+    endcase
+end : comparator_mux
 
 endmodule : core_s2_comparator
