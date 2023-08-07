@@ -9,9 +9,16 @@
  *
 */
 
+`ifdef IMPORTS_IN_MODULE_SCOPE_UNSUPPORTED
+import letc_pkg::*;
+import core_pkg::*;
+`endif
+
 module core_s2_alu_src_mux
+`ifndef IMPORTS_IN_MODULE_SCOPE_UNSUPPORTED
     import letc_pkg::*;
     import core_pkg::*;
+`endif
 (
     //ALU operand 1 mux IO
     input   alu_op1_src_e   alu_op1_src,
@@ -28,12 +35,6 @@ module core_s2_alu_src_mux
     input   word_t          csr_data_out,
     output  word_t          alu_operand_2
 );
-
-typedef enum logic [1:0] {
-    ALU_OP2_SRC_RS2,
-    ALU_OP2_SRC_IMM,
-    ALU_OP2_SRC_CSR_DATA_OUT
-} alu_op2_src_e;
 
 //ALU operand 1 mux
 always_comb begin : op1_mux

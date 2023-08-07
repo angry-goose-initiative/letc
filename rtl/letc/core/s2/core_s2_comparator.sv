@@ -11,9 +11,16 @@
  *
 */
 
+`ifdef IMPORTS_IN_MODULE_SCOPE_UNSUPPORTED
+import letc_pkg::*;
+import core_pkg::*;
+`endif
+
 module core_s2_comparator
+`ifndef IMPORTS_IN_MODULE_SCOPE_UNSUPPORTED
     import letc_pkg::*;
     import core_pkg::*;
+`endif
 (
     input   cmp_op_e    cmp_operation,
     input   word_t      rs1_ff,

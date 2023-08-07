@@ -1,0 +1,1 @@
+../../rtl/letc/core/core_pkg.svh

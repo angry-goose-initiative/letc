@@ -66,10 +66,13 @@ verif/nonuvm/verilator_firsttb/obj_dir
 */db/
 */incremental_db/
 */simulation/
+ide/jzj_quartus/simulation/
+ide/jzj_quartus/output_files/
 */timing/
 */testbench/
 */*_sim/
 incremental_db/
 db/
 _output_files/
+*/output_files/
 PLLJ_PLLSPE_INFO.txt
