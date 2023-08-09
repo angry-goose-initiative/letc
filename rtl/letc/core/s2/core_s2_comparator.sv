@@ -18,18 +18,18 @@ module core_s2_comparator
     input   cmp_op_e    cmp_operation,
     input   word_t      rs1_ff,
     input   word_t      rs2_ff,
-    output  logic       branch_en
+    output  logic       cmp_result
 );
 
 //Mux branch_en depending on the comparison and the values of rs1 and rs2
 always_comb begin : comparator_mux
     unique case (cmp_operation)
-        CMP_OP_EQ:  branch_en = rs1_ff == rs2_ff;
-        CMP_OP_NE:  branch_en = rs1_ff != rs2_ff;
-        CMP_OP_LT:  branch_en = signed'(rs1_ff) < signed'(rs2_ff);
-        CMP_OP_GE:  branch_en = signed'(rs1_ff) >= signed'(rs2_ff);
-        CMP_OP_LTU: branch_en = rs1_ff < rs2_ff;
-        CMP_OP_GEU: branch_en = rs1_ff >= rs2_ff;
+        CMP_OP_EQ:  cmp_result = rs1_ff == rs2_ff;
+        CMP_OP_NE:  cmp_result = rs1_ff != rs2_ff;
+        CMP_OP_LT:  cmp_result = signed'(rs1_ff) < signed'(rs2_ff);
+        CMP_OP_GE:  cmp_result = signed'(rs1_ff) >= signed'(rs2_ff);
+        CMP_OP_LTU: cmp_result = rs1_ff < rs2_ff;
+        CMP_OP_GEU: cmp_result = rs1_ff >= rs2_ff;
     endcase
 end : comparator_mux
 

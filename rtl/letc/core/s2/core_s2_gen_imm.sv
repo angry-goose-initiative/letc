@@ -13,7 +13,7 @@ module core_s2_gen_imm
     import letc_pkg::*;
     import core_pkg::*;
 (
-    input   word_t          instruction,
+    input   word_t          instr_ff,
     input   instr_format_e  instr_format,
     output  word_t          imm,
     output  word_t          csr_uimm
@@ -21,7 +21,7 @@ module core_s2_gen_imm
 );
 
 //For the CSR uimm, we always provide it, treating CSR instructions as I-type so we get _that_ immediate too since both are needed
-assign csr_uimm  = {27'd0, instruction[19:15]};//NOT sign extended
+assign csr_uimm  = {27'd0, instr_ff[19:15]};//NOT sign extended
 
 //Regular immediates
 word_t imm_i;
@@ -29,11 +29,11 @@ word_t imm_s;
 word_t imm_b;
 word_t imm_u;
 word_t imm_j;
-assign imm_i = {{20{instruction[31]}}, instruction[31:20]};
-assign imm_s = {{20{instruction[31]}}, instruction[31:25], instruction[11:7]};
-assign imm_b = {{19{instruction[31]}}, instruction[31],    instruction[7],  instruction[30:25], instruction[11:8], 1'b0};
-assign imm_u = {instruction[31:12], 12'h000};
-assign imm_j = {{12{instruction[31]}}, instruction[19:12], instruction[20], instruction[30:21], 1'b0};
+assign imm_i = {{20{instr_ff[31]}}, instr_ff[31:20]};
+assign imm_s = {{20{instr_ff[31]}}, instr_ff[31:25], instr_ff[11:7]};
+assign imm_b = {{19{instr_ff[31]}}, instr_ff[31],    instr_ff[7],  instr_ff[30:25], instr_ff[11:8], 1'b0};
+assign imm_u = {instr_ff[31:12], 12'h000};
+assign imm_j = {{12{instr_ff[31]}}, instr_ff[19:12], instr_ff[20], instr_ff[30:21], 1'b0};
 
 //Regular immediate mux based on instruction format
 always_comb begin : immediate_mux

@@ -17,7 +17,7 @@ module core_s2_control
     input   logic   rst_n,
 
     //Instruction in
-    input   word_t  instruction,
+    input   word_t  instr_ff,
 
     //Stage 1 signals in
     //TODO
@@ -26,13 +26,17 @@ module core_s2_control
     //TODO
 
     //Control signals out
+    output  logic           from_s1_we,
     output  logic           illegal_instr,
     output  instr_format_e  instr_format,
     output  alu_op_e        alu_operation,
     output  reg_idx_t       rd_idx,
     output  reg_idx_t       rs1_idx,
     output  reg_idx_t       rs2_idx,
-    output  logic           rd_we
+    output  logic           rd_we,
+    output  cmp_op_e        cmp_operation,
+    output  logic           cond_branch_en,
+    output  logic           uncond_branch_en
     //TODO others
 );
 
@@ -97,7 +101,7 @@ end : next_state_logic
  * --------------------------------------------------------------------------------------------- */
 
 //Decode the opcode
-assign opcode = opcode_e'(instruction[6:2]);
+assign opcode = opcode_e'(instr_ff[6:2]);
 
 //Determine if we don't support the opcode
 always_comb begin : check_if_opcode_supported
@@ -115,7 +119,7 @@ end : check_if_opcode_supported
 
 //Determine if the instruction is illegal
 //TODO we should check other fields too in addition to the opcode
-assign illegal_instr = unsupported_opcode || (instruction[1:0] != 2'b11) || (instruction == 32'd0) || (instruction == 32'hFFFFFFFF);
+assign illegal_instr = unsupported_opcode || (instr_ff[1:0] != 2'b11) || (instr_ff == 32'd0) || (instr_ff == 32'hFFFFFFFF);
 
 //Determine the instruction format
 always_comb begin : determine_instr_format
@@ -163,9 +167,9 @@ end : control_signal_logic
 
 assign halt_req = opcode == OPCODE_CUSTOM_0;
 
-assign rd_idx  = instruction[11:7];
-assign rs1_idx = instruction[19:15];
-assign rs2_idx = instruction[24:20];
+assign rd_idx  = instr_ff[11:7];
+assign rs1_idx = instr_ff[19:15];
+assign rs2_idx = instr_ff[24:20];
 
 //TODO other inner goodness (to generate command signals for control, the ALU, muxes, etc)
 

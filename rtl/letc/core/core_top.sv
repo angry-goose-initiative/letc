@@ -63,6 +63,10 @@ logic           csr_mcause_we;
 //TODO minst?
 //TODO others
 
+//Data from s1 to s2
+word_t          s1_to_s2_pc;
+word_t          s1_to_s2_instr;
+
 logic           invalidate_fetch;
 
 word_t          branch_target;

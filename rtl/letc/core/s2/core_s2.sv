@@ -16,6 +16,9 @@ module core_s2
     input   logic           clk,
     input   logic           rst_n,
 
+    input   word_t          s1_to_s2_instr,
+    input   word_t          s1_to_s2_pc,
+
     output  word_t          branch_target,
     output  logic           branch_en,
 
@@ -34,8 +37,10 @@ module core_s2
  * --------------------------------------------------------------------------------------------- */
 
 //?
-word_t pc_ff;//PC?
-word_t next_seq_pc;//PC?
+logic   from_s1_we;
+word_t  instr_ff;
+word_t  pc_ff;//PC?
+word_t  next_seq_pc;//PC?
 
 //Memory
 word_t dcache_data_out;
@@ -52,13 +57,18 @@ word_t      rs2_ff;
 //Register file source mux
 rd_src_e rd_src;
 
-//Control (internal)
-word_t          instruction;
+//Internal control signals
 word_t          imm;
 word_t          csr_uimm;
 logic           illegal_instr;//TODO this will go to the trap priority controller via core_top
 instr_format_e  instr_format;
+
+//Branching
 cmp_op_e        cmp_operation;
+logic           cmp_result;
+logic           cond_branch_en;
+logic           uncond_branch_en;
+
 //TODO others
 
 //ALU
@@ -70,6 +80,21 @@ word_t      alu_result;
 //ALU source mux
 alu_op1_src_e alu_op1_src;
 alu_op2_src_e alu_op2_src;
+
+assign branch_en = uncond_branch_en || (cond_branch_en && cmp_result);
+
+//TODO does this do what I think it does? (delete this comment if so)
+assign next_seq_pc = pc_ff + 4;
+
+always_ff @(posedge clk, negedge rst_n) begin : from_s1
+    if (!rst_n) begin
+        pc_ff       <= 32'hDEADBEEF;
+        instr_ff    <= 32'hDEADBEEF;
+    end else if (from_s1_we) begin
+        pc_ff       <= s1_to_s2_pc;
+        instr_ff    <= s1_to_s2_instr;
+    end
+end : from_s1
 
 /* ------------------------------------------------------------------------------------------------
  * Module Instantiations
