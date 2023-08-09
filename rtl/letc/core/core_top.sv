@@ -9,9 +9,16 @@
  *
 */
 
+`ifdef IMPORTS_IN_MODULE_SCOPE_UNSUPPORTED
+import letc_pkg::*;
+import core_pkg::*;
+`endif
+
 module core_top
+`ifndef IMPORTS_IN_MODULE_SCOPE_UNSUPPORTED
     import letc_pkg::*;
     import core_pkg::*;
+`endif
 (
     input   logic   clk,
     input   logic   rst_n

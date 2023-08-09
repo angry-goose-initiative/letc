@@ -9,9 +9,16 @@
  *
 */
 
+`ifdef IMPORTS_IN_MODULE_SCOPE_UNSUPPORTED
+import letc_pkg::*;
+import core_pkg::*;
+`endif
+
 module core_s2_reg_file_src_mux
+`ifndef IMPORTS_IN_MODULE_SCOPE_UNSUPPORTED
     import letc_pkg::*;
     import core_pkg::*;
+`endif
 (
     input   rd_src_e    rd_src,
     input   word_t      dcache_data_out,

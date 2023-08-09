@@ -12,9 +12,12 @@
 module jzj_cycloneiv_wrapper_top
     //import letc_pkg::*;
 (
-    //TODO
+    input   logic   clk,
+    input   logic   rst_n
 );
 
-//TODO
+letc_top letc_top_inst (.*);
+
+//TODO other things
 
 endmodule : jzj_cycloneiv_wrapper_top

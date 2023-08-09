@@ -9,9 +9,16 @@
  *
 */
 
+`ifdef IMPORTS_IN_MODULE_SCOPE_UNSUPPORTED
+import letc_pkg::*;
+import core_pkg::*;
+`endif
+
 module core_s2_gen_imm
+`ifndef IMPORTS_IN_MODULE_SCOPE_UNSUPPORTED
     import letc_pkg::*;
     import core_pkg::*;
+`endif
 (
     input   word_t          instr_ff,
     input   instr_format_e  instr_format,
