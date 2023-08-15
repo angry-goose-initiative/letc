@@ -23,11 +23,15 @@ module core_s2
     input   logic           clk,
     input   logic           rst_n,
 
+    //From s1
     input   word_t          s1_to_s2_instr,
     input   word_t          s1_to_s2_pc,
 
+    //To s1
     output  word_t          branch_target,
     output  logic           branch_en,
+    output  logic           s2_busy,//Means s2 is NOT ready to accept a new instruction from s1 this cycle//TODO or does this go to master control?
+    output  logic           halt_req,//LETC.EXIT instruction encountered in M-mode
 
     //CSR
     input   word_t          csr_data_out,

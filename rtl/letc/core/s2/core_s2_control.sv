@@ -30,6 +30,7 @@ module core_s2_control
     //TODO
 
     //Stage 1 signals out
+    output  logic           halt_req,//LETC.EXIT instruction encountered in M-mode
     //TODO
 
     //Control signals out
@@ -63,7 +64,6 @@ state_e state_ff, next_state;
 
 opcode_e opcode;
 
-logic halt_req;
 logic unsupported_opcode;
 
 /* ------------------------------------------------------------------------------------------------
@@ -87,7 +87,7 @@ always_comb begin : next_state_logic
                 //In the future we may do more things in INIT
                 next_state = FETCH_NEXT;
             end
-            HALT: next_state = HALT;
+            HALT: next_state = HALT;//There is no escape except for reset
             FETCH_NEXT: begin
                 next_state = HALT;//TODO
             end

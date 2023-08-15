@@ -21,7 +21,10 @@ module core_s1
 `endif
 (
     input   logic   clk,
-    input   logic   rst_n
+    input   logic   rst_n,
+
+    input   logic   halt_req,//LETC.EXIT instruction encountered in M-mode
+    input   logic   s2_busy//Means s2 is NOT ready to accept a new instruction from s1 this cycle
 
     //TODO other ports
 

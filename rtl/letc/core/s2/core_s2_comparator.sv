@@ -33,6 +33,7 @@ always_comb begin : comparator_mux
     unique case (cmp_operation)
         CMP_OP_EQ:  cmp_result = rs1_ff == rs2_ff;
         CMP_OP_NE:  cmp_result = rs1_ff != rs2_ff;
+        //TODO ensure the signed'() makes this correct
         CMP_OP_LT:  cmp_result = signed'(rs1_ff) < signed'(rs2_ff);
         CMP_OP_GE:  cmp_result = signed'(rs1_ff) >= signed'(rs2_ff);
         CMP_OP_LTU: cmp_result = rs1_ff < rs2_ff;
