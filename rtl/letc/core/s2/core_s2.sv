@@ -28,8 +28,8 @@ module core_s2
     input   word_t          s1_to_s2_pc,
 
     //To s1
-    output  word_t          branch_target,
-    output  logic           branch_en,
+    output  word_t          s2_to_s1_branch_target_addr,
+    output  logic           s2_to_s1_branch_en,
     output  logic           s2_busy,//Means s2 is NOT ready to accept a new instruction from s1 this cycle//TODO or does this go to master control?
     output  logic           halt_req,//LETC.EXIT instruction encountered in M-mode
 
@@ -92,9 +92,8 @@ word_t      alu_result;
 alu_op1_src_e alu_op1_src;
 alu_op2_src_e alu_op2_src;
 
-assign branch_en = uncond_branch_en || (cond_branch_en && cmp_result);
+assign s2_to_s1_branch_en = uncond_branch_en || (cond_branch_en && cmp_result);
 
-//TODO does this do what I think it does? (delete this comment if so)
 assign next_seq_pc = pc_ff + 4;
 
 always_ff @(posedge clk, negedge rst_n) begin : from_s1

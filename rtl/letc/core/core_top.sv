@@ -71,13 +71,14 @@ logic           csr_mcause_we;
 //TODO others
 
 //Data from s1 to s2
-word_t          s1_to_s2_pc;
+logic           s1_to_s2_valid;//Both _pc and _instr are valid
+word_t          s1_to_s2_pc;//The PC of s1_to_s2_instr (not the next PC)
 word_t          s1_to_s2_instr;
 
 logic           invalidate_fetch;
 
-word_t          branch_target;
-logic           branch_en;
+word_t          s2_to_s1_branch_target_addr;
+logic           s2_to_s1_branch_en;
 
 //?
 word_t          csr_wd;
@@ -86,6 +87,8 @@ logic           csr_we;
 //?
 logic           s2_busy;//Means s2 is NOT ready to accept a new instruction from s1 this cycle
 logic           halt_req;//LETC.EXIT instruction encountered in M-mode
+word_t          trap_target_addr;
+logic           trap_occurred;
 
 /* ------------------------------------------------------------------------------------------------
  * Module Instantiations
