@@ -96,6 +96,7 @@ assign s2_to_s1_branch_en = uncond_branch_en || (cond_branch_en && cmp_result);
 
 assign next_seq_pc = pc_ff + 4;
 
+//FIXME possible design consideration here. Introduce an instruction_ff stage may introduce an additional stage of latency. This may need to be removed, even though it would help with
 always_ff @(posedge clk, negedge rst_n) begin : from_s1
     if (!rst_n) begin
         pc_ff       <= 32'hDEADBEEF;
