@@ -24,8 +24,10 @@ module core_s1_control
     input   logic   rst_n,
 
     input   logic   halt_req,//LETC.EXIT instruction encountered in M-mode
-    input   logic   s2_busy//Means s2 is NOT ready to accept a new instruction from s1 this cycle
+    input   logic   s2_busy,//Means s2 is NOT ready to accept a new instruction from s1 this cycle
+    input   logic   fetch_exception,
 
+    output  logic   s1_stall    
     //TODO other ports
 
 );
@@ -38,9 +40,8 @@ typedef enum logic [2:0] {
     INIT,
     HALT,
     FETCHING,
-    STALLED_WAITING_ON_S2_NOEXCEPT,
-    STALLED_WAITING_ON_S2_FETCHEXCEPT
-    //TODO any other additional states that may be needed in the future
+    STALLED_ON_S2_NOEXCEPT,
+    STALLED_ON_S2_FETCHEXCEPT
 } state_e;
 state_e state_ff, next_state;
 
@@ -57,37 +58,37 @@ always_ff @(posedge clk, negedge rst_n) begin : state_seq_logic
 end : state_seq_logic
 
 always_comb begin : next_state_logic
-    if (halt_req) begin
-        next_state = HALT;
-    end else begin
-        unique case (state_ff)
-            INIT: begin
-                //In the future we may do more things in INIT
-                next_state = FETCHING;
-            end
-            HALT: next_state = HALT;//There is no escape except for reset
-            FETCHING: begin
-                if (s2_busy) begin
-                    next_state = STALLED_WAITING_ON_S2_NOEXCEPT;
-                end else begin//TODO else if exception then [...]_FETCHEXCEPT
-                    next_state = FETCHING;//No need to wait around, fetch the next instruction right away!
+    unique case (state_ff)
+        INIT: begin
+            //In the future we may do more things in INIT
+            next_state = FETCHING;
+        end
+        HALT: next_state = HALT;//There is no escape except for reset
+        FETCHING: begin
+            if (s2_busy) begin
+                if (fetch_exception) begin
+                    next_state = STALLED_ON_S2_FETCHEXCEPT;
+                end else begin
+                    next_state = STALLED_ON_S2_NOEXCEPT;
                 end
+            end else if (halt_req) begin//Previous instruction was LETC.EXIT
+                next_state = HALT;
+            end else begin
+                next_state = FETCHING;//No need to wait around, fetch the next instruction right away!
             end
-            STALLED_WAITING_ON_S2_NOEXCEPT: begin
-                next_state = HALT;//TODO
-            end
-            STALLED_WAITING_ON_S2_FETCHEXCEPT: begin
-                next_state = HALT;//TODO
-            end
-            default: next_state = HALT;//We entered an illegal state, so halt
-        endcase
-    end
+        end
+        STALLED_ON_S2_NOEXCEPT, STALLED_ON_S2_FETCHEXCEPT: begin
+            next_state = s2_busy ? state_ff : FETCHING;//If s2 is no longer busy, then we can fetch the next instruction
+        end
+        default: next_state = HALT;//We entered an illegal state, so halt
+    endcase
 end : next_state_logic
 
 /* ------------------------------------------------------------------------------------------------
  * Control signal output logic
  * --------------------------------------------------------------------------------------------- */
 
+assign s1_stall = state_ff != FETCHING;//TODO is this correct?
 //TODO
 
 endmodule : core_s1_control
