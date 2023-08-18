@@ -5,7 +5,9 @@
  * Copyright (C) 2023 John Jekel and Nick Chan
  * See the LICENSE file at the root of the project for licensing info.
  *
- * TODO longer description
+ * This is perhaps more explicit than it needs to be (ex. explicity showing
+ * the decoder instead of just indexing with the vector), but that's fine,
+ * it's good practice for keeping in mind what's actually going on.
  *
 */
 
@@ -38,13 +40,17 @@ module core_s2_reg_file
 );
 
 //The registers
-word_t [31:1] register_ff;//DON'T USE UNPACKED (we aren't inferring FPGA SRAMs here, so it would be bad practice)
+word_t register_ff [31:1];
 
-//rd_write_port decoder (5-to-32)
+//rd_write_port decoder (5-to-32, except for 0)
 logic [31:1] register_we;
 always_comb begin : rd_write_port_decoder
     for (int reg_idx = 1; reg_idx < 32; ++reg_idx) begin
-        register_we[reg_idx] = rd_we && (rd_idx == reg_idx[4:0]);
+        if (rd_idx == reg_idx[4:0]) begin
+            register_we[reg_idx] = rd_we;
+        end else begin
+            register_we[reg_idx] = 1'b0;
+        end
     end
 end : rd_write_port_decoder
 
@@ -52,9 +58,9 @@ end : rd_write_port_decoder
 always_ff @(posedge clk, negedge rst_n) begin : rd_write_port
     if (!rst_n) begin
         //Reset all except x0 to garbage values to aid debugging
-        for (int reg_idx = 1; reg_idx < 32; ++reg_idx) begin : reset
+        for (int reg_idx = 1; reg_idx < 32; ++reg_idx) begin : register_reset
             register_ff[reg_idx] <= 32'hDEADBEEF;
-        end : reset
+        end : register_reset
     end else begin//posedge clk
         for (int reg_idx = 1; reg_idx < 32; ++reg_idx) begin : rd_write
             if (register_we[reg_idx]) begin
