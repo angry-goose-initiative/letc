@@ -18,11 +18,9 @@
  * to add a flop stage yourself to help with timing if needed.
 */
 
-module intel_fpga_sram #(
-    parameter   WORDS               = 65536,
-    parameter   DATA_WIDTH          = 8,
-    localparam  ADDR_WIDTH          = $clog2(WORDS),
-    localparam  WMASK_WIDTH         = (DATA_WIDTH / 8) + ((DATA_WIDTH % 8) ? 1 : 0)
+module intel_fpga_rom #(
+    parameter   DEPTH       = 65536,
+    parameter   DATA_WIDTH  = 8
 ) (
     //All signals are duplicated, once per port
     input   logic [1:0]                     clk,
@@ -30,8 +28,11 @@ module intel_fpga_sram #(
     output  logic [1:0] [DATA_WIDTH - 1:0]  rdata
 );
 
+localparam  ADDR_WIDTH  = $clog2(DEPTH);
+localparam  WMASK_WIDTH = (DATA_WIDTH / 8) + ((DATA_WIDTH % 8) ? 1 : 0);
+
 intel_fpga_sram #(
-    .WORDS          (WORDS),
+    .DEPTH          (DEPTH),
     .DATA_WIDTH     (DATA_WIDTH),
     .ADDR_WIDTH     (ADDR_WIDTH)
 ) intel_fpga_sram_inst (

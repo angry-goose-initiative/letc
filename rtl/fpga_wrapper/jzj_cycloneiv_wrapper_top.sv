@@ -30,8 +30,8 @@ module jzj_cycloneiv_wrapper_top
     output  logic       vga_g,//Pin 105
     output  logic       vga_b,//Pin 104
 
-    input   logic[3:0]  seven_seg_digit_sel,//TODO
-    input   logic[7:0]  seven_seg_segment,//TODO
+    output  logic[3:0]  seven_seg_digit_sel,//TODO
+    output  logic[7:0]  seven_seg_segment,//TODO
 
     output  logic       ps2_clk,//Pin 119
     output  logic       ps2_data,//Pin 120
@@ -49,5 +49,31 @@ module jzj_cycloneiv_wrapper_top
 letc_top letc_top_inst (.*);
 
 //TODO other things
+
+true_dual_port_ram_single_clock (
+    .data_a({i2c_sda, key}),
+    .data_b({i2c_sda, key}),
+    .addr_a({i2c_sda, key}),
+    .addr_b({key, i2c_sda}),
+    .we_a(ir),
+    .we_b(uart_rx),
+    .clk_a(clk),
+    .clk_b(rst_n),
+    .q_a(seven_seg_digit_sel),
+    .q_b(seven_seg_segment)
+);
+//TESTING
+/*intel_fpga_sram #(
+    .DEPTH(1024),
+    .DATA_WIDTH(32)
+) sram_inst (
+    .clk({clk, clk}),
+    .we({ir, ir}),
+    .addr({i2c_sda, key}),
+    .wdata({i2c_sda, key}),
+    .rdata({seven_seg_digit_sel, seven_seg_segment}),
+    .wmask('0)
+);
+*/
 
 endmodule : jzj_cycloneiv_wrapper_top
