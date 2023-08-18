@@ -22,5 +22,6 @@ FILES="$FILES -I ../../../rtl/letc/core/s2/core_s2_reg_file_src_mux.sv"
 
 #TODO this FPGA-specific stuff likely shouldn't be here
 FILES="$FILES -I ../../../rtl/fpga_wrapper/intel_fpga_sram.sv"
+FILES="$FILES -I ../../../rtl/fpga_wrapper/intel_fpga_rom.sv"
 
 verilator $FILES --timescale 1ns/1ns -DVERILATOR_FIRSTTB_DUMPFILE_PATH=\"/tmp/verilator_firsttb.vcd\" --trace-threads 2 --trace-structs -Wall -Wno-fatal -sv -cc verilator_firsttb.sv --timing --exe --trace-fst -O3 --top-module verilator_firsttb +1800-2012ext+sv --build verilator_firsttb.cpp

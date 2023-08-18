@@ -13,13 +13,13 @@
  *
  * NOTE: To initialize the SRAM with default contents, use an initial block
  * from a testbench or outer FPGA wrapper (which is okayish practice for FPGAs). Alternatively, there are
- * likely options in the Quartus IDE that probably
+ * likely options in the Quartus IDE that probably are the "proper" way to do it.
  *
- * NOTE: Intel FPGA SRAMs are dual ported. If you don't need the second port,
+ * NOTE: This module is dual ported. If you don't need the second port,
  * just tie the relevant signals off and ignore unneeded outputs.
  * Each port also has its own clock, which is useful for, ex. CDC FIFOs.
  *
- * NOTE: Intel FPGA SRAMs have a 1-cycle latency for both reads and writes.
+ * NOTE: Intel FPGA memories have a 1-cycle latency for both reads and writes.
  * The read output is registered, but inputs are unreigstered, so you may want
  * to add a flop stage yourself to help with timing if needed.
 */
@@ -36,7 +36,7 @@ module intel_fpga_sram #(
     input   logic [1:0] [ADDR_WIDTH - 1:0]          addr,
     output  logic [1:0] [DATA_WIDTH - 1:0]          rdata,
     input   logic [1:0] [DATA_WIDTH - 1:0]          wdata,
-    input   logic [1:0] [(DATA_WIDTH / 8) - 1:0]    wmask,
+    input   logic [1:0] [WMASK_WIDTH - 1:0]         wmask,
     input   logic [1:0]                             we
 );
 
