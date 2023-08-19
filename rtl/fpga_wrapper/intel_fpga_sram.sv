@@ -49,42 +49,128 @@ localparam  ADDR_WIDTH          = $clog2(DEPTH);
 localparam  WMASK_WIDTH         = (DATA_WIDTH / 8) + ((DATA_WIDTH % 8) ? 1 : 0);
 localparam  INTERNAL_DATA_WIDTH = WMASK_WIDTH * 8;
 
-logic [INTERNAL_DATA_WIDTH - 1:0] sram [DEPTH - 1:0] /* synthesis ramstyle = M9K */;
+//logic [INTERNAL_DATA_WIDTH - 1:0] sram [DEPTH - 1:0];
+/**/
+logic [WMASK_WIDTH - 1:0] [7:0] sram [DEPTH - 1:0];//This is the actual SRAM
+logic [INTERNAL_DATA_WIDTH - 1:0] sram_1d [DEPTH - 1:0];//This just turns the 2D packed vector into 1D per-entry
+assign sram_1d = sram;
+/**/
 
-generate//Needed because of Quartus (otherwise this would be optional in SystemVerilog)
-    genvar i;//Also needed because of Quartus
+/*
+logic [ADDR_WIDTH - 1:0] addr_a;
+logic [ADDR_WIDTH - 1:0] addr_b;
+assign addr_a = addr[0];
+assign addr_b = addr[1];
+*/
 
-    for (i = 0; i < 2; ++i) begin : ports//Also needed because of Quartus
-    //for (genvar i = 0; i < 2; ++i) begin : ports//Quartus doesn't like this
-        always_ff @(posedge clk[i]) begin
-            //We place reads before
+always_ff @(posedge clk[0]) begin
+    //SRAM writes
+    if (we[0]) begin
+        /*
+        for (int j = 0; j < WMASK_WIDTH; ++j) begin
+            if (wmask[0][j]) begin
+                sram[addr[0]][j] <= wdata[0][j];
+            end
+        end
+        */
+        /*
+        if (wmask[0][0]) sram[addr_a][0] <= wdata[0][7:0];
+        if (wmask[0][1]) sram[addr_a][1] <= wdata[0][15:8];
+        if (wmask[0][2]) sram[addr_a][2] <= wdata[0][23:16];
+        if (wmask[0][3]) sram[addr_a][3] <= wdata[0][31:24];
+        */
+        /*
+        if (wmask[0][0]) sram[addr[0]][0] <= wdata[0][7:0];
+        if (wmask[0][1]) sram[addr[0]][1] <= wdata[0][15:8];
+        if (wmask[0][2]) sram[addr[0]][2] <= wdata[0][23:16];
+        if (wmask[0][3]) sram[addr[0]][3] <= wdata[0][31:24];
+        */
+        //sram[addr[0]] <= wdata[0];
+        /*if (wmask[0][0]) sram[addr[0]][7:0] <= wdata[0][7:0];
+        if (wmask[0][1]) sram[addr[0]][15:8] <= wdata[0][15:8];
+        if (wmask[0][2]) sram[addr[0]][23:16] <= wdata[0][23:16];
+        if (wmask[0][3]) sram[addr[0]][31:24] <= wdata[0][31:24];
+        */
+        /*for (int j = 0; j < WMASK_WIDTH; ++j) begin
+            if (wmask[0][j]) begin
+                sram[addr[0]][j * 8 +: 8] <= wdata[0][j * 8 +: 8];
+            end
+        end
+        */
+    end
 
-            //SRAM reads
-            rdata[i] <= sram[addr[i]][DATA_WIDTH - 1:0];
+    //SRAM reads
+    //rdata[0] <= sram[addr[0]];//[DATA_WIDTH - 1:0];
+    //rdata[0] <= sram_1d[addr[0]];//[DATA_WIDTH - 1:0];
+end
 
-            //SRAM writes
-            if (we[i]) begin
-                /*
-                for (int j = 0; j < WMASK_WIDTH; ++j) begin
-                    if (wmask[i][j]) begin
-                        //This would normally be bad practice, but to avoid multiple drivers in synthesis, we use blocking assignments
-                        //Recommended over at: https://www.intel.com/content/www/us/en/docs/programmable/683082/23-1/true-dual-port-synchronous-ram.html
-                        sram[addr[i]][j * 8 +: 8] <= wdata[i][j * 8 +: 8];
-                        //sram[addr[i]][j * 8 +: 8] = wdata[i][j * 8 +: 8];
-                    end
-                end
-                */
-                if (addr[0] == addr[1]) begin
-                    if (i == 0) begin
-                        sram[addr[i]] <= 'x;
-                    end
-                end else begin
-                    sram[addr[i]] <= wdata[i];//TESTING
+always_ff @(posedge clk[1]) begin
+    //SRAM writes
+    if (we[1]) begin
+        /*
+        for (int j = 0; j < WMASK_WIDTH; ++j) begin
+            if (wmask[1][j]) begin
+                sram[addr[1]][j] <= wdata[1][j];
+            end
+        end
+        */
+        /*
+        if (wmask[1][0]) sram[wdata[0]][0] <= wdata[1][7:0];
+        if (wmask[1][1]) sram[wdata[0]][1] <= wdata[1][15:8];
+        if (wmask[1][2]) sram[wdata[0]][2] <= wdata[1][23:16];
+        if (wmask[1][3]) sram[wdata[0]][3] <= wdata[1][31:24];
+        */
+        /*
+        if (wmask[1][0]) sram[addr[1]][0] <= wdata[1][7:0];
+        if (wmask[1][1]) sram[addr[1]][1] <= wdata[1][15:8];
+        if (wmask[1][2]) sram[addr[1]][2] <= wdata[1][23:16];
+        if (wmask[1][3]) sram[addr[1]][3] <= wdata[1][31:24];
+        */
+        //sram[addr[1]] <= wdata[1];
+        /*
+        if (wmask[1][0]) sram[addr[1]][0] <= wdata[1][7:0];
+        if (wmask[1][1]) sram[addr[1]][1] <= wdata[1][15:8];
+        if (wmask[1][2]) sram[addr[1]][2] <= wdata[1][23:16];
+        if (wmask[1][3]) sram[addr[1]][3] <= wdata[1][31:24];
+        */
+        /*
+        for (int j = 0; j < WMASK_WIDTH; ++j) begin
+            if (wmask[1][j]) begin
+                sram[addr[1]][j * 8 +: 8] <= wdata[1][j * 8 +: 8];
+            end
+        end
+        */
+    end
+
+    //SRAM reads
+    //rdata[1] <= sram[addr[1]][DATA_WIDTH - 1:0];
+    //rdata[1] <= sram_1d[addr[1]][DATA_WIDTH - 1:0];
+end
+
+//This is the cleaner approach. However, there are two issues:
+//- Quartus doesn't support avoiding the generate block, even though SystemVerilog no longer requires it for for-loops in the module scope
+//- Quartus doesn't infer SRAM from this properly, leading to multiple drivers in synthesis
+//  Technically, since we have 2 write ports with no priority logic, there is multiple drivers, but Quartus should ignore that in this situation
+//  and infer SRAM. But it does not...
+/*
+logic [INTERNAL_DATA_WIDTH - 1:0] sram [DEPTH - 1:0];
+
+for (genvar i = 0; i < 2; ++i) begin : ports
+    always_ff @(posedge clk[i]) begin
+        //SRAM writes
+        if (we[i]) begin
+            for (int j = 0; j < WMASK_WIDTH; ++j) begin
+                if (wmask[i][j]) begin
+                    sram[addr[i]][j * 8 +: 8] <= wdata[i][j * 8 +: 8];
                 end
             end
         end
-    end : ports
-endgenerate//Needed because of Quartus (otherwise this would be optional in SystemVerilog)
+
+        //SRAM reads
+        rdata[i] <= sram[addr[i]][DATA_WIDTH - 1:0];
+    end
+end : ports
+*/
 
 endmodule
 

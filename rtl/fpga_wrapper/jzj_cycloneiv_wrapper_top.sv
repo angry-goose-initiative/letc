@@ -50,6 +50,7 @@ letc_top letc_top_inst (.*);
 
 //TODO other things
 
+/*
 true_dual_port_ram_single_clock (
     .data_a({i2c_sda, key}),
     .data_b({i2c_sda, key}),
@@ -62,8 +63,9 @@ true_dual_port_ram_single_clock (
     .q_a(seven_seg_digit_sel),
     .q_b(seven_seg_segment)
 );
+*/
 //TESTING
-/*intel_fpga_sram #(
+intel_fpga_sram #(
     .DEPTH(1024),
     .DATA_WIDTH(32)
 ) sram_inst (
@@ -74,6 +76,5 @@ true_dual_port_ram_single_clock (
     .rdata({seven_seg_digit_sel, seven_seg_segment}),
     .wmask('0)
 );
-*/
 
 endmodule : jzj_cycloneiv_wrapper_top
