@@ -65,16 +65,20 @@ true_dual_port_ram_single_clock (
 );
 */
 //TESTING
-intel_fpga_sram #(
+/*
+intel_fpga_sram_64 #(
     .DEPTH(1024),
-    .DATA_WIDTH(32)
+    //.WIDTH(64),
+    .OUTPUT_REGISTER(1)
 ) sram_inst (
-    .clk({clk, clk}),
-    .we({ir, ir}),
-    .addr({i2c_sda, key}),
-    .wdata({i2c_sda, key}),
-    .rdata({seven_seg_digit_sel, seven_seg_segment}),
-    .wmask('0)
+    .clk({clk, rst_n}),
+    .re('1),
+    .we({ir, uart_rx}),
+    .addr({key, i2c_sda, 30'd456, i2c_sda, key}),
+    .wdata({2{i2c_sda, 30'd123, key}}),
+    .rdata({ps2_data, i2c_sdl, led, buzzer, seven_seg_digit_sel, seven_seg_segment}),
+    .wbmask(ir ? 16'hAAAA : 16'h5555)
 );
+*/
 
 endmodule : jzj_cycloneiv_wrapper_top
