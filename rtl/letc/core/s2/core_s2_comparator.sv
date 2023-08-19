@@ -28,7 +28,7 @@ module core_s2_comparator
     output  logic       cmp_result
 );
 
-//Mux branch_en depending on the comparison and the values of rs1 and rs2
+//Mux cmp_result depending on the comparison and the values of rs1 and rs2
 always_comb begin : comparator_mux
     unique case (cmp_operation)
         CMP_OP_EQ:  cmp_result = rs1_ff == rs2_ff;

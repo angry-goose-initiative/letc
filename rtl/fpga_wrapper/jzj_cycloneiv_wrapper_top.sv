@@ -46,24 +46,10 @@ module jzj_cycloneiv_wrapper_top
     //TODO SDRAM lines
 );
 
-letc_top letc_top_inst (.*);
-
 //TODO other things
 
-/*
-true_dual_port_ram_single_clock (
-    .data_a({i2c_sda, key}),
-    .data_b({i2c_sda, key}),
-    .addr_a({i2c_sda, key}),
-    .addr_b({key, i2c_sda}),
-    .we_a(ir),
-    .we_b(uart_rx),
-    .clk_a(clk),
-    .clk_b(rst_n),
-    .q_a(seven_seg_digit_sel),
-    .q_b(seven_seg_segment)
-);
-*/
+letc_top letc_top_inst (.*);
+
 //TESTING
 /*
 intel_fpga_sram_64 #(

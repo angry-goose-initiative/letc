@@ -44,8 +44,18 @@ typedef enum logic [4:0] {
     OPCODE_SYSTEM = 5'b11100, OPCODE_RESERVED_3 = 5'b11101, OPCODE_CUSTOM_3   = 5'b11110, OPCODE_BGE80    = 5'b11111
 } opcode_e;
 
-typedef enum logic [2:0] {
-    ALU_OP_TODO//TODO
+typedef enum logic [3:0] {
+    ALU_OP_ADD,
+    ALU_OP_SUB,
+    ALU_OP_SLL,
+    ALU_OP_SLT,
+    ALU_OP_SLTU,
+    ALU_OP_SRL,
+    ALU_OP_SRA,
+    ALU_OP_XOR,
+    ALU_OP_OR,
+    ALU_OP_AND
+    //TODO others if needed
 } alu_op_e;
 
 //Comparison opearations are based on funct3 of branch instructions
