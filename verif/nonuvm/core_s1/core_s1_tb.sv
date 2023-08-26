@@ -48,4 +48,27 @@ initial begin
     $finish;
 end
 
+localparam DEPTH = 2 ** 24;//Should be plenty large for testing purposes
+
+//We just access addresses as-is, without any translation since this is just
+//a block-level testbench
+
+//We also have a fixed 1 cycle latency (the minimum that is acceptable for
+//core_s1)
+//TODO vary the latency randomly in the future
+
+logic [31:0] instruction_memory [DEPTH - 1:0];
+
+always_ff @(posedge clk) begin
+    if (mmu_instr_req.valid) begin
+        mmu_instr_rsp.instr <= instruction_memory[mmu_instr_req.addr];
+        mmu_instr_rsp.ready <= 1'd1;//TODO randomize this (how long it takes in # of clock cycles)
+    end else begin//core_s1 shouldn't assume the data will be held if it deasserts valid
+        mmu_instr_rsp.instr <= 32'hDEADBEEF;
+        mmu_instr_rsp.ready <= 1'd0;
+    end
+end
+
+assign illegal = 1'd0;
+
 endmodule

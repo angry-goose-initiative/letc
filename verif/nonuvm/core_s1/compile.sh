@@ -5,7 +5,6 @@ FILES="-I ../../../rtl/letc/letc_pkg.svh"
 FILES="$FILES -I ../../../rtl/letc/limp_pkg.svh"
 FILES="$FILES -I ../../../rtl/letc/core/core_pkg.svh"
 FILES="$FILES -I ../../../rtl/letc/core/s1/core_s1.sv"
-FILES="$FILES -I ../../../rtl/letc/core/s1/core_s1_control.sv"
 
 #TODO this FPGA-specific stuff likely shouldn't be here
 FILES="$FILES -I ../../../rtl/fpga_wrapper/intel_fpga_sram.sv"

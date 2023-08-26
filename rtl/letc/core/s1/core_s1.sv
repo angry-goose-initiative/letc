@@ -110,10 +110,52 @@ always_ff @(posedge clk, negedge rst_n) begin : s1b_output_flops
 end : s1b_output_flops
 
 /* ------------------------------------------------------------------------------------------------
- * Common Stage Machine
+ * S1 Control State Machine
  * --------------------------------------------------------------------------------------------- */
 
-//TODO given how simple s1 is, should we just inline it into core_s1.sv?
-core_s1_control core_s1_control_inst    (.*);
+typedef enum logic [2:0] {
+    INIT,
+    HALT,
+    FETCHING,
+    STALLED_ON_S2_NOEXCEPT,
+    STALLED_ON_S2_FETCHEXCEPT
+} state_e;
+state_e state_ff, next_state;
+
+always_ff @(posedge clk, negedge rst_n) begin : state_seq_logic
+    if (!rst_n) begin
+        state_ff <= INIT;
+    end else begin
+        state_ff <= next_state;
+    end
+end : state_seq_logic
+
+always_comb begin : next_state_logic
+    if (halt_req) begin//Previous instruction was LETC.EXIT
+        next_state = HALT;
+    end else begin
+        unique case (state_ff)
+            INIT: begin
+                //In the future we may do more things in INIT
+                next_state = FETCHING;
+            end
+            HALT: next_state = HALT;//There is no escape except for reset
+            FETCHING: begin
+                if (s2_busy) begin
+                    next_state = fetch_exception ? STALLED_ON_S2_FETCHEXCEPT : STALLED_ON_S2_NOEXCEPT;
+                end else begin
+                    next_state = FETCHING;//No need to wait around, fetch the next instruction right away!
+                end
+            end
+            STALLED_ON_S2_NOEXCEPT, STALLED_ON_S2_FETCHEXCEPT: begin
+                next_state = s2_busy ? state_ff : FETCHING;//If s2 is no longer busy, then we can fetch the next instruction
+            end
+            default: next_state = HALT;//We entered an illegal state, so halt
+        endcase
+    end
+end : next_state_logic
+
+assign s1_stall = state_ff != FETCHING;//TODO is this correct?
+assign bypass_pc_for_fetch_addr = state_ff == FETCHING;//Not init since we need to fetch the first instruction
 
 endmodule : core_s1

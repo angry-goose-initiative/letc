@@ -122,7 +122,7 @@ typedef struct packed {
 //A critical difference: If a new request wasn't made, data must remain unchanged with its previous value//Actually never mind, we'll add a flip flop ourselves for this to s1
 typedef struct packed {
     letc_pkg::word_t    addr;
-    letc_pkg::word_t    valid;
+    logic               valid;
 } mmu_instr_req_s;
 typedef struct packed {
     letc_pkg::word_t    instr;
