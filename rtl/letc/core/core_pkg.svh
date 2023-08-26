@@ -125,7 +125,7 @@ typedef struct packed {
     letc_pkg::word_t    valid;
 } mmu_instr_req_s;
 typedef struct packed {
-    letc_pkg::word_t    data;
+    letc_pkg::word_t    instr;
     logic               ready;
     logic               illegal;
 } mmu_instr_rsp_s;

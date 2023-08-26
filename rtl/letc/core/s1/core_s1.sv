@@ -50,46 +50,15 @@ module core_s1
  * S1A: Logic BEFORE the outputs to the MMU (address/valid going to the IMEM)
  * --------------------------------------------------------------------------------------------- */
 
-word_t pc_ff;
-
 //Global S1 Stall Signal
 logic s1_stall;
-
-/* ------------------------------------------------------------------------------------------------
- * S1B: Logic AFTER the MMU (instr/ready/illegal/etc coming from IMEM)
- * --------------------------------------------------------------------------------------------- */
-
-always_ff @(posedge clk, negedge rst_n) begin : s1b_output_flops
-    if (!rst_n) begin
-        s1_to_s2.pc     <= 32'hDEADBEEF;
-        s1_to_s2.instr  <= 32'hDEADBEEF;
-        //TODO s1_to_s2.valid
-    end else if (~s1_stall) begin//TODO only if the IMEM was ready, and we're not flushing any previous work, etc
-        s1_to_s2.pc     <= pc_ff;
-        s1_to_s2.instr  <= 32'hDEADBEEF;
-        s1_to_s2.valid  <= mmu_instr_rsp.ready;
-    end
-end : s1b_output_flops
-
-//TODO reorganize everything below into the two above sections
-
-
-/* ------------------------------------------------------------------------------------------------
- * Connections
- * --------------------------------------------------------------------------------------------- */
 
 //?
 logic fetch_exception;
 
-//TODO others
+/* PC Logic **************************************************************************************/
 
-logic bypass_pc_for_fetch_addr;
-word_t fetch_addr;
-
-/* ------------------------------------------------------------------------------------------------
- * PC
- * --------------------------------------------------------------------------------------------- */
-
+word_t pc_ff;
 word_t next_pc;
 word_t next_seq_pc;
 
@@ -112,22 +81,36 @@ end : next_pc_logic
 
 assign next_seq_pc = pc_ff + 32'd4;
 
+/* Fetch Address Bypass Mux ***********************************************************************/
+
+//TODO this may introduce a large critical path, but it allows us to reduce latency and complicating
+//the pipeline further
+
+logic bypass_pc_for_fetch_addr;
+
+assign mmu_instr_req.addr = bypass_pc_for_fetch_addr ? next_pc : pc_ff;
+
 /* ------------------------------------------------------------------------------------------------
- * Fetch Address Logic
+ * S1B: Logic AFTER the MMU (instr/ready/illegal/etc coming from IMEM)
  * --------------------------------------------------------------------------------------------- */
 
-assign fetch_addr = bypass_pc_for_fetch_addr ? next_pc : pc_ff;
+//We add an extra flop stage here to improve timing
+always_ff @(posedge clk, negedge rst_n) begin : s1b_output_flops
+    if (!rst_n) begin
+        s1_to_s2.pc     <= 32'hDEADBEEF;
+        s1_to_s2.instr  <= 32'hDEADBEEF;
+        //TODO s1_to_s2.valid
+    end else begin
+        if (~s1_stall) begin//TODO only if the IMEM was ready, and we're not flushing any previous work, etc
+            s1_to_s2.pc     <= pc_ff;
+            s1_to_s2.instr  <= mmu_instr_rsp.instr;
+            s1_to_s2.valid  <= mmu_instr_rsp.ready;
+        end
+    end
+end : s1b_output_flops
 
 /* ------------------------------------------------------------------------------------------------
- * Output Logic to S2
- * --------------------------------------------------------------------------------------------- */
-
-//assign s1_to_s2.valid = 1'b1;//FIXME do this properly
-//assign s1_to_s2.pc = pc_ff;//It is ALWAYS pc_ff, never next_pc, even if bypassing since the fetch takes a cycle
-//assign s1_to_s2.instr = 32'h00000013;//FIXME do this properly
-
-/* ------------------------------------------------------------------------------------------------
- * Module Instantiations
+ * Common Stage Machine
  * --------------------------------------------------------------------------------------------- */
 
 //TODO given how simple s1 is, should we just inline it into core_s1.sv?
