@@ -29,18 +29,28 @@ module core_s1
     //TODO other ports
     input   word_t  trap_target_addr,
     input   logic   trap_occurred,
-    input   word_t  s2_to_s1_branch_target_addr,
-    input   logic   s2_to_s1_branch_en,
 
     //TODO interface with imem
 
     //TODO CSRs
 
+    output  s1_to_s2_s      s1_to_s2,
+    input   s2_to_s1_s      s2_to_s1
+    //TODO move these signals to the s1_to_s2 and s2_to_s1 structs
     //TODO s2 outputs
-    output  logic   s1_to_s2_valid,//Both _pc and _instr are valid
-    output  word_t  s1_to_s2_pc,//The PC of s1_to_s2_instr (not the next PC)
-    output  word_t  s1_to_s2_instr
 );
+
+/* ------------------------------------------------------------------------------------------------
+ * S1A: Logic BEFORE the outputs to the MMU (address/valid going to the IMEM)
+ * --------------------------------------------------------------------------------------------- */
+
+
+/* ------------------------------------------------------------------------------------------------
+ * S1B: Logic AFTER the MMU (instr/ready/illegal/etc coming from IMEM)
+ * --------------------------------------------------------------------------------------------- */
+
+//TODO reorganize everything below into the two above sections
+
 
 /* ------------------------------------------------------------------------------------------------
  * Connections
@@ -94,9 +104,9 @@ assign fetch_addr = bypass_pc_for_fetch_addr ? next_pc : pc_ff;
  * Output Logic to S2
  * --------------------------------------------------------------------------------------------- */
 
-assign s1_to_s2_valid = 1'b1;//FIXME do this properly
-assign s1_to_s2_pc = pc_ff;//It is ALWAYS pc_ff, never next_pc, even if bypassing since the fetch takes a cycle
-assign s1_to_s2_instr = 32'h00000013;//FIXME do this properly
+assign s1_to_s2.valid = 1'b1;//FIXME do this properly
+assign s1_to_s2.pc = pc_ff;//It is ALWAYS pc_ff, never next_pc, even if bypassing since the fetch takes a cycle
+assign s1_to_s2.instr = 32'h00000013;//FIXME do this properly
 
 /* ------------------------------------------------------------------------------------------------
  * Module Instantiations

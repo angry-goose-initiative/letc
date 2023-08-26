@@ -23,15 +23,14 @@ module core_s2
     input   logic           clk,
     input   logic           rst_n,
 
+    input   s1_to_s2_s      s1_to_s2,
+    output  s2_to_s1_s      s2_to_s1,
+    //TODO move these signals to the s1_to_s2 and s2_to_s1 structs
     //From s1
-    input   word_t          s1_to_s2_instr,
-    input   word_t          s1_to_s2_pc,
 
     //To s1
-    output  word_t          s2_to_s1_branch_target_addr,
-    output  logic           s2_to_s1_branch_en,
     output  logic           s2_busy,//Means s2 is NOT ready to accept a new instruction from s1 this cycle//TODO or does this go to master control?
-    output  logic           halt_req,//LETC.EXIT instruction encountered in M-mode
+    output  logic           halt_req,//LETC.EXIT instruction encountered in M-mode//TODO or does this go to master control?
 
     //CSR
     input   word_t          csr_data_out,
@@ -92,18 +91,19 @@ word_t      alu_result;
 alu_op1_src_e alu_op1_src;
 alu_op2_src_e alu_op2_src;
 
-assign s2_to_s1_branch_en = uncond_branch_en || (cond_branch_en && cmp_result);
+assign s2_to_s1.branch_en = uncond_branch_en || (cond_branch_en && cmp_result);
 
 assign next_seq_pc = pc_ff + 4;
 
 //FIXME possible design consideration here. Introduce an instruction_ff stage may introduce an additional stage of latency. This may need to be removed, even though it would help with
+//TODO actually we will include this, but we'll move it into s1
 always_ff @(posedge clk, negedge rst_n) begin : from_s1
     if (!rst_n) begin
         pc_ff       <= 32'hDEADBEEF;
         instr_ff    <= 32'hDEADBEEF;
     end else if (from_s1_we) begin
-        pc_ff       <= s1_to_s2_pc;
-        instr_ff    <= s1_to_s2_instr;
+        pc_ff       <= s1_to_s2.pc;
+        instr_ff    <= s1_to_s2.instr;
     end
 end : from_s1
 

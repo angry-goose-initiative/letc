@@ -71,14 +71,9 @@ logic           csr_mcause_we;
 //TODO others
 
 //Data from s1 to s2
-logic           s1_to_s2_valid;//Both _pc and _instr are valid
-word_t          s1_to_s2_pc;//The PC of s1_to_s2_instr (not the next PC)
-word_t          s1_to_s2_instr;
-
-logic           invalidate_fetch;
-
-word_t          s2_to_s1_branch_target_addr;
-logic           s2_to_s1_branch_en;
+s1_to_s2_s      s1_to_s2;
+s2_to_s1_s      s2_to_s1;
+logic           invalidate_fetch;//TODO should this be included too in s2_to_s1? Should master control play a part?
 
 //?
 word_t          csr_wd;

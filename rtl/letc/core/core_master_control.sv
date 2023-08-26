@@ -20,7 +20,7 @@ module core_master_control
     import core_pkg::*;
 `endif
 (
-    input   logic   s2_to_s1_branch_en,
+    //input   logic   s2_to_s1_branch_en,
     output  logic   invalidate_fetch
     //TODO ports
 );

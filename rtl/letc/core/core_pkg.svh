@@ -99,4 +99,35 @@ typedef struct packed {
 } csr_implicit_s;
 */
 
+/* ------------------------------------------------------------------------------------------------
+ * Structs 
+ * --------------------------------------------------------------------------------------------- */
+
+//Between s1 and s2
+
+typedef struct packed {
+    logic               valid;//Both _pc and _instr are valid
+    letc_pkg::word_t    pc;//The PC of instr (not the next PC)
+    letc_pkg::word_t    instr;
+} s1_to_s2_s;
+
+typedef struct packed {
+    logic               branch_en;
+    letc_pkg::word_t    branch_target_addr;
+} s2_to_s1_s;
+
+//Core-internal memory connections
+
+//Between the icache and s1 (a very stripped-down LIMP-like interface)
+//A critical difference: If a new request wasn't made, data must remain unchanged with its previous value//Actually never mind, we'll add a flip flop ourselves for this to s1
+typedef struct packed {
+    letc_pkg::word_t    addr;
+    letc_pkg::word_t    valid;
+} imem_req_s;
+typedef struct packed {
+    letc_pkg::word_t    data;
+    logic               ready;
+    logic               illegal;
+} imem_rsp_s;
+
 endpackage : core_pkg
