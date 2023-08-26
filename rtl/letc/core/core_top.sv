@@ -85,6 +85,10 @@ logic           halt_req;//LETC.EXIT instruction encountered in M-mode
 word_t          trap_target_addr;
 logic           trap_occurred;
 
+//Between s1 and the MMU
+mmu_instr_req_s  mmu_instr_req;
+mmu_instr_rsp_s  mmu_instr_rsp;
+
 /* ------------------------------------------------------------------------------------------------
  * Module Instantiations
  * --------------------------------------------------------------------------------------------- */

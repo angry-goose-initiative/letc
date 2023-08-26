@@ -48,8 +48,10 @@ module core_s2
 
 //?
 logic   from_s1_we;
-word_t  instr_ff;
-word_t  pc_ff;//PC?
+//word_t  instr_ff;
+//word_t  pc_ff;//PC?
+word_t  instr;
+word_t  pc;
 word_t  next_seq_pc;//PC?
 
 //Memory
@@ -93,10 +95,15 @@ alu_op2_src_e alu_op2_src;
 
 assign s2_to_s1.branch_en = uncond_branch_en || (cond_branch_en && cmp_result);
 
-assign next_seq_pc = pc_ff + 4;
+assign pc = s1_to_s2.pc;
+assign instr = s1_to_s2.instr;
+
+//assign next_seq_pc = pc_ff + 4;
+assign next_seq_pc = pc + 32'd4;
 
 //FIXME possible design consideration here. Introduce an instruction_ff stage may introduce an additional stage of latency. This may need to be removed, even though it would help with
 //TODO actually we will include this, but we'll move it into s1
+/*
 always_ff @(posedge clk, negedge rst_n) begin : from_s1
     if (!rst_n) begin
         pc_ff       <= 32'hDEADBEEF;
@@ -106,6 +113,7 @@ always_ff @(posedge clk, negedge rst_n) begin : from_s1
         instr_ff    <= s1_to_s2.instr;
     end
 end : from_s1
+*/
 
 /* ------------------------------------------------------------------------------------------------
  * Module Instantiations

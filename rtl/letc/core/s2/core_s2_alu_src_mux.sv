@@ -23,7 +23,7 @@ module core_s2_alu_src_mux
     //ALU operand 1 mux IO
     input   alu_op1_src_e   alu_op1_src,
     input   word_t          rs1_ff,
-    input   word_t          pc_ff,
+    input   word_t          pc,
     input   word_t          csr_uimm,
     input   word_t          dcache_data_out,
     output  word_t          alu_operand_1,
@@ -40,7 +40,7 @@ module core_s2_alu_src_mux
 always_comb begin : op1_mux
     unique case (alu_op1_src)
         ALU_OP1_SRC_RS1:                alu_operand_1 = rs1_ff;
-        ALU_OP1_SRC_PC:                 alu_operand_1 = pc_ff;
+        ALU_OP1_SRC_PC:                 alu_operand_1 = pc;
         ALU_OP1_SRC_CSR_UIMM:           alu_operand_1 = csr_uimm;
         ALU_OP1_SRC_DCACHE_DATA_OUT:    alu_operand_1 = dcache_data_out;
     endcase

@@ -123,11 +123,11 @@ typedef struct packed {
 typedef struct packed {
     letc_pkg::word_t    addr;
     letc_pkg::word_t    valid;
-} imem_req_s;
+} mmu_instr_req_s;
 typedef struct packed {
     letc_pkg::word_t    data;
     logic               ready;
     logic               illegal;
-} imem_rsp_s;
+} mmu_instr_rsp_s;
 
 endpackage : core_pkg
