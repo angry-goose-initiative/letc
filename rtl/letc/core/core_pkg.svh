@@ -114,6 +114,9 @@ typedef struct packed {
 typedef struct packed {
     logic               branch_en;
     letc_pkg::word_t    branch_target_addr;
+    //TODO might the two signal below need to be fed thru master control as well?
+    logic               s2_busy;//Means s2 is NOT ready to accept a new instruction from s1 this cycle
+    logic               halt_req;//LETC.EXIT instruction encountered in M-mode
 } s2_to_s1_s;
 
 //Core-internal memory connections

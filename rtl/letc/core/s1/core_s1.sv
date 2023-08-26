@@ -47,14 +47,16 @@ module core_s1
 );
 
 /* ------------------------------------------------------------------------------------------------
- * S1A: Logic BEFORE the outputs to the MMU (address/valid going to the IMEM)
+ * Signals
  * --------------------------------------------------------------------------------------------- */
 
-//Global S1 Stall Signal
-logic s1_stall;
+logic pc_ff_we;
+logic s1_to_s2_ff_we;
+logic bypass_pc_for_fetch_addr;
 
-//?
-logic fetch_exception;
+/* ------------------------------------------------------------------------------------------------
+ * S1A: Logic BEFORE the outputs to the MMU (address/valid going to the IMEM)
+ * --------------------------------------------------------------------------------------------- */
 
 /* PC Logic **************************************************************************************/
 
@@ -66,27 +68,32 @@ always_ff @(posedge clk, negedge rst_n) begin : pc_seq_logic
     if (~rst_n) begin
         pc_ff       <= RESET_PC;
     end else begin
-        if (~s1_stall) begin//Hopefully this infers a clock gate :)
+        if (~pc_ff_we) begin//Hopefully this infers a clock gate :)
             pc_ff       <= next_pc;
         end
     end
 end : pc_seq_logic
 
+/* Next PC Logic *********************************************************************************/
+
 always_comb begin : next_pc_logic 
     //Note: This dosn't worry about stalling
-
-    //TODO handle branches and traps
-    next_pc = next_seq_pc;
+    //TODO what about the priority between traps and branches?
+    if (trap_occurred) begin
+        next_pc = trap_target_addr;
+    end else if (s2_to_s1.branch_en) begin
+        next_pc = next_seq_pc;
+    end else begin
+        next_pc = pc_ff;
+    end
 end : next_pc_logic
 
 assign next_seq_pc = pc_ff + 32'd4;
 
 /* Fetch Address Bypass Mux ***********************************************************************/
 
-//TODO this may introduce a large critical path, but it allows us to reduce latency and complicating
-//the pipeline further
-
-logic bypass_pc_for_fetch_addr;
+//Note: this may introduce a large critical path, but it allows us to reduce latency and avoid
+//complicating the pipeline further
 
 assign mmu_instr_req.addr = bypass_pc_for_fetch_addr ? next_pc : pc_ff;
 
@@ -94,31 +101,51 @@ assign mmu_instr_req.addr = bypass_pc_for_fetch_addr ? next_pc : pc_ff;
  * S1B: Logic AFTER the MMU (instr/ready/illegal/etc coming from IMEM)
  * --------------------------------------------------------------------------------------------- */
 
+s1_to_s2_s s1_to_s2_ff;
+
 //We add an extra flop stage here to improve timing
 always_ff @(posedge clk, negedge rst_n) begin : s1b_output_flops
     if (!rst_n) begin
-        s1_to_s2.pc     <= 32'hDEADBEEF;
-        s1_to_s2.instr  <= 32'hDEADBEEF;
+        s1_to_s2_ff.pc     <= 32'hDEADBEEF;
+        s1_to_s2_ff.instr  <= 32'hDEADBEEF;
         //TODO s1_to_s2.valid
     end else begin
-        if (~s1_stall) begin//TODO only if the IMEM was ready, and we're not flushing any previous work, etc
-            s1_to_s2.pc     <= pc_ff;
-            s1_to_s2.instr  <= mmu_instr_rsp.instr;
-            s1_to_s2.valid  <= mmu_instr_rsp.ready;
+        if (s1_to_s2_ff_we) begin
+            s1_to_s2_ff.pc     <= pc_ff;
+            s1_to_s2_ff.instr  <= mmu_instr_rsp.instr;
+            s1_to_s2_ff.valid  <= mmu_instr_rsp.ready;
         end
     end
 end : s1b_output_flops
 
+assign s1_to_s2.pc     = s1_to_s2_ff.pc;
+assign s1_to_s2.instr  = s1_to_s2_ff.instr;
+assign s1_to_s2.valid  = s1_to_s2_ff.valid;
+//assign s1_to_s2.valid  = s1_to_s2_ff.valid && ~s1_flush;//FIXME or should this be before the flop? (for both correctness and better timing?)
+
 /* ------------------------------------------------------------------------------------------------
- * S1 Control State Machine
+ * S1 Control Logic and State Machine
  * --------------------------------------------------------------------------------------------- */
 
+/* Stall and Flush Logic *************************************************************************/
+
+//NOTE: None of this depends on the current state because these are cause by
+//outside things (ex. the MMU/IMEM not being ready, branches, traps, s2 being busy, etc)
+
+logic  s1_stall;
+logic  s1_flush;
+
+assign s1_flush = s2_to_s1.branch_en || trap_occurred;
+//We don't stall if we are flushing because we want to flush the pipeline
+//registers (so we have to be able to write to them)
+assign s1_stall = (~s1_flush) && (~mmu_instr_rsp.ready || s2_busy);
+
+/* State Machine *********************************************************************************/
+
 typedef enum logic [2:0] {
-    INIT,
-    HALT,
-    FETCHING,
-    STALLED_ON_S2_NOEXCEPT,
-    STALLED_ON_S2_FETCHEXCEPT
+    INIT,//Initial fetch
+    FETCHING,//All other fetches
+    HALT
 } state_e;
 state_e state_ff, next_state;
 
@@ -131,31 +158,38 @@ always_ff @(posedge clk, negedge rst_n) begin : state_seq_logic
 end : state_seq_logic
 
 always_comb begin : next_state_logic
-    if (halt_req) begin//Previous instruction was LETC.EXIT
-        next_state = HALT;
-    end else begin
-        unique case (state_ff)
-            INIT: begin
-                //In the future we may do more things in INIT
+    unique case (state_ff)
+        INIT: begin
+            //We remain in INIT until we fetch the first instruction
+            if (mmu_instr_rsp.ready) begin
+                next_state = FETCHING;
+            end else begin
+                next_state = INIT;
+            end
+        end
+        HALT: next_state = HALT;//There is no escape except for reset
+        FETCHING: begin
+            //If the previous instruction was LETC.EXIT, we halt
+            if (halt_req) begin
+                next_state = HALT;
+            end else begin//Otherwise, we'll continue fetching instructions!
                 next_state = FETCHING;
             end
-            HALT: next_state = HALT;//There is no escape except for reset
-            FETCHING: begin
-                if (s2_busy) begin
-                    next_state = fetch_exception ? STALLED_ON_S2_FETCHEXCEPT : STALLED_ON_S2_NOEXCEPT;
-                end else begin
-                    next_state = FETCHING;//No need to wait around, fetch the next instruction right away!
-                end
-            end
-            STALLED_ON_S2_NOEXCEPT, STALLED_ON_S2_FETCHEXCEPT: begin
-                next_state = s2_busy ? state_ff : FETCHING;//If s2 is no longer busy, then we can fetch the next instruction
-            end
-            default: next_state = HALT;//We entered an illegal state, so halt
-        endcase
-    end
+        end
+        default: next_state = HALT;//We entered an illegal state, so halt
+    endcase
 end : next_state_logic
 
-assign s1_stall = state_ff != FETCHING;//TODO is this correct?
-assign bypass_pc_for_fetch_addr = state_ff == FETCHING;//Not init since we need to fetch the first instruction
+/* Control Signals *******************************************************************************/
+
+assign pc_ff_we = s1_stall;
+assign s1_to_s2_ff_we = s1_stall;
+
+//Not init since we need to fetch the first instruction
+//Also don't bypass if we are currently stalling and we need to hold the address while
+//we wait for the MMU/IMEM to be ready
+assign bypass_pc_for_fetch_addr = (state_ff == FETCHING) && (~s1_stall);
+
+assign mmu_instr_req.valid = (state_ff != HALT);//All of the rest of the time we are fetching instructions
 
 endmodule : core_s1

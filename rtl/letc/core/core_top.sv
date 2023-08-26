@@ -80,8 +80,6 @@ word_t          csr_wd;
 logic           csr_we;
 
 //?
-logic           s2_busy;//Means s2 is NOT ready to accept a new instruction from s1 this cycle
-logic           halt_req;//LETC.EXIT instruction encountered in M-mode
 word_t          trap_target_addr;
 logic           trap_occurred;
 

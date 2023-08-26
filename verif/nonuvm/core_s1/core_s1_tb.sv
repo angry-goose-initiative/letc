@@ -11,6 +11,10 @@
 
 module core_s1_tb();
 
+/* ------------------------------------------------------------------------------------------------
+ * DUT And Connections
+ * --------------------------------------------------------------------------------------------- */
+
 logic clk;
 logic rst_n;
 
@@ -28,25 +32,9 @@ logic                       trap_occurred;
 
 core_s1 dut(.*);
 
-initial begin
-    $display("Starting core_s1_tb!");
-    $dumpfile(`CORE_S1_TB_DUMPFILE_PATH);
-    $dumpvars(0, firsttb);
-
-    clk = 1'b0;
-
-    //We expect a negedge on reset
-    rst_n = 1'b1;
-    #1 rst_n = 1'b0;
-    #1 rst_n = 1'b1;
-
-    repeat(1000) begin
-        #1 clk = ~clk;
-    end
-
-    $display("Bye bye!");
-    $finish;
-end
+/* ------------------------------------------------------------------------------------------------
+ * Test Instruction Memory/MMU
+ * --------------------------------------------------------------------------------------------- */
 
 localparam DEPTH = 2 ** 24;//Should be plenty large for testing purposes
 
@@ -70,5 +58,32 @@ always_ff @(posedge clk) begin
 end
 
 assign illegal = 1'd0;
+
+/* ------------------------------------------------------------------------------------------------
+ * Stimulus
+ * --------------------------------------------------------------------------------------------- */
+
+initial begin
+    $display("Starting core_s1_tb!");
+    $dumpfile(`CORE_S1_TB_DUMPFILE_PATH);
+    $dumpvars(0, firsttb);
+    $display("Created dump file");
+    $readmemh("test.vhex32", instruction_memory);
+    $display("Loaded IMEM with initial contents");
+
+    clk = 1'b0;
+
+    //We expect a negedge on reset
+    rst_n = 1'b1;
+    #1 rst_n = 1'b0;
+    #1 rst_n = 1'b1;
+
+    repeat(1000) begin
+        #1 clk = ~clk;
+    end
+
+    $display("Bye bye!");
+    $finish;
+end
 
 endmodule
