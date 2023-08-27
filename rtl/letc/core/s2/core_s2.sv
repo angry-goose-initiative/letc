@@ -29,8 +29,6 @@ module core_s2
     //From s1
 
     //To s1
-    output  logic           s2_busy,//Means s2 is NOT ready to accept a new instruction from s1 this cycle//TODO or does this go to master control?
-    output  logic           halt_req,//LETC.EXIT instruction encountered in M-mode//TODO or does this go to master control?
 
     //CSR
     input   word_t          csr_data_out,
@@ -119,7 +117,7 @@ end : from_s1
  * Module Instantiations
  * --------------------------------------------------------------------------------------------- */
 
-core_s2_control             core_s2_control_inst            (.*);
+core_s2_control             core_s2_control_inst            (.halt_req(s2_to_s1.halt_req), .*);
 core_s2_alu_src_mux         core_s2_alu_src_mux_inst        (.*);
 core_s2_alu                 core_s2_alu_inst                (.*);
 core_s2_reg_file_src_mux    core_s2_reg_file_src_mux_inst   (.*);

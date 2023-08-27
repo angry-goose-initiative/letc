@@ -18,9 +18,6 @@ module core_s1_tb();
 logic clk;
 logic rst_n;
 
-logic                       halt_req;
-logic                       s2_busy;
-
 core_pkg::s1_to_s2_s        s1_to_s2;
 core_pkg::s2_to_s1_s        s2_to_s1;
 
@@ -33,11 +30,11 @@ logic                       trap_occurred;
 core_s1 dut(.*);
 
 //TODO actually vary these over time for testing
-assign halt_req = 1'd0;
-assign s2_busy = 1'd0;
 
 assign s2_to_s1.branch_en = 1'd0;
 assign s2_to_s1.branch_target_addr = 32'hBEEFDEAD;
+assign s2_to_s1.s2_busy = 1'd0;
+assign s2_to_s1.halt_req = 1'd0;
 
 assign trap_target_addr = 32'hCAFEBABE;
 assign trap_occurred = 1'd0;

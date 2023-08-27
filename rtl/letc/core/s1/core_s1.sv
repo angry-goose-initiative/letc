@@ -23,9 +23,6 @@ module core_s1
     input   logic   clk,
     input   logic   rst_n,
 
-    input   logic   halt_req,//LETC.EXIT instruction encountered in M-mode
-    input   logic   s2_busy,//Means s2 is NOT ready to accept a new instruction from s1 this cycle
-
     //Connections to s2
     output  s1_to_s2_s      s1_to_s2,
     input   s2_to_s1_s      s2_to_s1,
@@ -147,7 +144,7 @@ logic  s1_flush;
 assign s1_flush = s2_to_s1.branch_en || trap_occurred;
 //We don't stall if we are flushing because we want to flush the pipeline
 //registers (so we have to be able to write to them)
-assign s1_stall = (~s1_flush) && (~mmu_instr_rsp.ready || s2_busy);
+assign s1_stall = (~s1_flush) && (~mmu_instr_rsp.ready || s2_to_s1.s2_busy);
 
 /* State Machine *********************************************************************************/
 
@@ -179,7 +176,7 @@ always_comb begin : next_state_logic
         HALT: next_state = HALT;//There is no escape except for reset
         FETCHING: begin
             //If the previous instruction was LETC.EXIT, we halt
-            if (halt_req) begin
+            if (s2_to_s1.halt_req) begin
                 next_state = HALT;
             end else begin//Otherwise, we'll continue fetching instructions!
                 next_state = FETCHING;
