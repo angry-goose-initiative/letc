@@ -32,6 +32,16 @@ logic                       trap_occurred;
 
 core_s1 dut(.*);
 
+//TODO actually vary these over time for testing
+assign halt_req = 1'd0;
+assign s2_busy = 1'd0;
+
+assign s2_to_s1.branch_en = 1'd0;
+assign s2_to_s1.branch_target_addr = 32'hBEEFDEAD;
+
+assign trap_target_addr = 32'hCAFEBABE;
+assign trap_occurred = 1'd0;
+
 /* ------------------------------------------------------------------------------------------------
  * Test Instruction Memory/MMU
  * --------------------------------------------------------------------------------------------- */
@@ -49,7 +59,7 @@ logic [31:0] instruction_memory [DEPTH - 1:0];
 
 always_ff @(posedge clk) begin
     if (mmu_instr_req.valid) begin
-        mmu_instr_rsp.instr <= instruction_memory[mmu_instr_req.addr];
+        mmu_instr_rsp.instr <= instruction_memory[mmu_instr_req.addr[31:2]];
         mmu_instr_rsp.ready <= 1'd1;//TODO randomize this (how long it takes in # of clock cycles)
     end else begin//core_s1 shouldn't assume the data will be held if it deasserts valid
         mmu_instr_rsp.instr <= 32'hDEADBEEF;
@@ -69,6 +79,9 @@ initial begin
     $dumpvars(0, firsttb);
     $display("Created dump file");
     $readmemh("test.vhex32", instruction_memory);
+    //for (int i = 0; i < $size(instruction_memory); ++i) begin
+        //$display("instruction_memory[%0d] = %h", i, instruction_memory[i]);
+    //end
     $display("Loaded IMEM with initial contents");
 
     clk = 1'b0;

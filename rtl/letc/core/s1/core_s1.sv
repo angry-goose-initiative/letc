@@ -68,7 +68,7 @@ always_ff @(posedge clk, negedge rst_n) begin : pc_seq_logic
     if (~rst_n) begin
         pc_ff       <= RESET_PC;
     end else begin
-        if (~pc_ff_we) begin//Hopefully this infers a clock gate :)
+        if (pc_ff_we) begin//Hopefully this infers a clock gate :)
             pc_ff       <= next_pc;
         end
     end
@@ -82,9 +82,9 @@ always_comb begin : next_pc_logic
     if (trap_occurred) begin
         next_pc = trap_target_addr;
     end else if (s2_to_s1.branch_en) begin
-        next_pc = next_seq_pc;
+        next_pc = s2_to_s1.branch_target_addr;
     end else begin
-        next_pc = pc_ff;
+        next_pc = next_seq_pc;
     end
 end : next_pc_logic
 
@@ -94,6 +94,9 @@ assign next_seq_pc = pc_ff + 32'd4;
 
 //Note: this may introduce a large critical path, but it allows us to reduce latency and avoid
 //complicating the pipeline further
+
+//TODO in the future, evaluate the timing impact of this long critical path from s2 through next_pc
+//into the MMU. If it ends up being too long, just don't bypass and deal with the extra latency in s1
 
 assign mmu_instr_req.addr = bypass_pc_for_fetch_addr ? next_pc : pc_ff;
 
@@ -108,20 +111,26 @@ always_ff @(posedge clk, negedge rst_n) begin : s1b_output_flops
     if (!rst_n) begin
         s1_to_s2_ff.pc     <= 32'hDEADBEEF;
         s1_to_s2_ff.instr  <= 32'hDEADBEEF;
-        //TODO s1_to_s2.valid
+        s1_to_s2_ff.valid  <= 1'd0;
     end else begin
-        if (s1_to_s2_ff_we) begin
+        if (s1_flush) begin//Flush due to unexpected change in control flow; discard what we would have sent to s2
+            s1_to_s2_ff.valid  <= 1'd0;
+        end else if (s1_to_s2_ff_we) begin//We are ready to send a new instruction to s2 (if the
             s1_to_s2_ff.pc     <= pc_ff;
             s1_to_s2_ff.instr  <= mmu_instr_rsp.instr;
-            s1_to_s2_ff.valid  <= mmu_instr_rsp.ready;
+            s1_to_s2_ff.valid  <= 1'd1;//We're guaranteed mmu...ready is 1 since s1_to_s2_ff_we is 1
+        end else if (s1_stall && s1_to_s2_ff.valid) begin//We are stalled, but already sent an instruction to s2, so we don't want to duplicate it
+            s1_to_s2_ff.valid  <= 1'd0;
         end
     end
 end : s1b_output_flops
 
 assign s1_to_s2.pc     = s1_to_s2_ff.pc;
 assign s1_to_s2.instr  = s1_to_s2_ff.instr;
-assign s1_to_s2.valid  = s1_to_s2_ff.valid;
-//assign s1_to_s2.valid  = s1_to_s2_ff.valid && ~s1_flush;//FIXME or should this be before the flop? (for both correctness and better timing?)
+
+//FIXME is this correct? We already have it be flushed before the flop, but that takes a cycle to take effect, so this is necessary right?...
+assign s1_to_s2.valid  = s1_to_s2_ff.valid && ~s1_flush;
+//assign s1_to_s2.valid  = s1_to_s2_ff.valid;
 
 /* ------------------------------------------------------------------------------------------------
  * S1 Control Logic and State Machine
@@ -182,14 +191,33 @@ end : next_state_logic
 
 /* Control Signals *******************************************************************************/
 
-assign pc_ff_we = s1_stall;
-assign s1_to_s2_ff_we = s1_stall;
+logic leaving_init_next_posedge;
 
-//Not init since we need to fetch the first instruction
-//Also don't bypass if we are currently stalling and we need to hold the address while
-//we wait for the MMU/IMEM to be ready
-assign bypass_pc_for_fetch_addr = (state_ff == FETCHING) && (~s1_stall);
+//These should be equivalent
+//assign leaving_init_next_posedge = (state_ff == INIT) && mmu_instr_rsp.ready;
+assign leaving_init_next_posedge = next_state == FETCHING;
 
-assign mmu_instr_req.valid = (state_ff != HALT);//All of the rest of the time we are fetching instructions
+//We don't want to write to the PC if we are stalling or in INIT or HALT
+//Stalling: Because we need to hold the address steady
+//INIT:     Because if we allow pc_ff to change, then because we are also bypassing, the bypassed value may change too (since it is pc_ff + 4)
+//HALT:     Because no state should change while we are halted
+//Note that if we are anticipating leaving INIT next cycle, we want to write to pc_ff so
+//    that we are ready to fetch the next instruction immediately when we enter FETCHING (assuming we don't stall)
+assign pc_ff_we = (leaving_init_next_posedge || (state_ff == FETCHING)) && ~s1_stall;
+
+//We don't want to bypass pc_ff with next_pc if we are stalling or in INIT or HALT
+//Stalling: Because we need to hold the address steady
+//INIT:     Because we need to fetch the first instruction, not the instruction after the first instruction
+//HALT:     Because no state should change while we are halted
+//Note that if we are anticipating leaving INIT next cycle, we want to immediately bypass
+//    so we can fetch the next instruction immediately when we enter FETCHING before pc_ff is latched with the new address too (assuming we don't stall)
+assign bypass_pc_for_fetch_addr = (leaving_init_next_posedge || (next_state == FETCHING)) && ~s1_stall;
+
+//We don't want to write to the state_ff if we are stalling or in HALT
+//TODO why stalling?
+//HALT:     Because no state should change while we are halted
+assign s1_to_s2_ff_we = (state_ff != HALT) && ~s1_stall;
+
+assign mmu_instr_req.valid = state_ff != HALT;//All of the rest of the time we are fetching instructions
 
 endmodule : core_s1

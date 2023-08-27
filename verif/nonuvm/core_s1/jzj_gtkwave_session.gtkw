@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
-[*] Sat Aug 26 17:27:40 2023
+[*] Sun Aug 27 01:55:23 2023
 [*]
 [dumpfile] "/tmp/core_s1_tb.vcd"
-[dumpfile_mtime] "Sat Aug 26 17:24:01 2023"
-[dumpfile_size] 11271
+[dumpfile_mtime] "Sun Aug 27 01:54:32 2023"
+[dumpfile_size] 11311
 [savefile] "/home/jzj/Data/wd/tech/ece/2023/agi/letc/main/verif/nonuvm/core_s1/jzj_gtkwave_session.gtkw"
 [timestart] 0
 [size] 1920 988
 [pos] -1 -1
-*-1.200000 1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-2.100000 3 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.core_s1_tb.
 [sst_width] 243
@@ -26,15 +26,15 @@ TOP.core_s1_tb.trap_occurred
 TOP.core_s1_tb.trap_target_addr[31:0]
 @200
 -mmu_instr_req
-@23
-TOP.core_s1_tb.mmu_instr_req.valid[31:0]
+@28
+TOP.core_s1_tb.mmu_instr_req.valid
 @22
 TOP.core_s1_tb.mmu_instr_req.addr[31:0]
 @200
 -mmu_instr_rsp
 @28
 TOP.core_s1_tb.mmu_instr_rsp.ready
-@22
+@23
 TOP.core_s1_tb.mmu_instr_rsp.instr[31:0]
 @28
 TOP.core_s1_tb.mmu_instr_rsp.illegal
@@ -45,5 +45,23 @@ TOP.core_s1_tb.s1_to_s2.valid
 @22
 TOP.core_s1_tb.s1_to_s2.instr[31:0]
 TOP.core_s1_tb.s1_to_s2.pc[31:0]
+@200
+-s2_to_s1
+@28
+TOP.core_s1_tb.s2_to_s1.branch_en
+@22
+TOP.core_s1_tb.s2_to_s1.branch_target_addr[31:0]
+@200
+-Internals
+@100000028
+TOP.core_s1_tb.dut.state_ff[2:0]
+@28
+TOP.core_s1_tb.dut.s1_flush
+TOP.core_s1_tb.dut.s1_stall
+@22
+TOP.core_s1_tb.dut.pc_ff[31:0]
+@28
+TOP.core_s1_tb.dut.bypass_pc_for_fetch_addr
+TOP.core_s1_tb.dut.pc_ff_we
 [pattern_trace] 1
 [pattern_trace] 0
