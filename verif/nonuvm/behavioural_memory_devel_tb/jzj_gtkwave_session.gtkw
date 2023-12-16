@@ -1,0 +1,116 @@
+[*]
+[*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
+[*] Mon Dec 25 15:50:58 2023
+[*]
+[dumpfile] "/tmp/behavioural_memory_devel_tb.vcd"
+[dumpfile_mtime] "Mon Dec 25 15:50:51 2023"
+[dumpfile_size] 1794
+[savefile] "/home/jzj/Data/wd/tech/ece/2023/agi/letc/personal/jzj/primary/verif/nonuvm/behavioural_memory_devel_tb/jzj_gtkwave_session.gtkw"
+[timestart] 0
+[size] 1920 1002
+[pos] -1 -1
+*-2.575384 18 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] TOP.
+[treeopen] TOP.behavioural_memory_devel_tb.
+[treeopen] TOP.behavioural_memory_devel_tb.mem.
+[sst_width] 243
+[signals_width] 240
+[sst_expanded] 1
+[sst_vpaned_height] 188
+@200
+-AW
+@28
+TOP.behavioural_memory_devel_tb.axi_global.aclk
+TOP.behavioural_memory_devel_tb.axi_global.aresetn
+TOP.behavioural_memory_devel_tb.req.awvalid
+TOP.behavioural_memory_devel_tb.rsp.awready
+@22
+TOP.behavioural_memory_devel_tb.req.awaddr[31:0]
+@100000028
+TOP.behavioural_memory_devel_tb.req.awburst[1:0]
+@22
+TOP.behavioural_memory_devel_tb.req.awid[7:0]
+TOP.behavioural_memory_devel_tb.req.awlen[7:0]
+@28
+TOP.behavioural_memory_devel_tb.req.awsize[2:0]
+TOP.behavioural_memory_devel_tb.req.awvalid
+@200
+-W
+@28
+TOP.behavioural_memory_devel_tb.axi_global.aclk
+TOP.behavioural_memory_devel_tb.axi_global.aresetn
+TOP.behavioural_memory_devel_tb.req.wvalid
+TOP.behavioural_memory_devel_tb.rsp.wready
+@22
+TOP.behavioural_memory_devel_tb.req.wdata[31:0]
+TOP.behavioural_memory_devel_tb.req.wid[7:0]
+@28
+TOP.behavioural_memory_devel_tb.req.wlast
+@22
+TOP.behavioural_memory_devel_tb.req.wstrb[3:0]
+@200
+-B
+@28
+TOP.behavioural_memory_devel_tb.axi_global.aclk
+TOP.behavioural_memory_devel_tb.axi_global.aresetn
+TOP.behavioural_memory_devel_tb.rsp.bvalid
+TOP.behavioural_memory_devel_tb.req.bready
+@22
+TOP.behavioural_memory_devel_tb.rsp.bid[7:0]
+@100000028
+TOP.behavioural_memory_devel_tb.rsp.bresp[1:0]
+@200
+-AR
+@28
+TOP.behavioural_memory_devel_tb.axi_global.aclk
+TOP.behavioural_memory_devel_tb.axi_global.aresetn
+TOP.behavioural_memory_devel_tb.req.arvalid
+TOP.behavioural_memory_devel_tb.rsp.arready
+@100000028
+TOP.behavioural_memory_devel_tb.req.arburst[1:0]
+@22
+TOP.behavioural_memory_devel_tb.req.arid[7:0]
+TOP.behavioural_memory_devel_tb.req.arlen[7:0]
+@28
+TOP.behavioural_memory_devel_tb.req.arsize[2:0]
+@200
+-R
+@28
+TOP.behavioural_memory_devel_tb.axi_global.aclk
+TOP.behavioural_memory_devel_tb.axi_global.aresetn
+TOP.behavioural_memory_devel_tb.rsp.rvalid
+TOP.behavioural_memory_devel_tb.req.rready
+@22
+TOP.behavioural_memory_devel_tb.rsp.rdata[31:0]
+TOP.behavioural_memory_devel_tb.rsp.rid[7:0]
+@28
+TOP.behavioural_memory_devel_tb.rsp.rlast
+@100000028
+TOP.behavioural_memory_devel_tb.rsp.rresp[1:0]
+@200
+-Internals
+@28
+TOP.behavioural_memory_devel_tb.mem.ar_burst_attempted
+TOP.behavioural_memory_devel_tb.mem.aw_burst_attempted
+@22
+TOP.behavioural_memory_devel_tb.mem.aw_current_addr[31:0]
+TOP.behavioural_memory_devel_tb.mem.aw_current_id[7:0]
+@28
+TOP.behavioural_memory_devel_tb.mem.aw_current_size[2:0]
+TOP.behavioural_memory_devel_tb.mem.aw_current_valid
+TOP.behavioural_memory_devel_tb.mem.irrecoverable_error
+@22
+#{TOP.behavioural_memory_devel_tb.mem.test[0:31]} TOP.behavioural_memory_devel_tb.mem.test[0] TOP.behavioural_memory_devel_tb.mem.test[1] TOP.behavioural_memory_devel_tb.mem.test[2] TOP.behavioural_memory_devel_tb.mem.test[3] TOP.behavioural_memory_devel_tb.mem.test[4] TOP.behavioural_memory_devel_tb.mem.test[5] TOP.behavioural_memory_devel_tb.mem.test[6] TOP.behavioural_memory_devel_tb.mem.test[7] TOP.behavioural_memory_devel_tb.mem.test[8] TOP.behavioural_memory_devel_tb.mem.test[9] TOP.behavioural_memory_devel_tb.mem.test[10] TOP.behavioural_memory_devel_tb.mem.test[11] TOP.behavioural_memory_devel_tb.mem.test[12] TOP.behavioural_memory_devel_tb.mem.test[13] TOP.behavioural_memory_devel_tb.mem.test[14] TOP.behavioural_memory_devel_tb.mem.test[15] TOP.behavioural_memory_devel_tb.mem.test[16] TOP.behavioural_memory_devel_tb.mem.test[17] TOP.behavioural_memory_devel_tb.mem.test[18] TOP.behavioural_memory_devel_tb.mem.test[19] TOP.behavioural_memory_devel_tb.mem.test[20] TOP.behavioural_memory_devel_tb.mem.test[21] TOP.behavioural_memory_devel_tb.mem.test[22] TOP.behavioural_memory_devel_tb.mem.test[23] TOP.behavioural_memory_devel_tb.mem.test[24] TOP.behavioural_memory_devel_tb.mem.test[25] TOP.behavioural_memory_devel_tb.mem.test[26] TOP.behavioural_memory_devel_tb.mem.test[27] TOP.behavioural_memory_devel_tb.mem.test[28] TOP.behavioural_memory_devel_tb.mem.test[29] TOP.behavioural_memory_devel_tb.mem.test[30] TOP.behavioural_memory_devel_tb.mem.test[31]
+@29
+TOP.behavioural_memory_devel_tb.mem.w_complete
+@22
+TOP.behavioural_memory_devel_tb.mem.w_current_data[31:0]
+TOP.behavioural_memory_devel_tb.mem.w_current_id[7:0]
+@28
+TOP.behavioural_memory_devel_tb.mem.w_current_last
+@22
+TOP.behavioural_memory_devel_tb.mem.w_current_strb[3:0]
+@28
+TOP.behavioural_memory_devel_tb.mem.w_current_valid
+[pattern_trace] 1
+[pattern_trace] 0
