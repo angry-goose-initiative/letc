@@ -1,0 +1,61 @@
+[*]
+[*] GTKWave Analyzer v3.3.111 (w)1999-2020 BSI
+[*] Tue Dec 26 15:43:34 2023
+[*]
+[dumpfile] "/tmp/fifo_tb.vcd"
+[dumpfile_mtime] "Tue Dec 26 15:40:59 2023"
+[dumpfile_size] 919
+[savefile] "/home/jzj/Data/wd/tech/ece/2023/agi/letc/personal/jzj/primary/verif/nonuvm/fifo_tb/jzj_gtkwave.gtkw"
+[timestart] 0
+[size] 1920 1002
+[pos] -461 -202
+*-1.800000 4 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] TOP.
+[treeopen] TOP.fifo_tb.
+[sst_width] 243
+[signals_width] 210
+[sst_expanded] 1
+[sst_vpaned_height] 294
+@420
+TOP.fifo_tb.ADDR_WIDTH
+TOP.fifo_tb.DATA_WIDTH
+@28
+TOP.fifo_tb.clk
+TOP.fifo_tb.rst_n
+@200
+-In
+@28
+TOP.fifo_tb.push
+TOP.fifo_tb.full
+@22
+TOP.fifo_tb.data_in[31:0]
+@200
+-Out
+@28
+TOP.fifo_tb.pop
+TOP.fifo_tb.empty
+@22
+TOP.fifo_tb.data_out[31:0]
+@200
+-Internal
+@22
+TOP.fifo_tb.dut.next_push_idx[3:0]
+TOP.fifo_tb.dut.next_pop_idx[3:0]
+TOP.fifo_tb.dut.mem[0][7:0]
+TOP.fifo_tb.dut.mem[1][7:0]
+TOP.fifo_tb.dut.mem[2][7:0]
+TOP.fifo_tb.dut.mem[3][7:0]
+TOP.fifo_tb.dut.mem[4][7:0]
+TOP.fifo_tb.dut.mem[5][7:0]
+TOP.fifo_tb.dut.mem[6][7:0]
+TOP.fifo_tb.dut.mem[7][7:0]
+TOP.fifo_tb.dut.mem[8][7:0]
+TOP.fifo_tb.dut.mem[9][7:0]
+TOP.fifo_tb.dut.mem[10][7:0]
+TOP.fifo_tb.dut.mem[11][7:0]
+TOP.fifo_tb.dut.mem[12][7:0]
+TOP.fifo_tb.dut.mem[13][7:0]
+TOP.fifo_tb.dut.mem[14][7:0]
+TOP.fifo_tb.dut.mem[15][7:0]
+[pattern_trace] 1
+[pattern_trace] 0

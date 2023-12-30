@@ -1,6 +1,7 @@
 verif/nonuvm/verilator_firsttb/obj_dir
 verif/nonuvm/core_s1/obj_dir
 verif/nonuvm/behavioural_memory_devel_tb/obj_dir
+verif/nonuvm/fifo_tb/obj_dir
 .DS_Store
 
 
