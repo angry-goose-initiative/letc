@@ -66,4 +66,6 @@ module core_csr_file
     //TODO others
 );
 
+assign csr_data_out = 32'hDEADBEEF;//TESTING
+
 endmodule : core_csr_file

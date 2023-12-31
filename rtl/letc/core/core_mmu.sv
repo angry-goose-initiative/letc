@@ -51,4 +51,6 @@ intel_fpga_sram_generic #(
 );
 */
 
+assign rdata = 32'hDEADBEEF;//TESTING
+
 endmodule : core_mmu
