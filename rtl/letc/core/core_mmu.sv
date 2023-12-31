@@ -36,6 +36,7 @@ module core_mmu
 
 //TESTING just hooking up directly to an SRAM for now
 
+/*
 intel_fpga_sram_generic #(
     .DEPTH(1024),
     .WIDTH(32),
@@ -48,5 +49,6 @@ intel_fpga_sram_generic #(
     .we(2'd0),
     .wdata('0)
 );
+*/
 
 endmodule : core_mmu

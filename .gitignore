@@ -1,10 +1,26 @@
+.DS_Store
+
+####################################################################################################
+# Verilator
+####################################################################################################
 verif/nonuvm/verilator_firsttb/obj_dir
 verif/nonuvm/core_s1/obj_dir
 verif/nonuvm/behavioural_memory_devel_tb/obj_dir
 verif/nonuvm/fifo_tb/obj_dir
-.DS_Store
 
 
+####################################################################################################
+# Verilator
+####################################################################################################
+ide/coraz7_vivado/letc.cache
+ide/coraz7_vivado/letc.runs
+ide/coraz7_vivado/letc.sim
+
+
+
+####################################################################################################
+# Quartus
+####################################################################################################
 # Thanks https://gist.github.com/nhasbun/71918796044b7ba89d6662133495f754
 # Working with Altera Quartus II (Q2) and do proper versioning is not that easy
 # but if you follow some rules it can be accomplished. :)
