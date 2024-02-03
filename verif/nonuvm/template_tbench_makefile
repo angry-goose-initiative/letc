@@ -1,0 +1,18 @@
+# Makefile
+# Copyright (C) TODO-TODO TODO
+# See the LICENSE file at the root of the project for licensing info.
+#
+# Makefile for the block/subdirs/tbench testbench
+
+####################################################################################################
+# Testbench Configuration
+####################################################################################################
+
+TBENCH_TOP  := tb_top
+RTL_SOURCES := $(RTL_ROOT)/block/subdirs/...
+
+####################################################################################################
+# Add Targets!
+####################################################################################################
+
+include $(TBENCH_ROOT)/nonuvm.mk
