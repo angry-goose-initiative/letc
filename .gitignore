@@ -10,12 +10,13 @@ verif/nonuvm/fifo_tb/obj_dir
 
 
 ####################################################################################################
-# Verilator
+# Vivado
 ####################################################################################################
 ide/coraz7_vivado/letc.cache
 ide/coraz7_vivado/letc.runs
 ide/coraz7_vivado/letc.sim
 ide/coraz7_vivado/letc.gen
+ide/coraz7_vivado/letc.ip_user_files
 
 
 ####################################################################################################
