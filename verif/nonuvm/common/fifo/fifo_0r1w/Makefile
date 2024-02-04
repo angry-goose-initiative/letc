@@ -8,8 +8,8 @@
 # Testbench Configuration
 ####################################################################################################
 
-TBENCH_TOP  := common_fifo_devel_tb
-RTL_SOURCES := $(RTL_ROOT)/common/fifo.sv
+TBENCH_TOP  := fifo_0r1w_tb
+RTL_SOURCES := $(RTL_ROOT)/common/fifo/fifo_0r1w.sv
 
 ####################################################################################################
 # Add Targets!
