@@ -86,7 +86,9 @@ endclocking
  * Tasks
  * --------------------------------------------------------------------------------------------- */
 
-task setup;
+//Note: due to quirks with Verilator, sadly we should try to avoid waiting for the next posedge in tasks
+
+task setup();
 begin
     $display("Running fifo_0r1w_tb testbench");
 
@@ -94,54 +96,23 @@ begin
     cb.i_push   <= 1'b0;
     cb.i_wdata  <= '0;
     cb.i_pop    <= 1'b0;
-
-    //Reset things
-    i_rst_n = 1'b0;
-    //##2;//Verilator doesn't like this in tasks for some reason
-    @(posedge i_clk);
-    @(posedge i_clk);
-    i_rst_n = 1'b1;
-    //##2;
-    @(posedge i_clk);
-    @(posedge i_clk);
 end
 endtask
 
 task push(input logic [DWIDTH-1:0] data);
 begin
-    $display("Setting up push signals next posedge");
-
-    //Stimulus signals go out right after the posedge
-    cb.i_push   <= 1'b1;
-    cb.i_wdata  <= data;
-    @(posedge i_clk);
-
     $display("Pushing %h", data);
 
-    //We disable them right after the next posedge where the push occurs
-    cb.i_push   <= 1'b0;
-    cb.i_wdata  <= '0;
-    @(posedge i_clk);
-
-    $display("Pushed %h", data);
+    cb.i_push   <= 1'b1;
+    cb.i_wdata  <= data;
 end
 endtask
 
 task pop();
 begin
-    $display("Popped (peaked) %h, and setting up pop signals next posedge", o_rdata);
+    $display("Popped %h", o_rdata);
 
-    //Stimulus signals go out right after the posedge
     cb.i_pop <= 1'b1;
-    @(posedge i_clk);
-
-    $display("Pop will take effect next posedge, popped data is still %h", o_rdata);
-
-    //We disable them right after the next posedge where the pop takes effect
-    cb.i_pop <= 1'b0;
-    @(posedge i_clk);
-
-    $display("Pop took effect; (invalid/next) pop data is now %h", o_rdata);
 end
 endtask
 
@@ -152,25 +123,11 @@ begin
 end
 endtask
 
-task push_and_pop(input logic [DWIDTH-1:0] data);
+task idle();
 begin
-    $display("Popped (peaked) %h, and setting up push and pop signals next posedge", o_rdata);
-
-    //Stimulus signals go out right after the posedge
-    cb.i_push   <= 1'b1;
-    cb.i_wdata  <= data;
-    cb.i_pop    <= 1'b1;
-    @(posedge i_clk);
-
-    $display("Pushing %h, and pop will take effect next posedge; pop data is still %h", data, o_rdata);
-
-    //We disable them right after the next posedge where the push occurs and pop takes effect
     cb.i_push   <= 1'b0;
     cb.i_wdata  <= '0;
     cb.i_pop    <= 1'b0;
-    @(posedge i_clk);
-
-    $display("Pushed %h and pop took effect; (invalid/next) pop data is now %h", data, o_rdata);
 end
 endtask
 
@@ -181,24 +138,41 @@ endtask
 initial begin
     setup();
 
+    //Reset things
+    i_rst_n = 1'b0;
+    ##2;
+    i_rst_n = 1'b1;
+    ##2;
+
     //Initial experiements with avoiding races with $display statements
     push(32'hCAFEBABE);
-    push_and_pop(32'hDEADBEEF);
-    //peak();
+    ##1;//One cycle for the signals from push() to take effect
+    idle();
+    ##1;//One cycle for the push to actually occur
+    push(32'hDEADBEEF);
     pop();
+    ##1;//One cycle for the signals from push() and pop to take effect
+    idle();
+    ##1;//One cycle for the push and pop to actually occur
+    peak();
+    ##2;
+    push(32'hA5A5A5A5);
+    pop();
+    ##1;//One cycle for the signals from push() and pop to take effect
+    idle();
+    pop();//Note: What is said that is popped here is wrong because it takes a cycle for the first pop to actually occur
+    ##1;//One cycle for the push and pop to actually occur; second pop signals also taking effect
+    idle();
+    ##1;//One cycle for the second pop to actually occur
     //FIFO is empty at this point
+
+    ##5;
 
     //Back-to-back push and pop tests
     //It's a bit unintuitive but remember that the signals don't actually take
     //effect until just after the posedge AFTER the signals are set
     //This delays things by a cycle then what you might exepect with this
     //stimulus but it doesn't really matter
-
-    `ifndef VERILATOR
-    //Why is there a descrepency between Verilator and Xsim/Vsim?
-    //I'm okay with it just because it only affects the stimulus and not the DUT
-    ##1;
-    `endif
 
     cb.i_push   <= 1'b1;
     cb.i_wdata  <= 32'h11111111;
