@@ -10,6 +10,8 @@
  *
 */
 
+`timescale 1ns / 1ns
+
 /* ------------------------------------------------------------------------------------------------
  * Module Definition
  * --------------------------------------------------------------------------------------------- */
@@ -191,6 +193,13 @@ initial begin
     //effect until just after the posedge AFTER the signals are set
     //This delays things by a cycle then what you might exepect with this
     //stimulus but it doesn't really matter
+
+    `ifndef VERILATOR
+    //Why is there a descrepency between Verilator and Xsim/Vsim?
+    //I'm okay with it just because it only affects the stimulus and not the DUT
+    ##1;
+    `endif
+
     cb.i_push   <= 1'b1;
     cb.i_wdata  <= 32'h11111111;
     cb.i_pop    <= 1'b0;

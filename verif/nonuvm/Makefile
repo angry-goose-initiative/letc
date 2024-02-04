@@ -4,8 +4,8 @@
 #
 # Non-UVM Testbenches Makefile
 
-VERILATOR    := verilator
-WAVEVIEWER   := gtkwave
+SIMULATOR    := verilator
+WAVE_VIEWER  := gtkwave
 PROJECT_ROOT := $(abspath ../../)
 RTL_ROOT     := $(PROJECT_ROOT)/rtl
 VERIF_ROOT   := $(PROJECT_ROOT)/verif
@@ -16,7 +16,7 @@ export
 help:
 	@echo "This is the Makefile for running the non-UVM testbenches!"
 	@echo ""
-	@echo "Usage: make TBENCH="block/subdirs/tbench_folder" {compile|simulate|waves|clean}"
+	@echo "Usage: make TBENCH="block/subdirs/tbench_folder" SIMULATOR={verilator|xsim|vsim} WAVE_VIEWER={gtkwave|native} {compile|simulate|waves|clean}"
 	@echo ""
 	@echo "Information"
 	@echo "Current Project Root:   $(PROJECT_ROOT)"
