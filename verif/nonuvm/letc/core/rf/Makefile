@@ -2,16 +2,14 @@
 # Copyright (C) 2024 John Jekel
 # See the LICENSE file at the root of the project for licensing info.
 #
-# Makefile for the common/axi/smoke testbench
+# Makefile for the letc/core/rf testbench
 
 ####################################################################################################
 # Testbench Configuration
 ####################################################################################################
 
-TBENCH_TOP  := smoke_tb
-#We need the pkg before the tb, so no wildcard for us
-RTL_SOURCES := $(RTL_ROOT)/common/axi/axi_pkg.sv $(RTL_ROOT)/common/axi/axi_if.sv
-#RTL_SOURCES := $(wildcard $(RTL_ROOT)/common/axi/*.sv)
+TBENCH_TOP  := letc_core_rf_tb
+RTL_SOURCES := $(RTL_ROOT)/letc/letc_pkg.sv $(RTL_ROOT)/letc/core/letc_core_pkg.sv $(RTL_ROOT)/letc/core/letc_core_rf.sv
 
 ####################################################################################################
 # Add Targets!

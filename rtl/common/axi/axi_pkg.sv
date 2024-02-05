@@ -3,7 +3,7 @@
  * Brief:   AXI definitions and helper functions
  *
  * Copyright:
- *  Copyright (C) 2023-2024 John Jekel\n
+ *  Copyright (C) 2023-2024 John Jekel
  * See the LICENSE file at the root of the project for licensing info.
  *
  * Based on the old axi_pkg.svh

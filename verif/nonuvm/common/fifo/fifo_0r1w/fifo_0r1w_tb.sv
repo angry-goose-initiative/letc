@@ -3,7 +3,7 @@
  * Brief   TODO
  * 
  * Copyright:
- *  Copyright (C) 2024 John Jekel\n
+ *  Copyright (C) 2024 John Jekel
  * See the LICENSE file at the root of the project for licensing info.
  * 
  * TODO longer description
@@ -15,6 +15,10 @@
  * --------------------------------------------------------------------------------------------- */
 
 module fifo_0r1w_tb;
+
+/* ------------------------------------------------------------------------------------------------
+ * Parameters
+ * --------------------------------------------------------------------------------------------- */
 
 localparam CLOCK_PERIOD = 10;
 

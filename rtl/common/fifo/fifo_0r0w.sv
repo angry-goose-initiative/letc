@@ -3,7 +3,7 @@
  * Brief:   FIFO with 0-cycle read latency and write latencies
  *
  * Copyright:
- *  Copyright (C) 2024 John Jekel\n
+ *  Copyright (C) 2024 John Jekel
  * See the LICENSE file at the root of the project for licensing info.
  *
  * Writes still technically take 1-cycle, but the data is forwarded

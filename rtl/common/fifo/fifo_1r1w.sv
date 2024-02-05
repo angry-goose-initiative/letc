@@ -3,7 +3,7 @@
  * Brief:   FIFO with 1-cycle read latency and write latencies
  *
  * Copyright:
- *  Copyright (C) 2024 John Jekel\n
+ *  Copyright (C) 2024 John Jekel
  * See the LICENSE file at the root of the project for licensing info.
  *
  * As long as i_pop is deasserted, o_rdata will be held for convenience
