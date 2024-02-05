@@ -6,6 +6,8 @@
 
 #TODO better incremental compilation, compile files in parallel, etc
 
+TIMESCALE := "1ns/1ns"
+
 TBENCH_PATH  := $(TBENCH_ROOT)/$(TBENCH)
 
 OUTPUT_DIR   := $(TBENCH_PATH)/build
@@ -42,7 +44,7 @@ endif
 NUM_COMPILE_JOBS := 6
 
 VERIF_SOURCES     := $(wildcard $(TBENCH_PATH)/*.v) $(wildcard $(TBENCH_PATH)/*.sv)
-SOURCES           := $(VERIF_SOURCES) $(RTL_SOURCES)
+SOURCES           := $(RTL_SOURCES) $(VERIF_SOURCES)
 VERILATOR_WRAPPER := $(TBENCH_ROOT)/verilator_wrapper.cpp
 XSIM_TCL          := $(TBENCH_ROOT)/xsim.tcl
 
@@ -105,7 +107,7 @@ else ifeq ($(SIMULATOR),xsim) # XSIM ###########################################
 else ifeq ($(SIMULATOR),vsim) # VSIM ##############################################################
 
 	cd $(OUTPUT_DIR) && vsim -voptargs=+acc=npr -l transcript -c -do "vcd file $(OUTPUT_DIR)/vsim_waves.vcd; vcd add -r /*; run -all" $(TBENCH_TOP)
-	cd $(OUTPUT_DIR) && vcd2wlf $(OUTPUT_DIR)/vsim_waves.vcd $(OUTPUT_DIR)/vsim_waves.wlf
+	-cd $(OUTPUT_DIR) && vcd2wlf $(OUTPUT_DIR)/vsim_waves.vcd $(OUTPUT_DIR)/vsim_waves.wlf
 
 else
 	$(error "Unsupported simulator: $(SIMULATOR)")
@@ -121,7 +123,7 @@ $(OUTPUT_EXE): $(SOURCES)
 ifeq ($(SIMULATOR),verilator) # VERILATOR #########################################################
 
 	verilator --exe --build --timing \
-		--timescale 1ns/1ns +1800-2012ext+sv -sv -Wall -Wno-fatal -O3 -cc --assert \
+		--timescale $(TIMESCALE) +1800-2012ext+sv -sv -Wall -Wno-fatal -O3 -cc --assert \
 		--trace-threads 2 --trace-structs --trace-fst \
 		--build-jobs 4 \
 		-DSIMULATION -DVERILATOR \
@@ -137,7 +139,7 @@ else ifeq ($(SIMULATOR),xsim) # XSIM ###########################################
 	mkdir -p $(OUTPUT_DIR)
 	#TODO be more efficient by dong xvlog in parallel on all sources
 	cd $(OUTPUT_DIR) && xvlog -d SIMULATION -d XSIM -sv $(SOURCES)
-	cd $(OUTPUT_DIR) && xelab -debug all -top $(TBENCH_TOP) -snapshot snapshot_$(TBENCH_TOP)
+	cd $(OUTPUT_DIR) && xelab -timescale $(TIMESCALE) -debug all -top $(TBENCH_TOP) -snapshot snapshot_$(TBENCH_TOP)
 
 else ifeq ($(SIMULATOR),vsim) # VSIM ##############################################################
 

@@ -15,6 +15,8 @@
  * It is undefined behaviour to push while full or pop while empty
 */
 
+//TODO this module is not yet tested, only fifo_0r1w has been so far
+
 /* ------------------------------------------------------------------------------------------------
  * Module Definition
  * --------------------------------------------------------------------------------------------- */
