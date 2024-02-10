@@ -102,6 +102,20 @@ begin
 end
 endtask
 
+task write(input reg_idx_t rd_idx, input word_t rd_wdata);
+begin
+    cb.i_rd_idx     <= rd_idx;
+    cb.i_rd_wdata   <= rd_wdata;
+    cb.i_rd_wen     <= 1'b1;
+end
+endtask
+
+task nowrite();
+begin
+    cb.i_rd_wen <= 1'b0;
+end
+endtask
+
 /* ------------------------------------------------------------------------------------------------
  * Stimulus
  * --------------------------------------------------------------------------------------------- */

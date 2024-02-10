@@ -46,7 +46,7 @@ localparam AWIDTH = $clog2(DEPTH);
  * State
  * --------------------------------------------------------------------------------------------- */
 
-logic [DEPTH-1:0] [DWIDTH-1:0] mem;
+logic [DWIDTH-1:0] mem [DEPTH-1:0];//Unpacked array to make it more likely to infer SRAM
 logic [AWIDTH-1:0] push_idx, pop_idx, next_push_idx, next_pop_idx;
 
 /* ------------------------------------------------------------------------------------------------
@@ -70,13 +70,22 @@ always_ff @(posedge i_clk, negedge i_rst_n) begin
     end else begin
         if (i_push) begin
             push_idx        <= next_push_idx;
-            mem[push_idx]   <= i_wdata;//Input demux (1-cycle latency)
         end
 
         if (i_pop) begin
             pop_idx <= next_pop_idx;
-            o_rdata <= mem[pop_idx];//Output mux (1-cycle latency)
         end
+    end
+end
+
+//Seperate always_ff to make it more likely to infer SRAM
+always_ff @(posedge i_clk) begin
+    if (i_push) begin
+        mem[push_idx]   <= i_wdata;//Input demux (1-cycle latency)
+    end
+
+    if (i_pop) begin
+        o_rdata <= mem[pop_idx];//Output mux (1-cycle latency)
     end
 end
 
