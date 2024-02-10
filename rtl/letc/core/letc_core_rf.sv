@@ -23,9 +23,8 @@ module letc_core_rf
     import letc_pkg::*;
     import letc_core_pkg::*;
 (
-    //Clock and reset
+    //Clock
     input logic i_clk,
-    input logic i_rst_n,
 
     //rd Write Port
     input   reg_idx_t   i_rd_idx,
@@ -60,17 +59,11 @@ always_comb begin
 end
 
 //Write Logic
-always_ff @(posedge i_clk, negedge i_rst_n) begin
-    if (~i_rst_n) begin
-        //Reset all (except x0) to garbage values to aid debugging
-        for (int ii = 1; ii < 32; ++ii) begin
-            registers[ii] <= 32'hDEADBEEF;
-        end
-    end else begin
-        for (int ii = 1; ii < 32; ++ii) begin
-            if (register_wen[ii]) begin
-                registers[ii] <= i_rd_wdata;
-            end
+always_ff @(posedge i_clk) begin
+    //No resets needed, so don't include them to save resources
+    for (int ii = 1; ii < 32; ++ii) begin
+        if (register_wen[ii]) begin
+            registers[ii] <= i_rd_wdata;
         end
     end
 end
@@ -107,6 +100,8 @@ end
 `ifdef SIMULATION
 
 //TODO
+
+//TODO also in simulation init registers to 32'hDEADBEEF to aid debugging
 
 `endif
 
