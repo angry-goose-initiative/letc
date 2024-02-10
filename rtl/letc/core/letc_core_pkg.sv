@@ -54,10 +54,40 @@ typedef enum logic [2:0] {
     INSTR_FORMAT_U, INSTR_FORMAT_J, INSTR_FORMAT_UIMM, INSTR_FORMAT_OTHER
 } instr_format_e;
 
+typedef enum logic [1:0] {
+    //Values correspond to RISC-V instruction encoding for potential efficiency gains
+    BYTE        = 2'b00,
+    HALFWORD    = 2'b01,
+    WORD        = 2'b10
+} size_e;
+
 /* ------------------------------------------------------------------------------------------------
  * Structs 
  * --------------------------------------------------------------------------------------------- */
 
-//TODO
+typedef struct packed {
+    logic valid;
+    //TODO
+} f1_to_f2_s;
+
+typedef struct packed {
+    logic valid;
+    //TODO
+} f2_to_d_s;
+
+typedef struct packed {
+    logic valid;
+    //TODO
+} d_to_e1_s;
+
+typedef struct packed {
+    logic valid;
+    //TODO
+} e1_to_e2_s;
+
+typedef struct packed {
+    logic valid;
+    //TODO
+} e2_to_w_s;
 
 endpackage : letc_core_pkg

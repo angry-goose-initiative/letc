@@ -1,14 +1,10 @@
 /*
- * File:    axi_pkg.sv
- * Brief:   AXI definitions and helper functions
+ * File:    axi_if.sv
+ * Brief:   AXI interface definition
  *
  * Copyright:
  *  Copyright (C) 2023-2024 John Jekel
  * See the LICENSE file at the root of the project for licensing info.
- *
- * Based on the old axi_pkg.svh
- *
- * Lock, cache, prot, qos, region, and user signals unsupported
  *
 */
 
@@ -80,6 +76,7 @@ modport manager (
     output awaddr,
     output awlen,
     output awsize,
+    output awburst,
 
     //W: Write Data Channel
     output wvalid,
@@ -102,6 +99,7 @@ modport manager (
     output araddr,
     output arlen,
     output arsize,
+    output arburst,
 
     //R: Read Data Channel
     input  rvalid,
@@ -120,6 +118,7 @@ modport subordinate (
     input  awaddr,
     input  awlen,
     input  awsize,
+    input  awburst,
 
     //W: Write Data Channel
     input  wvalid,
@@ -142,6 +141,7 @@ modport subordinate (
     input  araddr,
     input  arlen,
     input  arsize,
+    input  arburst,
 
     //R: Read Data Channel
     output rvalid,

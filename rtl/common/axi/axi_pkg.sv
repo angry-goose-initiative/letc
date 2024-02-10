@@ -21,11 +21,11 @@ package axi_pkg;
  * --------------------------------------------------------------------------------------------- */
 
 //Adjust these as needed depending on the project
-//For LETC this is 32 bits for both address and data in the Matrix, though we
+//For LETC this is 32 bits for data in the Matrix, though we
 //may need to upconvert to 64 bit data for the ACP connection
-parameter int AWIDTH    = 32;
+parameter int AWIDTH    = 34;
 parameter int DWIDTH    = 32;
-parameter int IDWIDTH   = 8;
+parameter int IDWIDTH   = 1;
 parameter int LENWIDTH  = 4;//4 bits are used for AXI3, 8 for AXI4
 
 //Derived constants
