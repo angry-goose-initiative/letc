@@ -1,5 +1,8 @@
 .DS_Store
 
+verif/nonuvm/**/build
+synth/subblock/**/build
+
 ####################################################################################################
 # Verilator
 ####################################################################################################
@@ -7,7 +10,6 @@ verif/nonuvm/legacy/verilator_firsttb/obj_dir
 verif/nonuvm/legacy/core_s1/obj_dir
 verif/nonuvm/legacy/behavioural_memory_devel_tb/obj_dir
 verif/nonuvm/legacy/fifo_tb/obj_dir
-verif/nonuvm/**/build
 
 
 ####################################################################################################
@@ -75,7 +77,7 @@ ide/coraz7_vivado/letc.ip_user_files
 *.sof
 *.sopc_builder
 *.summary
-*.tcl
+#*.tcl
 *.txt # Explicitly add any text files used
 *~
 *example*
