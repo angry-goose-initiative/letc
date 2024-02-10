@@ -56,9 +56,9 @@ typedef enum logic [2:0] {
 
 typedef enum logic [1:0] {
     //Values correspond to RISC-V instruction encoding for potential efficiency gains
-    BYTE        = 2'b00,
-    HALFWORD    = 2'b01,
-    WORD        = 2'b10
+    SIZE_BYTE       = 2'b00,
+    SIZE_HALFWORD   = 2'b01,
+    SIZE_WORD       = 2'b10
 } size_e;
 
 /* ------------------------------------------------------------------------------------------------
