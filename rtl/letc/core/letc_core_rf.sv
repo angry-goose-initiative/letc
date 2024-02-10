@@ -44,27 +44,44 @@ module letc_core_rf
  * Register State
  * --------------------------------------------------------------------------------------------- */
 
-word_t [31:1] registers;
+//Unpacked only so we infer RAM32M (more efficient than raw LUTs, but not as efficient as BRAM)
+//Before this (and the changes below) we consumed ~600 LUTS, now we consume ~100
+//word_t [31:1] registers;
+word_t registers [31:1];
+
+//RAM32M is really fricking cool! We use the LUT SRAM itself as the asynchrenous-read RAM!
+//This doesn't actually infer any slice registers at all!
 
 /* ------------------------------------------------------------------------------------------------
  * rd Write Port
  * --------------------------------------------------------------------------------------------- */
 
 //Decoder (5-to-32, except for 0)
+//More explicit but prevents RAM32M inference
+/*
 logic [31:1] register_wen;
 always_comb begin
     for (int ii = 1; ii < 32; ++ii) begin
         register_wen[ii] = (i_rd_idx == ii) & i_rd_wen;
     end
 end
+*/
 
 //Write Logic
 always_ff @(posedge i_clk) begin
     //No resets needed, so don't include them to save resources
+
+    //More explicit but prevents RAM32M inference
+    /*
     for (int ii = 1; ii < 32; ++ii) begin
         if (register_wen[ii]) begin
             registers[ii] <= i_rd_wdata;
         end
+    end
+    */
+
+    if (i_rd_wen & (i_rd_idx != '0)) begin
+        registers[i_rd_idx] <= i_rd_wdata;
     end
 end
 

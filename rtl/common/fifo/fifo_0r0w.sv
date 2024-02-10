@@ -25,8 +25,8 @@
  * --------------------------------------------------------------------------------------------- */
 
 module fifo_0r0w #(
-    parameter DWIDTH    = 8,
-    parameter DEPTH     = 4
+    parameter DWIDTH    = 32,
+    parameter DEPTH     = 32
 ) (
     //Clock and reset
     input   logic i_clk,
@@ -49,7 +49,7 @@ localparam AWIDTH = $clog2(DEPTH);
  * State
  * --------------------------------------------------------------------------------------------- */
 
-logic [DEPTH-1:0] [DWIDTH-1:0] mem;
+logic [DWIDTH-1:0] mem [DEPTH-1:0];//Unpacked array to make it more likely to infer RAM32M
 logic [AWIDTH-1:0] push_idx, pop_idx, next_push_idx, next_pop_idx;
 
 /* ------------------------------------------------------------------------------------------------
@@ -75,16 +75,21 @@ always_ff @(posedge i_clk, negedge i_rst_n) begin
     if (~i_rst_n) begin
         push_idx    <= '0;
         pop_idx     <= '0;
-        //Save area by not resetting mem
     end else begin
         if (i_push) begin
-            push_idx        <= next_push_idx;
-            mem[push_idx]   <= i_wdata;//Input demux (1-cycle latency)
+            push_idx <= next_push_idx;
         end
 
         if (i_pop) begin
             pop_idx <= next_pop_idx;
         end
+    end
+end
+
+//Seperate always_ff to make it more likely to infer RAM32M
+always_ff @(posedge i_clk) begin
+    if (i_push) begin
+        mem[push_idx] <= i_wdata;//Input demux (1-cycle latency)
     end
 end
 
