@@ -24,7 +24,7 @@
  * Module Definition
  * --------------------------------------------------------------------------------------------- */
 
-module fifo_1r1w #(
+module fifo_0r0w #(
     parameter DWIDTH    = 8,
     parameter DEPTH     = 4
 ) (
@@ -112,4 +112,4 @@ assert property (@(posedge i_clk) disable iff (!i_rst_n) !(pop_idx  >= (AWIDTH)'
 
 `endif
 
-endmodule : fifo_1r1w
+endmodule : fifo_0r0w

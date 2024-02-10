@@ -15,9 +15,9 @@ set BLOCK_PATH      [lindex $argv 2]
 # Synthesis Config
 ####################################################################################################
 
-set RTL_TOP fifo_1r1w
+set RTL_TOP fifo_0r0w
 set CONSTRAINTS_SOURCE $SUBBLOCK_ROOT/usual.xdc
-set RTL_SOURCE $RTL_ROOT/common/fifo/fifo_1r1w.sv
+set RTL_SOURCE $RTL_ROOT/common/fifo/fifo_0r0w.sv
 
 ####################################################################################################
 # Run Out of Context Synthesis
