@@ -225,25 +225,35 @@ assert property (@(posedge i_aclk) disable iff (!i_arst_n) (awvalid |-> !$isunkn
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) (awvalid |-> !$isunknown(awlen)));
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) (awvalid |-> !$isunknown(awsize)));
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) (awvalid |-> !$isunknown(awburst)));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) (wvalid |-> !$isunknown(wid)));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) (wvalid |-> !$isunknown(wdata)));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) (wvalid |-> !$isunknown(wstrb)));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) (wvalid |-> !$isunknown(wlast)));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) (bvalid |-> !$isunknown(bid)));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) (bvalid |-> !$isunknown(bresp)));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) (wvalid  |-> !$isunknown(wid)));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) (wvalid  |-> !$isunknown(wdata)));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) (wvalid  |-> !$isunknown(wstrb)));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) (wvalid  |-> !$isunknown(wlast)));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) (bvalid  |-> !$isunknown(bid)));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) (bvalid  |-> !$isunknown(bresp)));
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) (arvalid |-> !$isunknown(arid)));
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) (arvalid |-> !$isunknown(araddr)));
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) (arvalid |-> !$isunknown(arlen)));
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) (arvalid |-> !$isunknown(arsize)));
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) (arvalid |-> !$isunknown(arburst)));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) (rvalid |-> !$isunknown(rid)));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) (rvalid |-> !$isunknown(rdata)));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) (rvalid |-> !$isunknown(rresp)));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) (rvalid |-> !$isunknown(rlast)));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) (rvalid  |-> !$isunknown(rid)));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) (rvalid  |-> !$isunknown(rdata)));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) (rvalid  |-> !$isunknown(rresp)));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) (rvalid  |-> !$isunknown(rlast)));
 
 //AxBURST shouldn't be reserved
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) (awvalid |-> (awburst != AXI_BURST_RESERVED)));
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) (arvalid |-> (arburst != AXI_BURST_RESERVED)));
+
+//AXI valid and ready handshaking
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) awvalid |-> (awvalid throughout awready[->1]));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) wvalid  |-> (wvalid throughout  wready[->1]));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) bvalid  |-> (bvalid throughout  bready[->1]));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) arvalid |-> (arvalid throughout arready[->1]));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) rvalid  |-> (rvalid throughout  rready[->1]));
+
+//Stable while valid
+//TODO
 
 //TODO others
 

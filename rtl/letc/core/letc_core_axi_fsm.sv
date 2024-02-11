@@ -94,7 +94,8 @@ typedef enum logic [2:0] {
     SEND_RADDR,
     GET_RDATA,
     SEND_WADDR,
-    SEND_WDATA
+    SEND_WDATA,
+    GET_BRESP
 } state_e;
 
 state_e state, next_state;
@@ -113,7 +114,7 @@ always_comb begin
             if (selected_valid) begin
                 if (selected_wen_nren) begin//Write
                     if (axi.aw_transfer_complete() && axi.w_transfer_complete()) begin
-                        next_state = IDLE;//Done in one cycle!
+                        next_state = GET_BRESP;//Write done in one cycle! (Waiting on response now)
                     end else if (axi.aw_transfer_complete()) begin
                         next_state = SEND_WDATA;//Still need to send data
                     end else if (axi.w_transfer_complete()) begin
@@ -164,7 +165,13 @@ always_comb begin
                 next_state = SEND_WDATA;
             end
         end
-        //TODO extra state for get write response?
+        GET_BRESP: begin
+            if (axi.b_transfer_complete()) begin
+                next_state = IDLE;
+            end else begin
+                next_state = GET_BRESP;
+            end
+        end
     endcase
 end
 
@@ -172,13 +179,13 @@ end
  * FSM Outputs
  * --------------------------------------------------------------------------------------------- */
 
-//TODO also set ready_to_requester based on AXI ready signals
-
 always_comb begin
     axi.arvalid = 1'b0;
     axi.rready  = 1'b0;
     axi.awvalid = 1'b0;
     axi.wvalid  = 1'b0;
+    //axi.bready  = 1'b0;//More efficient to just make this high all of the time as an optimization (the response must come at least one cycle later)
+    ready_to_requester = 1'b0;
 
     if (selected_valid) begin
         unique case (state)
@@ -189,6 +196,7 @@ always_comb begin
                 end else begin//Read
                     axi.arvalid = 1'b1;
                     axi.rready  = 1'b1;
+                    ready_to_requester = axi.ar_transfer_complete() && axi.r_transfer_complete();
                 end
             end
             SEND_RADDR: begin
@@ -196,6 +204,7 @@ always_comb begin
             end
             GET_RDATA: begin
                 axi.rready  = 1'b1;
+                ready_to_requester = axi.r_transfer_complete();
             end
             SEND_WADDR: begin
                 axi.awvalid = 1'b1;
@@ -203,12 +212,13 @@ always_comb begin
             SEND_WDATA: begin
                 axi.wvalid  = 1'b1;
             end
-            //TODO extra state for get write response?
+            GET_BRESP: begin
+                //axi.bready  = 1'b1;//More efficient to just make this high all of the time as an optimization (the response must come at least one cycle later)
+                ready_to_requester = axi.b_transfer_complete();
+            end
         endcase
     end
 end
-
-//TODO need to buffer read data on entry into SEND_RADDR state; ACTUALLY nvm it can't come until the data comes first
 
 always_comb begin
     //Ensure addresses are aligned (we handle smaller accesses with the write strobe and muxing)

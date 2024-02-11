@@ -10,7 +10,7 @@ SYNTH_ROOT    := $(PROJECT_ROOT)/synth
 SUBBLOCK_ROOT := $(SYNTH_ROOT)/subblock
 
 help:
-	@echo "This is the Makefile for running the out of context synthesis!"
+	@echo "This is the Makefile for running out of context synthesis!"
 	@echo ""
 	@echo "Usage: make BLOCK="block/subdirs/synth_folder" synth"
 	@echo ""

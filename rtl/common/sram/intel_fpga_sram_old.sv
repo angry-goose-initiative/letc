@@ -1,6 +1,10 @@
 /*
- * File:    intel_fpga_sram.sv
+ * File:    intel_fpga_sram_old.sv
  * Brief:   Inferred SRAM for Intel FPGAs
+ *
+ * TODO do this cleaner by directly using altsyncram.
+ * Or tune inference for M9Ks/etc, taking into account available output
+ * buffers, address stalling, read and write clock, etc.
  *
  * Copyright (C) 2023 John Jekel
  * See the LICENSE file at the root of the project for licensing info.

@@ -35,7 +35,9 @@ report_clock_networks -file $OUTPUT_DIR/post_synth_clock_networks.rpt
 # Place
 ####################################################################################################
 
-opt_design
+#opt_design
+#opt_design -retarget -propconst -sweep -bufg_opt -mbufg_opt -remap -aggressive_remap -resynth_remap -muxf_remap -shift_register_opt -dsp_register_opt
+opt_design -directive ExploreWithRemap
 place_design
 phys_opt_design
 write_checkpoint -force $OUTPUT_DIR/post_place
