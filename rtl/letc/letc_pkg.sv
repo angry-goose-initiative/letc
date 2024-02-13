@@ -17,12 +17,21 @@
 package letc_pkg;
 
 /* ------------------------------------------------------------------------------------------------
+ * Parameters
+ * --------------------------------------------------------------------------------------------- */
+
+parameter PADDR_WIDTH       = 32;//Instead of 34 bit physical address to reduce resource usage
+parameter WORD_WIDTH        = 32;
+parameter HALFWORD_WIDTH    = 16;
+parameter BYTE_WIDTH        = 8;
+
+/* ------------------------------------------------------------------------------------------------
  * Typedefs
  * --------------------------------------------------------------------------------------------- */
 
-typedef logic [33:0] paddr_t;
-typedef logic [31:0] word_t;
-typedef logic [15:0] halfword_t;
-typedef logic [7:0]  byte_t;
+typedef logic [PADDR_WIDTH-1:0]     paddr_t;
+typedef logic [WORD_WIDTH-1:0]      word_t;
+typedef logic [HALFWORD_WIDTH-1:0]  halfword_t;
+typedef logic [BYTE_WIDTH-1:0]      byte_t;
 
 endpackage : letc_pkg
