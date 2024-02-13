@@ -16,6 +16,9 @@
  *     DEPTH:   Depth of the FIFO
  *
  * It is undefined behaviour to push while full or pop while empty
+ *
+ * A synchronous reset is employed as this is tuned for FPGA use
+ *
 */
 
 //TODO this module is not yet tested, only fifo_0r1w has been so far
@@ -71,7 +74,7 @@ always_comb begin
     end
 end
 
-always_ff @(posedge i_clk, negedge i_rst_n) begin
+always_ff @(posedge i_clk) begin
     if (~i_rst_n) begin
         push_idx    <= '0;
         pop_idx     <= '0;

@@ -15,6 +15,9 @@
  * The latency makes this perfect for AXI (and other things of course)
  *
  * It is undefined behaviour to push while full or pop while empty
+ *
+ * A synchronous reset is employed as this is tuned for FPGA use
+ *
 */
 
 /* ------------------------------------------------------------------------------------------------
@@ -64,7 +67,7 @@ always_comb begin
     o_rdata = mem[pop_idx];//Output mux (combinational)
 end
 
-always_ff @(posedge i_clk, negedge i_rst_n) begin
+always_ff @(posedge i_clk) begin
     if (~i_rst_n) begin
         push_idx    <= '0;
         pop_idx     <= '0;

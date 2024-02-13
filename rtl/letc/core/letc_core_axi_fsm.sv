@@ -100,7 +100,7 @@ typedef enum logic [2:0] {
 
 state_e state, next_state;
 
-always_ff @(posedge i_clk, negedge i_rst_n) begin
+always_ff @(posedge i_clk) begin
     if (~i_rst_n) begin
         state <= IDLE;
     end else begin
@@ -222,8 +222,8 @@ end
 
 always_comb begin
     //Ensure addresses are aligned (we handle smaller accesses with the write strobe and muxing)
-    axi.araddr = {selected_addr[33:2], 2'b00};
-    axi.awaddr = {selected_addr[33:2], 2'b00};
+    axi.araddr = {selected_addr[PADDR_WIDTH-1:2], 2'b00};
+    axi.awaddr = {selected_addr[PADDR_WIDTH-1:2], 2'b00};
 
     //Set write strobe properly
     unique case (selected_size)
