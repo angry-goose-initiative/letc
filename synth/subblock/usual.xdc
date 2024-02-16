@@ -1,1 +1,1 @@
-create_clock -name clock -period 10 -waveform {0 5} [get_ports i_clk]
+create_clock -name clock -period 4 -waveform {0 2} [get_ports i_clk]
