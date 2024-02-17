@@ -26,7 +26,7 @@ package axi_pkg;
 parameter int AWIDTH    = 32;//Matches value in rtl/letc/letc_pkg.sv
 parameter int DWIDTH    = 32;
 parameter int IDWIDTH   = 1;
-parameter int LENWIDTH  = 4;//4 bits are used for AXI3, 8 for AXI4
+parameter int LENWIDTH  = 8;//4 bits are used for AXI3, 8 for AXI4
 
 //Derived constants
 parameter int WSTRBWIDTH = DWIDTH / 8;
