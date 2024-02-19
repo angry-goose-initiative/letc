@@ -35,12 +35,12 @@ parameter int WSTRBWIDTH = DWIDTH / 8;
  * Typedefs
  * --------------------------------------------------------------------------------------------- */
 
+//NOTE, these only match axi_if's signal sizes if you don't override axi_if's parameters
 typedef logic [AWIDTH-1:0]      addr_t;
 typedef logic [DWIDTH-1:0]      data_t;
 typedef logic [IDWIDTH-1:0]     id_t;
 typedef logic [LENWIDTH-1:0]    len_t;
 typedef logic [2:0]             size_t;
-
 typedef logic [WSTRBWIDTH-1:0]  wstrb_t;
 
 /* ------------------------------------------------------------------------------------------------
@@ -65,6 +65,6 @@ typedef enum logic [1:0] {
  * Structs
  * --------------------------------------------------------------------------------------------- */
 
-//Actually interfaces feel like a better fit for this
+//Actually interfaces feel like a better fit for this: check out axi_if!
 
 endpackage : axi_pkg

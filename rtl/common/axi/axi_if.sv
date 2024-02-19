@@ -12,9 +12,14 @@
  * Interface Definition
  * --------------------------------------------------------------------------------------------- */
 
-interface axi_if
-    import axi_pkg::*;
-(
+interface axi_if #(
+    //The parameters default to the same ones as are in axi_pkg, but can be overridden if needed
+    parameter int AWIDTH        = axi_pkg::AWIDTH,
+    parameter int DWIDTH        = axi_pkg::DWIDTH,
+    parameter int IDWIDTH       = axi_pkg::IDWIDTH,
+    parameter int LENWIDTH      = axi_pkg::LENWIDTH,
+    parameter int WSTRBWIDTH    = DWIDTH / 8
+) (
     //Global signals
     input logic i_aclk,
     input logic i_arst_n
@@ -24,45 +29,49 @@ interface axi_if
  * Connections
  * --------------------------------------------------------------------------------------------- */
 
+//NOT using (most of) the axi_pkg typedefs here to allow for parameter overrides
+//Enums are still used since those never change and can't be overridden: same goes for size_t even
+//though it is a typedef
+
 //AW: Write Address Channel
-logic   awvalid;
-logic   awready;
-id_t    awid;
-addr_t  awaddr;
-len_t   awlen;
-size_t  awsize;
-burst_e awburst;
+logic                   awvalid;
+logic                   awready;
+logic [IDWIDTH-1:0]     awid;
+logic [AWIDTH-1:0]      awaddr;
+logic [LENWIDTH-1:0]    awlen;
+axi_pkg::size_t         awsize;
+axi_pkg::burst_e        awburst;
 
 //W: Write Data Channel
-logic   wvalid;
-logic   wready;
-id_t    wid;//Removed in AXI4; you may need to deal with this in your RTL
-data_t  wdata;
-wstrb_t wstrb;
-logic   wlast;
+logic                   wvalid;
+logic                   wready;
+logic [IDWIDTH-1:0]     wid;//Removed in AXI4; you may need to deal with/ignore this in your RTL
+logic [DWIDTH-1:0]      wdata;
+logic [WSTRBWIDTH-1:0]  wstrb;
+logic                   wlast;
 
 //B: Write Response Channel
-logic   bvalid;
-logic   bready;
-id_t    bid;
-resp_e  bresp;
+logic                   bvalid;
+logic                   bready;
+logic [IDWIDTH-1:0]     bid;
+axi_pkg::resp_e         bresp;
 
 //AR: Read Address Channel
-logic   arvalid;
-logic   arready;
-id_t    arid;
-addr_t  araddr;
-len_t   arlen;
-size_t  arsize;
-burst_e arburst;
+logic                   arvalid;
+logic                   arready;
+logic [IDWIDTH-1:0]     arid;
+logic [AWIDTH-1:0]      araddr;
+logic [LENWIDTH-1:0]    arlen;
+axi_pkg::size_t         arsize;
+axi_pkg::burst_e        arburst;
 
 //R: Read Data Channel
-logic   rvalid;
-logic   rready;
-id_t    rid;
-data_t  rdata;
-resp_e  rresp;
-logic   rlast;
+logic                   rvalid;
+logic                   rready;
+logic [IDWIDTH-1:0]     rid;
+logic [DWIDTH-1:0]      rdata;
+axi_pkg::resp_e         rresp;
+logic                   rlast;
 
 /* ------------------------------------------------------------------------------------------------
  * Modports
@@ -177,11 +186,11 @@ function logic r_transfer_complete();//At next posedge
 endfunction
 
 function logic b_error_resp();
-    return (bresp == AXI_RESP_SLVERR) | (bresp == AXI_RESP_DECERR);
+    return (bresp == axi_pkg::AXI_RESP_SLVERR) | (bresp == axi_pkg::AXI_RESP_DECERR);
 endfunction
 
 function logic r_error_resp();
-    return (rresp == AXI_RESP_SLVERR) | (rresp == AXI_RESP_DECERR);
+    return (rresp == axi_pkg::AXI_RESP_SLVERR) | (rresp == axi_pkg::AXI_RESP_DECERR);
 endfunction
 
 function logic [LENWIDTH:0] aw_num_beats();
@@ -242,8 +251,8 @@ assert property (@(posedge i_aclk) disable iff (!i_arst_n) (rvalid  |-> !$isunkn
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) (rvalid  |-> !$isunknown(rlast)));
 
 //AxBURST shouldn't be reserved
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) (awvalid |-> (awburst != AXI_BURST_RESERVED)));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) (arvalid |-> (arburst != AXI_BURST_RESERVED)));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) (awvalid |-> (awburst != axi_pkg::AXI_BURST_RESERVED)));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) (arvalid |-> (arburst != axi_pkg::AXI_BURST_RESERVED)));
 
 //AXI valid and ready handshaking
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) awvalid |-> (awvalid throughout awready[->1]));

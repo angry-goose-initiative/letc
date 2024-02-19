@@ -18,7 +18,7 @@ module letc_core_axi_fsm
     import letc_pkg::*;
     import letc_core_pkg::*;
 #(
-    parameter NUM_REQUESTERS    = 3,//MMU, instruction cache, and data cache
+    parameter NUM_REQUESTERS    = 3,//MMU, caches, and uncached access
     parameter AXI_ID            = 0
 ) (
     //Clock and reset
@@ -247,13 +247,13 @@ always_comb begin
     unique case (selected_size)
         SIZE_BYTE: begin
             unique case (selected_addr[1:0])
-                2'b00: processed_rdata = axi.rdata[7:0];
-                2'b01: processed_rdata = axi.rdata[15:8];
-                2'b10: processed_rdata = axi.rdata[23:16];
-                2'b11: processed_rdata = axi.rdata[31:24];
+                2'b00: processed_rdata = {24'h0, axi.rdata[7:0]};
+                2'b01: processed_rdata = {24'h0, axi.rdata[15:8]};
+                2'b10: processed_rdata = {24'h0, axi.rdata[23:16]};
+                2'b11: processed_rdata = {24'h0, axi.rdata[31:24]};
             endcase
         end
-        SIZE_HALFWORD:  processed_rdata = selected_addr[1] ? axi.rdata[31:16] : axi.rdata[15:0];
+        SIZE_HALFWORD:  processed_rdata = selected_addr[1] ? {16'h0, axi.rdata[31:16]} : {16'h0, axi.rdata[15:0]};
         SIZE_WORD:      processed_rdata = axi.rdata;
     endcase
 

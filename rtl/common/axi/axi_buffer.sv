@@ -21,6 +21,7 @@
 module axi_buffer
     import axi_pkg::*;
 #(
+    //FIXME need to be able to vary field widths just like axi_if from axi_pkg
     parameter AWDEPTH   = 2,
     parameter WDEPTH    = 2,
     parameter BDEPTH    = 2,
