@@ -2,6 +2,7 @@
 
 verif/nonuvm/**/build
 synth/subblock/**/build
+synth/fc/build
 external_ip/amd/**/build
 
 ####################################################################################################

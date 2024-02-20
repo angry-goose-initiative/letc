@@ -19,7 +19,6 @@ module coraz7_top
     
     //TODO internal ports
     
-    
     //External IO
     input  wire [1:0]   btn,
     output wire         led0_r,
@@ -52,7 +51,7 @@ assign led1_b = 1'b0;
  * Module Instantiations
  * --------------------------------------------------------------------------------------------- */
 
-letc_top letc_top_inst (//No .* in SystemVerilog sadly
+letc_top letc_top_inst (//No .* in Verilog sadly
     .clk(clk),
     .rst_n(rst_n)
 );
