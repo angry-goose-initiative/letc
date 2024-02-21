@@ -23,6 +23,21 @@ set OUTPUT_DIR          ./
 set RTL_TOP coraz7_top
 set CONSTRAINTS_SOURCE $FC_ROOT/constraints.xdc
 set RTL_SOURCE "
+    $RTL_ROOT/common/cdc/cdc_synchronizer.sv
+    $RTL_ROOT/common/axi/axi_pkg.sv
+    $RTL_ROOT/common/axi/axi_if.sv
+    $RTL_ROOT/letc/letc_pkg.sv
+    $RTL_ROOT/letc/letc_top.sv
+    $RTL_ROOT/letc/core/letc_core_pkg.sv
+    $RTL_ROOT/letc/core/letc_core_top.sv
+    $RTL_ROOT/letc/core/letc_core_rf.sv
+    $RTL_ROOT/letc/core/letc_core_stage_f1.sv
+    $RTL_ROOT/letc/core/letc_core_stage_f2.sv
+    $RTL_ROOT/letc/core/letc_core_stage_d.sv
+    $RTL_ROOT/letc/core/letc_core_stage_e1.sv
+    $RTL_ROOT/letc/core/letc_core_stage_e2.sv
+    $RTL_ROOT/letc/core/letc_core_stage_w.sv
+    $RTL_ROOT/letc/core/letc_core_axi_fsm.sv
     $RTL_ROOT/fpga_wrapper/coraz7_top.sv
 "
 set IP "
@@ -30,10 +45,6 @@ set IP "
 "
 set IP_SOURCE "
     $AMD_IP_CONFIGS_ROOT/letc_ps7.xci
-"
-set IP_GENERATED_RTL "
-    $AMD_IP_ROOT/build/hdl/verilog/processing_system7_v5_5_processing_system7.v
-    $AMD_IP_ROOT/build/synth/letc_ps7.v
 "
 
 ####################################################################################################

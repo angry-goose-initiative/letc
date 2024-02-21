@@ -27,7 +27,7 @@ module letc_core_top
     input logic             i_timer_irq_pending,
     input logic             i_external_irq_pending,
 
-    //Debug
+    //Debug (Logic Analyzer)
     output logic [7:0]      o_debug
 );
 
