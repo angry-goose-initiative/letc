@@ -87,15 +87,38 @@ letc_core_rf rf (
 );
 
 letc_core_stage_f1 stage_f1 (
-    .*
+    .*,
+
+    //To F2
+    .o_f1_to_f2(f1_to_f2)
 );
 
 letc_core_stage_f2 stage_f2 (
-    .*
+    .*,
+
+    //From F1
+    .i_f1_to_f2(f1_to_f2),
+
+    //To D
+    .o_f2_to_d(f2_to_d)
 );
 
 letc_core_stage_d stage_d (
-    .*
+    .*,
+
+    //rs1 Read Port
+    .o_rs1_idx(rs1_idx),
+    .i_rs1_rdata(rs1_rdata),
+
+    //rs2 Read Port
+    .o_rs2_idx(rs2_idx),
+    .i_rs2_rdata(rs2_rdata),
+
+    //From F2
+    .i_f2_to_d(f2_to_d),
+
+    //To E1
+    .o_d_to_e1(d_to_e1)
 );
 
 letc_core_stage_e1 stage_e1 (

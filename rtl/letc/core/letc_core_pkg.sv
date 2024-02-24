@@ -17,16 +17,22 @@
 package letc_core_pkg;
 
 /* ------------------------------------------------------------------------------------------------
- * Parameters
- * --------------------------------------------------------------------------------------------- */
-
-parameter letc_pkg::word_t RESET_PC = 32'h00000000;
-
-/* ------------------------------------------------------------------------------------------------
  * Typedefs
  * --------------------------------------------------------------------------------------------- */
 
-typedef logic [4:0] reg_idx_t;
+typedef logic [4:0]     reg_idx_t;
+
+//We don't support misaligned instructions or the C extension so we can ignore the lower 2 bits of the PC
+typedef logic [31:2]    pc_word_t;
+
+//C extension is not supported so we can save some bits
+typedef logic [31:2]    instr_t;
+
+/* ------------------------------------------------------------------------------------------------
+ * Parameters
+ * --------------------------------------------------------------------------------------------- */
+
+parameter pc_word_t RESET_PC_WORD= 30'h00000000;
 
 /* ------------------------------------------------------------------------------------------------
  * Enums
@@ -66,18 +72,32 @@ typedef enum logic [1:0] {
  * --------------------------------------------------------------------------------------------- */
 
 typedef struct packed {
-    logic valid;
-    //TODO
+    logic               valid;
+    pc_word_t           pc_word;
+    letc_pkg::paddr_t   fetch_addr;
 } f1_to_f2_s;
 
 typedef struct packed {
-    logic valid;
-    //TODO
+    logic       valid;
+    pc_word_t   pc_word;
+    instr_t     instr;
 } f2_to_d_s;
 
 typedef struct packed {
-    logic valid;
-    //TODO
+    logic               valid;
+    pc_word_t           pc_word;
+
+    //reg_idx_t           rs1_idx;//Are these needed for bypassing?
+    //reg_idx_t           rs2_idx;
+    reg_idx_t           rd_idx;
+
+    letc_pkg::word_t    rs1_rdata;
+    letc_pkg::word_t    rs2_rdata;
+
+    letc_pkg::word_t    immediate;
+
+    opcode_e            opcode;
+    //TODO control signals, rd write enable, etc
 } d_to_e1_s;
 
 typedef struct packed {
