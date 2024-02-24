@@ -436,14 +436,14 @@ cdc_synchronizer #(
  * Connections Between LETC and PS7
  * --------------------------------------------------------------------------------------------- */
 
-//TODO
-
 always_comb begin
-    //Temporary until Conductor is further along
-    letc_clk    = i_raw_125mhz_clk;
-    letc_rst_n  = ~btn_sync[0];
-    //letc_clk    = FCLK_CLK0;
-    //letc_rst_n  = FCLK_RESET0_N;
+    letc_clk    = FCLK_CLK0;
+    letc_rst_n  = FCLK_RESET0_N;
+
+    //Useful for debugging without the PS7 running
+    //letc_clk    = i_raw_125mhz_clk;
+    //letc_rst_n  = ~btn_sync[0];
+
 end
 
 always_comb begin

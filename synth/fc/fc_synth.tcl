@@ -23,11 +23,15 @@ set OUTPUT_DIR          ./
 set RTL_TOP coraz7_top
 set CONSTRAINTS_SOURCE $FC_ROOT/constraints.xdc
 set RTL_SOURCE "
+    $RTL_ROOT/common/fifo/fifo_0r1w.sv
     $RTL_ROOT/common/cdc/cdc_synchronizer.sv
     $RTL_ROOT/common/axi/axi_pkg.sv
     $RTL_ROOT/common/axi/axi_if.sv
+    $RTL_ROOT/common/axi/axi_buffer.sv
+
     $RTL_ROOT/letc/letc_pkg.sv
     $RTL_ROOT/letc/letc_top.sv
+
     $RTL_ROOT/letc/core/letc_core_pkg.sv
     $RTL_ROOT/letc/core/letc_core_top.sv
     $RTL_ROOT/letc/core/letc_core_rf.sv
@@ -38,6 +42,11 @@ set RTL_SOURCE "
     $RTL_ROOT/letc/core/letc_core_stage_e2.sv
     $RTL_ROOT/letc/core/letc_core_stage_w.sv
     $RTL_ROOT/letc/core/letc_core_axi_fsm.sv
+
+    $RTL_ROOT/letc/matrix/letc_matrix_top.sv
+    $RTL_ROOT/letc/matrix/letc_matrix_switch.sv
+    $RTL_ROOT/letc/matrix/letc_matrix_default_subordinate.sv
+
     $RTL_ROOT/fpga_wrapper/coraz7_top.sv
 "
 set IP "

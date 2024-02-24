@@ -49,9 +49,10 @@ module letc_top
  * Connections
  * --------------------------------------------------------------------------------------------- */
 
-axi_if  core_axi(.i_aclk(i_clk), .i_arst_n(i_rst_n));
-logic   timer_irq_pending;
+axi_if  axi_core(.i_aclk(i_clk), .i_arst_n(i_rst_n));
+logic   timer_irq_pending;//TEMPORARY
 
+axi_if  axi_aclint(.i_aclk(i_clk), .i_arst_n(i_rst_n));
 //TODO more
 
 /* ------------------------------------------------------------------------------------------------
@@ -61,13 +62,24 @@ logic   timer_irq_pending;
 letc_core_top core (
     .*,
 
-    .axi(core_axi),
+    //IO
+    .axi(axi_core),
     .i_timer_irq_pending(timer_irq_pending),
     .i_external_irq_pending(i_uart1_interrupt)
 );
 
 //TEMPORARY
 assign timer_irq_pending = 1'b0;
+
+letc_matrix_top matrix (
+    .*,
+
+    //AXI ports
+    .core(axi_core),
+    .ps_gp(axi_s_gp_0),
+    .ps_acp(axi_s_acp),
+    .aclint(axi_aclint)
+);
 
 /* ------------------------------------------------------------------------------------------------
  * Assertions
