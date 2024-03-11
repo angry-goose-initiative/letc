@@ -30,14 +30,14 @@ module letc_core_stage_f2
 );
 
 //TESTING for starters, instead of a cache, we'll just have an instruction memory
+//Two mem stages to ease timing
 logic [31:0] instr_mem [1023:0];
 
-logic [31:0] data;
+logic [31:0] intermediate_mem_stage;
 
 always_ff @(posedge i_clk) begin
     //TODO stalling logic
     //For testing preload the instruction mem with a test program
-    //data <= instr_mem[addr_reg[9:0]];
     intermediate_mem_stage <= instr_mem[i_f1_to_f2.fetch_addr[9:0]];
 end
 

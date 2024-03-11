@@ -407,6 +407,16 @@ cdc_synchronizer #(
     .o_sync_data(uart1_interrupt_sync)
 );
 
+//Same goes for the software controllable reset
+logic FCLK_RESET0_N_sync;
+cdc_synchronizer #(
+    .WIDTH(1)
+) reset_synchronizer (
+    .i_clk(letc_clk),
+    .i_async_data(FCLK_RESET0_N),
+    .o_sync_data(FCLK_RESET0_N_sync)
+);
+
 //Buttons
 logic [1:0] btn_sync;
 cdc_synchronizer #(
@@ -438,7 +448,7 @@ cdc_synchronizer #(
 
 always_comb begin
     letc_clk    = FCLK_CLK0;
-    letc_rst_n  = FCLK_RESET0_N;
+    letc_rst_n  = FCLK_RESET0_N_sync;
 
     //Useful for debugging without the PS7 running
     //letc_clk    = i_raw_125mhz_clk;

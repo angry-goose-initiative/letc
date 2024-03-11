@@ -124,3 +124,8 @@ report_drc -file $OUTPUT_DIR/post_route_drc.rpt
 write_verilog -force $OUTPUT_DIR/output_netlist.v
 write_xdc -no_fixed_only -force $OUTPUT_DIR/output_constraints.xdc
 write_bitstream -force $OUTPUT_DIR/output_bitstream.bit
+
+#https://support.xilinx.com/s/question/0D52E00006hpPHtSAM/error-common-1769-command-failed-writehwplatform-is-only-supported-for-synthesized-implemented-or-checkpoint-designs
+#open_checkpoint $OUTPUT_DIR/post_route.dcp
+#set_property platform.name "letc_platform" [current_project]
+#write_hw_platform -force $OUTPUT_DIR/output_hw_platform.xsa
