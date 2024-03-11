@@ -31,7 +31,6 @@ localparam CLOCK_PERIOD = 10;
 
 //Clock and reset
 logic i_clk;
-logic i_rst_n;
 
 //rd Write Port
 reg_idx_t   i_rd_idx;
@@ -94,11 +93,11 @@ endclocking
 task setup();
 begin
     //Set initial input states
-    i_rd_idx    <= '0;
-    i_rd_wdata  <= '0;
-    i_rd_wen    <= 1'b0;
-    i_rs1_idx   <= '0;
-    i_rs2_idx   <= '0;
+    cb.i_rd_idx     <= '0;
+    cb.i_rd_wdata   <= '0;
+    cb.i_rd_wen     <= 1'b0;
+    cb.i_rs1_idx    <= '0;
+    cb.i_rs2_idx    <= '0;
 end
 endtask
 
@@ -112,7 +111,9 @@ endtask
 
 task nowrite();
 begin
-    cb.i_rd_wen <= 1'b0;
+    cb.i_rd_idx     <= 'x;
+    cb.i_rd_wdata   <= 'x;
+    cb.i_rd_wen     <= 1'b0;
 end
 endtask
 
@@ -122,14 +123,42 @@ endtask
 
 initial begin
     setup();
+    ##1;
 
-    //Reset things
-    i_rst_n = 1'b0;
-    ##2;
-    i_rst_n = 1'b1;
-    ##2;
+    //Some writes
+    write(5'h1A, 32'hABCD1234);
+    ##1;//One cycle for the inputs to be sent (testbench delay)
+    nowrite();
+    ##1;//One cycle for the write to happen
+    write(5'h0, 32'h55555555);//Should get ignored
+    ##1;
+    write(5'hB, 32'hBBBBBBBB);
+    ##1;
+    nowrite();
+    ##3;
 
-    //TODO
+    //Some reads
+    cb.i_rs1_idx <= 5'h1A;
+    cb.i_rs2_idx <= 5'h0;
+    ##1;//So the idx being set actually takes effect
+    cb.i_rs1_idx <= 'x;
+    cb.i_rs2_idx <= 'x;
+    assert(cb.o_rs1_rdata == 32'hABCD1234);
+    assert(cb.o_rs2_rdata == '0);//x0 is always 0
+    ##3;
+
+    //Reads and writes in the same cycle
+    cb.i_rs1_idx <= 5'h10;
+    cb.i_rs2_idx <= 5'hB;
+    write(5'h10, 32'h12345678);
+    ##1;//So the idxs being set actually takes effect, and the write inputs are sent. But the write hasn't happened yet
+    cb.i_rs1_idx <= 'x;
+    cb.i_rs2_idx <= 'x;
+    nowrite();
+    assert(cb.o_rs1_rdata == 32'h12345678);//Write should be forwarded to read
+    assert(cb.o_rs2_rdata == 32'hBBBBBBBB);//This should NOT be forwarded
+    ##1;//Now the write has happened
+    ##3;
 
     ##5;
     $finish;
