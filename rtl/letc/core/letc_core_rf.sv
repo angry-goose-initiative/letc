@@ -118,8 +118,6 @@ end
 
 //TODO
 
-//TODO also in simulation init registers to 32'hDEADBEEF to aid debugging
-
 `endif
 
 endmodule : letc_core_rf
