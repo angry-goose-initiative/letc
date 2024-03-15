@@ -106,8 +106,8 @@ else ifeq ($(SIMULATOR),xsim) # XSIM ###########################################
 
 else ifeq ($(SIMULATOR),vsim) # VSIM ##############################################################
 
-	cd $(OUTPUT_DIR) && vsim -voptargs=+acc=npr -l transcript -c -do "vcd file $(OUTPUT_DIR)/vsim_waves.vcd; vcd add -r /*; run -all" $(TBENCH_TOP)
-	-cd $(OUTPUT_DIR) && vcd2wlf $(OUTPUT_DIR)/vsim_waves.vcd $(OUTPUT_DIR)/vsim_waves.wlf
+	cd $(OUTPUT_DIR) && vsim -wlf $(OUTPUT_DIR)/vsim_waves.wlf -voptargs=+acc -l transcript -c -do "set WildcardFilter AllVerilog; log -r /*; run -all" $(TBENCH_TOP)
+	-cd $(OUTPUT_DIR) && wlf2vcd $(OUTPUT_DIR)/vsim_waves.wlf -o $(OUTPUT_DIR)/vsim_waves.vcd
 
 else
 	$(error "Unsupported simulator: $(SIMULATOR)")
@@ -144,7 +144,7 @@ else ifeq ($(SIMULATOR),xsim) # XSIM ###########################################
 else ifeq ($(SIMULATOR),vsim) # VSIM ##############################################################
 
 	mkdir -p $(OUTPUT_DIR)
-	cd $(OUTPUT_DIR) && vlog +define+SIMULATION +define+VSIM -lint -sv $(SOURCES)
+	cd $(OUTPUT_DIR) && vlog +acc +define+SIMULATION +define+VSIM -lint -sv $(SOURCES)
 
 else
 	$(error "Unsupported simulator: $(SIMULATOR)")
