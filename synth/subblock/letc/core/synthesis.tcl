@@ -23,6 +23,7 @@ set RTL_SOURCE "
     $RTL_ROOT/letc/letc_pkg.sv
     $RTL_ROOT/letc/core/letc_core_pkg.sv
     $RTL_ROOT/letc/core/letc_core_top.sv
+    $RTL_ROOT/letc/core/letc_core_gen_imm.sv
     $RTL_ROOT/letc/core/letc_core_rf.sv
     $RTL_ROOT/letc/core/letc_core_stage_f1.sv
     $RTL_ROOT/letc/core/letc_core_stage_f2.sv
