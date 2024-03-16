@@ -2,6 +2,8 @@
 
 The Little Engine That Could (Run Linux) :)
 
+[![LETC Non-UVM Tests](https://github.com/angry-goose-initiative/letc/actions/workflows/nonuvm_tests.yml/badge.svg?branch=main)](https://github.com/angry-goose-initiative/letc/actions/workflows/nonuvm_tests.yml)
+
 ## Lore
 
 LETC is the last step on our journey within the Angry Goose Initiative.

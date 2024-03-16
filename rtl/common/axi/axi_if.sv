@@ -255,11 +255,13 @@ assert property (@(posedge i_aclk) disable iff (!i_arst_n) (awvalid |-> (awburst
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) (arvalid |-> (arburst != axi_pkg::AXI_BURST_RESERVED)));
 
 //AXI valid and ready handshaking
+`ifndef VERILATOR//Verilator doesn't support the `throughout` keyword
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) awvalid |-> (awvalid throughout awready[->1]));
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) wvalid  |-> (wvalid throughout  wready[->1]));
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) bvalid  |-> (bvalid throughout  bready[->1]));
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) arvalid |-> (arvalid throughout arready[->1]));
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) rvalid  |-> (rvalid throughout  rready[->1]));
+`endif
 
 //Stable while valid
 //TODO
