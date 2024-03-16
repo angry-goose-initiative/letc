@@ -67,6 +67,16 @@ typedef enum logic [1:0] {
     SIZE_WORD       = 2'b10
 } size_e;
 
+typedef enum logic [2:0] {
+    //Enum values based on funct3 of branch instructions
+    CMP_OP_EQ   = 3'b000,
+    CMP_OP_NE   = 3'b001,
+    CMP_OP_LT   = 3'b100,
+    CMP_OP_GE   = 3'b101,
+    CMP_OP_LTU  = 3'b110,
+    CMP_OP_GEU  = 3'b111
+} cmp_op_e;
+
 typedef enum logic [3:0] {
     ALU_OP_ADD,
     ALU_OP_SUB,
