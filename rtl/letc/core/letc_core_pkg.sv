@@ -28,11 +28,14 @@ typedef logic [31:2]    pc_word_t;
 //C extension is not supported so we can save some bits
 typedef logic [31:2]    instr_t;
 
+typedef logic [6:0]     funct7_t;
+typedef logic [2:0]     funct3_t;
+
 /* ------------------------------------------------------------------------------------------------
  * Parameters
  * --------------------------------------------------------------------------------------------- */
 
-parameter pc_word_t RESET_PC_WORD= 30'h00000000;
+parameter pc_word_t RESET_PC_WORD = 30'h00000000;
 
 /* ------------------------------------------------------------------------------------------------
  * Enums
@@ -90,6 +93,34 @@ typedef enum logic [3:0] {
     ALU_OP_AND
 } alu_op_e;
 
+typedef enum logic [1:0] {
+    MEM_OP_NOP,
+    MEM_OP_LOAD,
+    MEM_OP_STORE
+} mem_op_e;
+
+typedef enum logic {
+    //Either nothing or read-modify-write
+    CSR_OP_NOP,
+    CSR_OP_ACCESS
+} csr_op_e;
+
+typedef enum logic [1:0] {
+    RD_SRC_ALU,
+    RD_SRC_MEM,
+    RD_SRC_CSR
+} rd_src_e;
+
+typedef enum logic [1:0] {
+    ALU_OP1_SRC_RS1
+    //TODO others
+} alu_op1_src_e;
+
+typedef enum logic [1:0] {
+    ALU_OP1_SRC_RS2
+    //TODO others
+} alu_op2_src_e;
+
 /* ------------------------------------------------------------------------------------------------
  * Structs 
  * --------------------------------------------------------------------------------------------- */
@@ -97,7 +128,7 @@ typedef enum logic [3:0] {
 typedef struct packed {
     logic               valid;
     pc_word_t           pc_word;
-    letc_pkg::paddr_t   fetch_addr;
+    letc_pkg::paddr_t   fetch_addr;//Virtual PC translated to physical address
 } f1_to_f2_s;
 
 typedef struct packed {
@@ -110,27 +141,55 @@ typedef struct packed {
     logic               valid;
     pc_word_t           pc_word;
 
-    //reg_idx_t           rs1_idx;//Are these needed for bypassing?
-    //reg_idx_t           rs2_idx;
+    rd_src_e            rd_src;//The final rd source, for writeback
     reg_idx_t           rd_idx;
+    logic               rd_we;
+
+    csr_op_e            csr_op;
 
     letc_pkg::word_t    rs1_rdata;
     letc_pkg::word_t    rs2_rdata;
+    letc_pkg::word_t    immediate;//Sometimes contains CSR idx (bits 11:0)
+    letc_pkg::word_t    csr_uimm;
 
-    letc_pkg::word_t    immediate;
+    alu_op1_src_e       alu_op1_src;
+    alu_op2_src_e       alu_op2_src;
+    alu_op_e            alu_op;
 
-    opcode_e            opcode;
-    //TODO control signals, rd write enable, etc
+    mem_op_e            memory_op;
+    logic               memory_signed;
+    size_e              memory_size;
 } d_to_e1_s;
 
 typedef struct packed {
-    logic valid;
-    //TODO
+    logic               valid;
+
+    rd_src_e            rd_src;
+    reg_idx_t           rd_idx;
+    logic               rd_we;
+
+    csr_op_e            csr_op;
+    logic [11:0]        csr_idx;
+    letc_pkg::word_t    old_csr_value;//To be written to rd
+
+    letc_pkg::word_t    alu_result;//Can also pass through registers, new CSR value to writeback, mem address, etc
+
+    mem_op_e            memory_op;
+    logic               memory_signed;
+    size_e              memory_size;
+    letc_pkg::word_t    rs2_rdata;//rs2 is what is written to memory
 } e1_to_e2_s;
 
 typedef struct packed {
-    logic valid;
-    //TODO
+    logic               valid;
+
+    rd_src_e            rd_src;
+    reg_idx_t           rd_idx;
+    logic               rd_we;
+
+    letc_pkg::word_t    old_csr_value;
+    letc_pkg::word_t    alu_result;
+    letc_pkg::word_t    memory_rdata;
 } e2_to_w_s;
 
 endpackage : letc_core_pkg

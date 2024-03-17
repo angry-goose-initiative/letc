@@ -23,7 +23,7 @@ module letc_core_stage_f2
     input logic i_rst_n,
 
     //From F1
-    input f1_to_f2_s i_f1_to_f2,
+    input  f1_to_f2_s i_f1_to_f2,
 
     //To D
     output f2_to_d_s o_f2_to_d

@@ -20,9 +20,17 @@ module letc_core_stage_w
 (
     //Clock and reset
     input logic i_clk,
-    input logic i_rst_n
+    input logic i_rst_n,
 
     //TODO
+
+    //rd Write Port
+    output reg_idx_t    i_rd_idx,
+    output word_t       i_rd_wdata,
+    output logic        i_rd_wen,
+
+    //From E2
+    input  e2_to_w_s    i_e2_to_w
 );
 
 logic TODO;

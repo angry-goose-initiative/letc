@@ -20,9 +20,15 @@ module letc_core_stage_e1
 (
     //Clock and reset
     input logic i_clk,
-    input logic i_rst_n
+    input logic i_rst_n,
 
     //TODO
+
+    //From D
+    input d_to_e1_s i_d_to_e1,
+
+    //To E2
+    output e1_to_e2_s o_e1_to_e2
 );
 
 logic TODO;

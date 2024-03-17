@@ -22,12 +22,14 @@ module letc_core_stage_d
     input logic i_clk,
     input logic i_rst_n,
 
+    //TODO
+
     //rs1 Read Port
-    output reg_idx_t    o_rs1_idx,
+    output reg_idx_t    o_rs1_idx,//Also goes to TGHM
     input  word_t       i_rs1_rdata,
 
     //rs2 Read Port
-    output reg_idx_t    o_rs2_idx,
+    output reg_idx_t    o_rs2_idx,//Also goes to TGHM
     input  word_t       i_rs2_rdata,
 
     //From F2
@@ -43,8 +45,8 @@ module letc_core_stage_d
 
 opcode_e opcode;
 reg_idx_t rd_idx, rs1_idx, rs2_idx;
-logic [2:0] funct3;
-logic [6:0] funct7;
+funct3_t funct3;
+funct7_t funct7;
 
 always_comb begin
     opcode  = opcode_e'(i_f2_to_d.instr[6:2]);
