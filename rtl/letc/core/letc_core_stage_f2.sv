@@ -1,6 +1,6 @@
 /*
  * File:    letc_core_stage_f2.sv
- * Brief:   TODO
+ * Brief:   LETC Core 1st Fetch Stage
  *
  * Copyright:
  *  Copyright (C) 2024 John Jekel
@@ -21,6 +21,13 @@ module letc_core_stage_f2
     //Clock and reset
     input logic i_clk,
     input logic i_rst_n,
+
+    //TODO
+
+    //Hazard/backpressure signals
+    output logic o_stage_ready,
+    input  logic i_stage_flush,
+    input  logic i_stage_stall,
 
     //From F1
     input  f1_to_f2_s i_f1_to_f2,

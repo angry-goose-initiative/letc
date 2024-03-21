@@ -1,6 +1,6 @@
 /*
  * File:    letc_core_axi_fsm.sv
- * Brief:   TODO
+ * Brief:   AXI Manager FSM and logic for LETC Core
  *
  * Copyright:
  *  Copyright (C) 2024 John Jekel

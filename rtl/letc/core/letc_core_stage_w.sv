@@ -1,6 +1,6 @@
 /*
  * File:    letc_core_stage_w.sv
- * Brief:   TODO
+ * Brief:   LETC Core Writeback Stage
  *
  * Copyright:
  *  Copyright (C) 2024 John Jekel
@@ -23,6 +23,11 @@ module letc_core_stage_w
     input logic i_rst_n,
 
     //TODO
+
+    //Hazard/backpressure signals
+    output logic o_stage_ready,
+    input  logic i_stage_flush,
+    input  logic i_stage_stall,
 
     //rd Write Port
     output reg_idx_t    i_rd_idx,

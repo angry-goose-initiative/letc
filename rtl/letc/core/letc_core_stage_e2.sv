@@ -1,6 +1,6 @@
 /*
  * File:    letc_core_stage_e2.sv
- * Brief:   TODO
+ * Brief:   LETC Core 2nd Execute Stage
  *
  * Copyright:
  *  Copyright (C) 2024 John Jekel
@@ -23,6 +23,11 @@ module letc_core_stage_e2
     input logic i_rst_n,
 
     //TODO
+
+    //Hazard/backpressure signals
+    output logic o_stage_ready,
+    input  logic i_stage_flush,
+    input  logic i_stage_stall,
 
     //From E1
     input e1_to_e2_s i_e1_to_e2,

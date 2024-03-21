@@ -1,6 +1,6 @@
 /*
  * File:    letc_core_pkg.sv
- * Brief:   TODO
+ * Brief:   Common LETC Core stuffs
  *
  * Copyright:
  *  Copyright (C) 2023-2024 John Jekel

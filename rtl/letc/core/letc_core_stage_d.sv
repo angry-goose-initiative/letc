@@ -1,6 +1,6 @@
 /*
  * File:    letc_core_stage_d.sv
- * Brief:   TODO
+ * Brief:   LETC Core Decode Stage
  *
  * Copyright:
  *  Copyright (C) 2024 John Jekel
@@ -23,6 +23,11 @@ module letc_core_stage_d
     input logic i_rst_n,
 
     //TODO
+
+    //Hazard/backpressure signals
+    output logic o_stage_ready,
+    input  logic i_stage_flush,
+    input  logic i_stage_stall,
 
     //rs1 Read Port
     output reg_idx_t    o_rs1_idx,//Also goes to TGHM

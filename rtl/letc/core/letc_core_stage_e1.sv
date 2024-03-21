@@ -1,6 +1,6 @@
 /*
  * File:    letc_core_stage_e1.sv
- * Brief:   TODO
+ * Brief:   LETC Core 1st Execute Stage
  *
  * Copyright:
  *  Copyright (C) 2024 John Jekel
@@ -23,6 +23,11 @@ module letc_core_stage_e1
     input logic i_rst_n,
 
     //TODO
+
+    //Hazard/backpressure signals
+    output logic o_stage_ready,
+    input  logic i_stage_flush,
+    input  logic i_stage_stall,
 
     //From D
     input d_to_e1_s i_d_to_e1,

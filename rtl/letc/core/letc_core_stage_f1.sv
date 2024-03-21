@@ -1,6 +1,6 @@
 /*
  * File:    letc_core_stage_f1.sv
- * Brief:   TODO
+ * Brief:   LETC Core 1st Fetch Stage
  *
  * Copyright:
  *  Copyright (C) 2024 John Jekel
@@ -23,6 +23,11 @@ module letc_core_stage_f1
     input logic i_rst_n,
 
     //TODO others
+
+    //Hazard/backpressure signals
+    output logic o_stage_ready,
+    input  logic i_stage_flush,
+    input  logic i_stage_stall,
 
     //To F2
     output f1_to_f2_s o_f1_to_f2
