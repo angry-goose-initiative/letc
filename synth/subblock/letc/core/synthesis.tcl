@@ -23,7 +23,6 @@ set RTL_SOURCE "
     $RTL_ROOT/letc/letc_pkg.sv
     $RTL_ROOT/letc/core/letc_core_pkg.sv
     $RTL_ROOT/letc/core/letc_core_top.sv
-    $RTL_ROOT/letc/core/letc_core_gen_imm.sv
     $RTL_ROOT/letc/core/letc_core_rf.sv
     $RTL_ROOT/letc/core/letc_core_stage_f1.sv
     $RTL_ROOT/letc/core/letc_core_stage_f2.sv
@@ -31,6 +30,12 @@ set RTL_SOURCE "
     $RTL_ROOT/letc/core/letc_core_stage_e1.sv
     $RTL_ROOT/letc/core/letc_core_stage_e2.sv
     $RTL_ROOT/letc/core/letc_core_stage_w.sv
+    $RTL_ROOT/letc/core/letc_core_tghm.sv
+    $RTL_ROOT/letc/core/letc_core_cache.sv
+    $RTL_ROOT/letc/core/letc_core_tlb.sv
+    $RTL_ROOT/letc/core/letc_core_mmu.sv
+    $RTL_ROOT/letc/core/letc_core_csr.sv
+    $RTL_ROOT/letc/core/letc_core_limp_if.sv
     $RTL_ROOT/letc/core/letc_core_axi_fsm.sv
 "
 

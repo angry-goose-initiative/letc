@@ -61,14 +61,7 @@ logic [5:0] stage_flush;
 logic [5:0] stage_stall;
 
 //Memory requests
-//TODO probably make this into an interface
-logic   [2:0]   valid;
-logic   [2:0]   ready;
-logic   [2:0]   wen_nren;//Write enable and not read enable
-size_e  [2:0]   size;
-paddr_t [2:0]   addr;
-word_t  [2:0]   rdata;
-word_t  [2:0]   wdata;
+letc_core_limp_if limp[2:0](.*);
 
 //Implicitly read CSRs by LETC Core logic, always valid
 csr_implicit_rdata_s csr_implicit_rdata;
@@ -245,15 +238,21 @@ letc_core_tghm tghm (
 );
 
 letc_core_cache l1icache (//TODO perhaps parameters for read only?
-    .*
+    .*,
 
     //TODO design cache interface. Is it as simple as buffering LIMP accesses or something?
+
+    //LIMP interface
+    .limp(limp[0])
 );
 
 letc_core_cache l1dcache (
-    .*
+    .*,
 
     //TODO design cache interface. Is it as simple as buffering LIMP accesses or something?
+
+    //LIMP interface
+    .limp(limp[1])
 );
 
 letc_core_tlb itlb (
@@ -273,9 +272,12 @@ letc_core_tlb dtlb (
 );
 
 letc_core_mmu mmu (
-    .*
+    .*,
 
     //TODO design MMU interfaces
+
+    //LIMP interface
+    .limp(limp[2])
 );
 
 letc_core_csr csr (
@@ -301,15 +303,13 @@ letc_core_csr csr (
 );
 
 letc_core_axi_fsm axi_fsm (
-    .*,
+    .*
 
-    .i_valid(valid),
-    .o_ready(ready),
-    .i_wen_nren(wen_nren),
-    .i_size(size),
-    .i_addr(addr),
-    .o_rdata(rdata),
-    .i_wdata(wdata)
+    //Core IO
+    //axi connected thanks to .* above
+
+    //Internal Core Connections
+    //limp connected thanks to .* above
 );
 
 endmodule : letc_core_top

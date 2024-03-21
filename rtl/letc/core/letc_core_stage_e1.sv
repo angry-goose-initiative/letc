@@ -36,6 +36,6 @@ module letc_core_stage_e1
     output e1_to_e2_s o_e1_to_e2
 );
 
-logic TODO;
+assign o_e1_to_e2.valid = 1'b0;//TODO
 
 endmodule : letc_core_stage_e1

@@ -18,11 +18,14 @@ module letc_core_mmu
 (
     //Clock and reset
     input logic i_clk,
-    input logic i_rst_n
+    input logic i_rst_n,
 
     //TODO design MMU interfaces
+    
+    //LIMP interface
+    letc_core_limp_if.requestor limp
 );
 
-logic TODO;
+assign limp.valid = 1'b0;//TODO
 
 endmodule : letc_core_mmu

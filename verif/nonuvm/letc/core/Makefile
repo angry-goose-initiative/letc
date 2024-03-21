@@ -27,6 +27,7 @@ RTL_SOURCES := \
     $(RTL_ROOT)/letc/core/letc_core_tlb.sv \
     $(RTL_ROOT)/letc/core/letc_core_mmu.sv \
     $(RTL_ROOT)/letc/core/letc_core_csr.sv \
+    $(RTL_ROOT)/letc/core/letc_core_limp_if.sv \
     $(RTL_ROOT)/letc/core/letc_core_axi_fsm.sv
 
 ####################################################################################################

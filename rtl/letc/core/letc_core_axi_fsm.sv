@@ -18,7 +18,7 @@ module letc_core_axi_fsm
     import letc_pkg::*;
     import letc_core_pkg::*;
 #(
-    parameter NUM_REQUESTERS    = 3,//MMU, caches, and uncached access
+    parameter NUM_REQUESTORS    = 3,//MMU, caches, and uncached access
     parameter AXI_ID            = 0
 ) (
     //Clock and reset
@@ -29,19 +29,40 @@ module letc_core_axi_fsm
     axi_if.manager axi,
 
     //Internal Core Connections
-    //TODO probably make this into an interface (LIMP)
-    input   logic   [NUM_REQUESTERS-1:0]    i_valid,
-    output  logic   [NUM_REQUESTERS-1:0]    o_ready,
-    input   logic   [NUM_REQUESTERS-1:0]    i_wen_nren,//Write enable and not read enable
-    input   size_e  [NUM_REQUESTERS-1:0]    i_size,
-    input   paddr_t [NUM_REQUESTERS-1:0]    i_addr,
-    output  word_t  [NUM_REQUESTERS-1:0]    o_rdata,
-    input   word_t  [NUM_REQUESTERS-1:0]    i_wdata
-    //TODO fault signal if unaligned, AXI errors, etc
+    //Sadly this needs to be unpacked since these are interfaces. But we've
+    //ensured this is synthesizable
+    letc_core_limp_if.axi_fsm limp [NUM_REQUESTORS-1:0]
 );
 
 //TODO in future this can be made much more efficient by allowing reads and writes simulataneously
-//That change, and also adding more AXI ports, could be made invisible to the requesters
+//That change, and also adding more AXI ports, could be made invisible to the requestors
+
+/* ------------------------------------------------------------------------------------------------
+ * "Breaking Out" LIMP Signals
+ * --------------------------------------------------------------------------------------------- */
+
+//So they're easier to work with and we can index into them, which is useful for arbitration
+logic   [NUM_REQUESTORS-1:0]    limp_valid;
+logic   [NUM_REQUESTORS-1:0]    limp_ready;
+logic   [NUM_REQUESTORS-1:0]    limp_wen_nren;//Write enable and not read enable
+size_e  [NUM_REQUESTORS-1:0]    limp_size;
+paddr_t [NUM_REQUESTORS-1:0]    limp_addr;
+word_t  [NUM_REQUESTORS-1:0]    limp_rdata;
+word_t  [NUM_REQUESTORS-1:0]    limp_wdata;
+
+generate
+for (genvar ii = 0; ii < NUM_REQUESTORS; ++ii) begin : breakout_limp
+    always_comb begin
+        limp_valid[ii]      = limp[ii].valid;
+        limp[ii].ready      = limp_ready[ii];
+        limp_wen_nren[ii]   = limp[ii].wen_nren;
+        limp_size[ii]       = limp[ii].size;
+        limp_addr[ii]       = limp[ii].addr;
+        limp[ii].rdata      = limp_rdata[ii];
+        limp_wdata[ii]      = limp[ii].wdata;
+    end
+end : breakout_limp
+endgenerate
 
 /* ------------------------------------------------------------------------------------------------
  * Internal Signals
@@ -53,35 +74,35 @@ size_e  selected_size;
 paddr_t selected_addr;
 word_t  selected_wdata;
 
-logic   ready_to_requester;
+logic   ready_to_requestor;
 
 /* ------------------------------------------------------------------------------------------------
  * Arbiter and Switching
  * --------------------------------------------------------------------------------------------- */
 
-logic [$clog2(NUM_REQUESTERS)-1:0] selected_requester;
+logic [$clog2(NUM_REQUESTORS)-1:0] selected_requestor;
 
 always_comb begin
-    //Priority decoder; priority increases as requester number decreases
+    //Priority decoder; priority increases as requestor number decreases
     //FIXME we need to have state so one requestor doesn't steal from another
-    selected_requester = '0;
-    for (int ii = NUM_REQUESTERS - 1; ii > 0; --ii) begin
-        if (i_valid[ii]) begin
-            selected_requester = ii;
+    selected_requestor = '0;
+    for (int ii = NUM_REQUESTORS - 1; ii > 0; --ii) begin
+        if (limp_valid[ii]) begin
+            selected_requestor = ii;
         end
     end
 
-    selected_valid = |i_valid;//More efficient than a mux
+    selected_valid = |limp_valid;//More efficient than a mux
 
     //Muxes
-    selected_wen_nren = i_wen_nren[selected_requester];
-    selected_size     = i_size[selected_requester];
-    selected_addr     = i_addr[selected_requester];
-    selected_wdata    = i_wdata[selected_requester];
+    selected_wen_nren = limp_wen_nren[selected_requestor];
+    selected_size     = limp_size[selected_requestor];
+    selected_addr     = limp_addr[selected_requestor];
+    selected_wdata    = limp_wdata[selected_requestor];
 
-    //Demux ready signal to the selected requester
-    o_ready = '0;
-    o_ready[selected_requester] = ready_to_requester;
+    //Demux ready signal to the selected requestor
+    limp_ready = '0;
+    limp_ready[selected_requestor] = ready_to_requestor;
 end
 
 /* ------------------------------------------------------------------------------------------------
@@ -185,7 +206,7 @@ always_comb begin
     axi.awvalid = 1'b0;
     axi.wvalid  = 1'b0;
     //axi.bready  = 1'b0;//More efficient to just make this high all of the time as an optimization (the response must come at least one cycle later)
-    ready_to_requester = 1'b0;
+    ready_to_requestor = 1'b0;
 
     if (selected_valid) begin
         unique case (state)
@@ -196,7 +217,7 @@ always_comb begin
                 end else begin//Read
                     axi.arvalid = 1'b1;
                     axi.rready  = 1'b1;
-                    ready_to_requester = axi.ar_transfer_complete() && axi.r_transfer_complete();
+                    ready_to_requestor = axi.ar_transfer_complete() && axi.r_transfer_complete();
                 end
             end
             SEND_RADDR: begin
@@ -204,7 +225,7 @@ always_comb begin
             end
             GET_RDATA: begin
                 axi.rready  = 1'b1;
-                ready_to_requester = axi.r_transfer_complete();
+                ready_to_requestor = axi.r_transfer_complete();
             end
             SEND_WADDR: begin
                 axi.awvalid = 1'b1;
@@ -214,7 +235,7 @@ always_comb begin
             end
             GET_BRESP: begin
                 //axi.bready  = 1'b1;//More efficient to just make this high all of the time as an optimization (the response must come at least one cycle later)
-                ready_to_requester = axi.b_transfer_complete();
+                ready_to_requestor = axi.b_transfer_complete();
             end
         endcase
     end
@@ -257,9 +278,9 @@ always_comb begin
         SIZE_WORD:      processed_rdata = axi.rdata;
     endcase
 
-    //Connect the data to all requesters
-    for (int ii = 0; ii < NUM_REQUESTERS; ++ii) begin
-        o_rdata[ii] = processed_rdata;
+    //Connect the data to all requestors
+    for (int ii = 0; ii < NUM_REQUESTORS; ++ii) begin
+        limp_rdata[ii] = processed_rdata;
     end
 end
 
