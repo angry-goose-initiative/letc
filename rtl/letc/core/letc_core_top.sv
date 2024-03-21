@@ -70,6 +70,24 @@ paddr_t [2:0]   addr;
 word_t  [2:0]   rdata;
 word_t  [2:0]   wdata;
 
+//Implicitly read CSRs by LETC Core logic, always valid
+csr_implicit_rdata_s csr_implicit_rdata;
+
+//Interface for CSRs whose state (at least partially) exists outside of letc_core_csr
+//TODO
+
+//CSR explicit software read interface
+logic           csr_explicit_ren;
+logic [11:0]    csr_explicit_raddr;
+word_t          csr_explicit_rdata;
+logic           csr_explicit_rill;
+
+//CSR explicit software read interface
+logic           csr_explicit_wen;
+logic [11:0]    csr_explicit_waddr;
+word_t          csr_explicit_wdata;
+logic           csr_explicit_will;
+
 /* ------------------------------------------------------------------------------------------------
  * Module Instantiations
  * --------------------------------------------------------------------------------------------- */
@@ -140,6 +158,12 @@ letc_core_stage_d stage_d (
     .o_rs2_idx(rs2_idx),
     .i_rs2_rdata(rs2_rdata),
 
+    //CSR Read Port
+    .o_csr_explicit_ren(csr_explicit_ren),
+    .o_csr_explicit_raddr(csr_explicit_raddr),
+    .i_csr_explicit_rdata(csr_explicit_rdata),
+    .o_csr_explicit_rill(csr_explicit_rill),
+
     //From F2
     .i_f2_to_d(f2_to_d),
 
@@ -196,6 +220,12 @@ letc_core_stage_w stage_w (
     .i_rd_wdata(rd_wdata),
     .i_rd_wen(rd_wen),
 
+    //CSR Write Port
+    .o_csr_explicit_wen(csr_explicit_wen),
+    .o_csr_explicit_waddr(csr_explicit_waddr),
+    .o_csr_explicit_wdata(csr_explicit_wdata),
+    .o_csr_explicit_will(csr_explicit_will),
+
     //From E2
     .i_e2_to_w(e2_to_w)
 );
@@ -246,6 +276,28 @@ letc_core_mmu mmu (
     .*
 
     //TODO design MMU interfaces
+);
+
+letc_core_csr csr (
+    .*,
+
+    //Implicitly read CSRs by LETC Core logic, always valid
+    .o_csr_implicit_rdata(csr_implicit_rdata),
+
+    //Interface for CSRs whose state (at least partially) exists outside of this module
+    //TODO
+
+    //CSR explicit software read interface
+    .i_csr_explicit_ren(csr_explicit_ren),
+    .i_csr_explicit_raddr(csr_explicit_raddr),
+    .o_csr_explicit_rdata(csr_explicit_rdata),
+    .o_csr_explicit_rill(csr_explicit_rill),
+
+    //CSR explicit software read interface
+    .i_csr_explicit_wen(csr_explicit_wen),
+    .i_csr_explicit_waddr(csr_explicit_waddr),
+    .i_csr_explicit_wdata(csr_explicit_wdata),
+    .o_csr_explicit_will(csr_explicit_will)
 );
 
 letc_core_axi_fsm axi_fsm (

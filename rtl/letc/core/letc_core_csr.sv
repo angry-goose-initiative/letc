@@ -1,27 +1,35 @@
 /*
- * File:    core_csr_file.sv
+ * File:    letc_core_csr.sv
  * Brief:   The CSR file
  *
- * Copyright (C) 2023 John Jekel and Nick Chan
+ * Copyright:
+ *  Copyright (C) 2023      Nick Chan
+ *  Copyright (C) 2023-2024 John Jekel
  * See the LICENSE file at the root of the project for licensing info.
  *
  * TODO longer description
  *
 */
 
-`ifdef IMPORTS_IN_MODULE_SCOPE_UNSUPPORTED
-import letc_pkg::*;
-import core_pkg::*;
-`endif
+/* ------------------------------------------------------------------------------------------------
+ * Module Definition
+ * --------------------------------------------------------------------------------------------- */
 
-module core_csr_file
-`ifndef IMPORTS_IN_MODULE_SCOPE_UNSUPPORTED
+module letc_core_csr
     import letc_pkg::*;
-    import core_pkg::*;
-`endif
+    import letc_core_pkg::*;
 (
-    input   logic           clk,
-    input   logic           rst_n,
+    //Clock and reset
+    input logic i_clk,
+    input logic i_rst_n,
+
+    //Implicitly read CSRs by LETC Core logic, always valid
+    output csr_implicit_rdata_s o_csr_implicit_rdata,
+
+    //Interface for CSRs whose state (at least partially) exists outside of this module
+    //TODO
+
+    /*
     input   logic [11:0]    csr_sel,//TODO should we make an enum for this?
     output  word_t          csr_data_out,
 
@@ -64,8 +72,25 @@ module core_csr_file
     //TODO mip?
     //TODO minst?
     //TODO others
+    */
+
+    //CSR explicit software read interface
+    input  logic        i_csr_explicit_ren,
+    input  logic [11:0] i_csr_explicit_raddr,
+    output word_t       o_csr_explicit_rdata,
+    output logic        o_csr_explicit_rill,
+
+    //CSR explicit software read interface
+    input  logic        i_csr_explicit_wen,
+    input  logic [11:0] i_csr_explicit_waddr,
+    input  word_t       i_csr_explicit_wdata,
+    output logic        o_csr_explicit_will
 );
 
-assign csr_data_out = 32'hDEADBEEF;//TESTING
+assign o_csr_explicit_rdata = 32'hDEADBEEF;//TESTING
 
-endmodule : core_csr_file
+//Detecting illegal CSR accesses for security/to catch SW bugs is a low priority
+assign o_csr_explicit_rill = 1'b0;
+assign o_csr_explicit_will = 1'b0;
+
+endmodule : letc_core_csr

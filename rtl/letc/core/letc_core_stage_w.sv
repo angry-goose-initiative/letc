@@ -34,6 +34,12 @@ module letc_core_stage_w
     output word_t       i_rd_wdata,
     output logic        i_rd_wen,
 
+    //CSR Write Port
+    output logic        o_csr_explicit_wen,
+    output logic [11:0] o_csr_explicit_waddr,
+    output word_t       o_csr_explicit_wdata,
+    output logic        o_csr_explicit_will,
+
     //From E2
     input  e2_to_w_s    i_e2_to_w
 );

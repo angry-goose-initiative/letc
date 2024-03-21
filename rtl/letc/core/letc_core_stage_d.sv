@@ -37,6 +37,12 @@ module letc_core_stage_d
     output reg_idx_t    o_rs2_idx,//Also goes to TGHM
     input  word_t       i_rs2_rdata,
 
+    //CSR Read Port
+    output logic        o_csr_explicit_ren,
+    output logic [11:0] o_csr_explicit_raddr,
+    input  word_t       i_csr_explicit_rdata,
+    output logic        o_csr_explicit_rill,
+
     //From F2
     input f2_to_d_s i_f2_to_d,
 

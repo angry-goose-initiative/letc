@@ -31,6 +31,8 @@ typedef logic [31:2]    instr_t;
 typedef logic [6:0]     funct7_t;
 typedef logic [2:0]     funct3_t;
 
+typedef logic [1:0]     priv_t;
+
 /* ------------------------------------------------------------------------------------------------
  * Parameters
  * --------------------------------------------------------------------------------------------- */
@@ -122,7 +124,7 @@ typedef enum logic [1:0] {
 } alu_op2_src_e;
 
 /* ------------------------------------------------------------------------------------------------
- * Structs 
+ * Pipeline Datapath Structs 
  * --------------------------------------------------------------------------------------------- */
 
 typedef struct packed {
@@ -191,5 +193,29 @@ typedef struct packed {
     letc_pkg::word_t    alu_result;
     letc_pkg::word_t    memory_rdata;
 } e2_to_w_s;
+
+/* ------------------------------------------------------------------------------------------------
+ * CSR Structs 
+ * --------------------------------------------------------------------------------------------- */
+
+//Note: Only provides CSRs that actually need to be implicitly read by LETC Core logic
+typedef struct packed {
+    //TODO structs for each CSR that holds the fields
+    //TODO add more CSRs here if they need to be implicitly read
+
+    letc_pkg::word_t mstatus;
+    letc_pkg::word_t mcause;
+    letc_pkg::word_t mip;
+    letc_pkg::word_t mie;
+    letc_pkg::word_t mideleg;
+    letc_pkg::word_t medeleg;
+    letc_pkg::word_t mtvec;
+
+    letc_pkg::word_t scause;
+    letc_pkg::word_t stvec;
+    letc_pkg::word_t satp;
+
+    priv_t current_priv;//Not really a standard RISC-V CSR but useful to many things
+} csr_implicit_rdata_s;
 
 endpackage : letc_core_pkg
