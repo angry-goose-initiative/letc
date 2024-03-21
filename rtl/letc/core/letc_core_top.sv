@@ -214,6 +214,40 @@ letc_core_tghm tghm (
     //TODO
 );
 
+letc_core_cache l1icache (//TODO perhaps parameters for read only?
+    .*
+
+    //TODO design cache interface. Is it as simple as buffering LIMP accesses or something?
+);
+
+letc_core_cache l1dcache (
+    .*
+
+    //TODO design cache interface. Is it as simple as buffering LIMP accesses or something?
+);
+
+letc_core_tlb itlb (
+    .*
+
+    //TODO TLB interface to F1
+
+    //TODO TLB interface to MMU
+);
+
+letc_core_tlb dtlb (
+    .*
+
+    //TODO TLB interface to E1
+
+    //TODO TLB interface to MMU
+);
+
+letc_core_mmu mmu (
+    .*
+
+    //TODO design MMU interfaces
+);
+
 letc_core_axi_fsm axi_fsm (
     .*,
 
