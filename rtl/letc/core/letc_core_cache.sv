@@ -20,7 +20,8 @@ module letc_core_cache
     input logic i_clk,
     input logic i_rst_n,
 
-    //TODO design cache interface. Is it as simple as buffering LIMP accesses or something?
+    //Cache interface
+    letc_core_cache_if.cache cache_if,
     
     //LIMP interface
     letc_core_limp_if.requestor limp

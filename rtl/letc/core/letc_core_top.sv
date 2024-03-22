@@ -81,6 +81,14 @@ logic [11:0]    csr_explicit_waddr;
 word_t          csr_explicit_wdata;
 logic           csr_explicit_will;
 
+//Cache interfaces
+letc_core_cache_if l1icache_if(.*);
+letc_core_cache_if l1dcache_if(.*);
+
+//TLB interfaces
+letc_core_tlb_if itlb_if(.*);
+letc_core_tlb_if dtlb_if(.*);
+
 /* ------------------------------------------------------------------------------------------------
  * Module Instantiations
  * --------------------------------------------------------------------------------------------- */
@@ -106,6 +114,9 @@ letc_core_stage_f1 stage_f1 (
     .*,
 
     //TODO
+
+    //TLB interface
+    .itlb_if(itlb_if),
 
     //Hazard/backpressure signals
     .o_stage_ready(stage_ready[0]),
@@ -168,6 +179,9 @@ letc_core_stage_e1 stage_e1 (
     .*,
 
     //TODO
+
+    //TLB interface
+    .dtlb_if(dtlb_if),
 
     //Hazard/backpressure signals
     .o_stage_ready(stage_ready[3]),
@@ -240,7 +254,8 @@ letc_core_tghm tghm (
 letc_core_cache l1icache (//TODO perhaps parameters for read only?
     .*,
 
-    //TODO design cache interface. Is it as simple as buffering LIMP accesses or something?
+    //Cache interface
+    .cache_if(l1icache_if),
 
     //LIMP interface
     .limp(limp[0])
@@ -249,24 +264,27 @@ letc_core_cache l1icache (//TODO perhaps parameters for read only?
 letc_core_cache l1dcache (
     .*,
 
-    //TODO design cache interface. Is it as simple as buffering LIMP accesses or something?
+    //Cache interface
+    .cache_if(l1dcache_if),
 
     //LIMP interface
     .limp(limp[1])
 );
 
 letc_core_tlb itlb (
-    .*
+    .*,
 
-    //TODO TLB interface to F1
+    //TLB interface
+    .tlb_if(itlb_if)
 
     //TODO TLB interface to MMU
 );
 
 letc_core_tlb dtlb (
-    .*
+    .*,
 
-    //TODO TLB interface to E1
+    //TLB interface
+    .tlb_if(dtlb_if)
 
     //TODO TLB interface to MMU
 );

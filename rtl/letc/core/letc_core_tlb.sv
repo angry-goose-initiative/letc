@@ -18,9 +18,10 @@ module letc_core_tlb
 (//TODO perhaps parameters?
     //Clock and reset
     input logic i_clk,
-    input logic i_rst_n
+    input logic i_rst_n,
 
-    //TODO design TLB interface to F1 and E1
+    //TLB interface
+    letc_core_tlb_if.tlb tlb_if
 
     //TODO design TLB interface to MMU
 );

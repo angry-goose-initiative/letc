@@ -24,6 +24,9 @@ module letc_core_stage_e1
 
     //TODO
 
+    //TLB interface
+    letc_core_tlb_if.stage dtlb_if,
+
     //Hazard/backpressure signals
     output logic o_stage_ready,
     input  logic i_stage_flush,
