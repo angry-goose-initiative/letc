@@ -43,6 +43,10 @@ module letc_core_stage_d
     input  word_t       i_csr_explicit_rdata,
     output logic        o_csr_explicit_rill,
 
+    //Branch signals
+    output logic        o_branch_taken,
+    output pc_word_t    o_branch_target,
+
     //From F2
     input f2_to_d_s i_f2_to_d,
 

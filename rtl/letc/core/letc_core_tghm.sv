@@ -60,6 +60,8 @@ module letc_core_tghm
     input reg_idx_t i_stage_w_rd_idx
     */
 
+   //TODO also need to snoop branch target/etc
+
     //TODO bypass signals for perf optimizations down the road
 
     //TODO others

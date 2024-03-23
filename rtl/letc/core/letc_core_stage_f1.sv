@@ -24,6 +24,10 @@ module letc_core_stage_f1
 
     //TODO others
 
+    //Branch signals
+    input logic     i_branch_taken,
+    input pc_word_t i_branch_target,
+
     //TLB interface
     letc_core_tlb_if.stage itlb_if,
 

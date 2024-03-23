@@ -55,6 +55,10 @@ d_to_e1_s   d_to_e1;
 e1_to_e2_s  e1_to_e2;
 e2_to_w_s   e2_to_w;
 
+//Branch signals
+logic       branch_taken;
+pc_word_t   branch_target;
+
 //Hazard/backpressure signals
 logic [5:0] stage_ready;
 logic [5:0] stage_flush;
@@ -115,6 +119,10 @@ letc_core_stage_f1 stage_f1 (
 
     //TODO
 
+    //Branch signals
+    .i_branch_taken(branch_taken),
+    .i_branch_target(branch_target),
+
     //TLB interface
     .itlb_if(itlb_if),
 
@@ -167,6 +175,10 @@ letc_core_stage_d stage_d (
     .o_csr_explicit_raddr(csr_explicit_raddr),
     .i_csr_explicit_rdata(csr_explicit_rdata),
     .o_csr_explicit_rill(csr_explicit_rill),
+
+    //Branch signals
+    .o_branch_taken(branch_taken),
+    .o_branch_target(branch_target),
 
     //From F2
     .i_f2_to_d(f2_to_d),
