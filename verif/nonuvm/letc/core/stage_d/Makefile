@@ -8,8 +8,8 @@
 # Testbench Configuration
 ####################################################################################################
 
-TBENCH_TOP  := letc_core_gen_imm_tb
-RTL_SOURCES := $(RTL_ROOT)/letc/letc_pkg.sv $(RTL_ROOT)/letc/core/letc_core_pkg.sv $(RTL_ROOT)/letc/core/letc_core_gen_imm.sv
+TBENCH_TOP  := letc_core_stage_d_tb
+RTL_SOURCES := $(RTL_ROOT)/letc/letc_pkg.sv $(RTL_ROOT)/letc/core/letc_core_pkg.sv $(RTL_ROOT)/letc/core/letc_core_stage_d.sv
 
 ####################################################################################################
 # Add Targets!

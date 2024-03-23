@@ -21,15 +21,13 @@ package letc_core_pkg;
  * --------------------------------------------------------------------------------------------- */
 
 typedef logic [4:0]     reg_idx_t;
+typedef logic [11:0]    csr_idx_t;
 
 //We don't support misaligned instructions or the C extension so we can ignore the lower 2 bits of the PC
 typedef logic [31:2]    pc_word_t;
 
 //C extension is not supported so we can save some bits
 typedef logic [31:2]    instr_t;
-
-typedef logic [6:0]     funct7_t;
-typedef logic [2:0]     funct3_t;
 
 typedef logic [1:0]     priv_t;
 
@@ -48,22 +46,6 @@ typedef enum logic [1:0] {
     S_MODE = 2'b01,
     M_MODE = 2'b11
 } prv_mode_e;
-
-typedef enum logic [4:0] {
-    OPCODE_LOAD   = 5'b00000, OPCODE_LOAD_FP    = 5'b00001, OPCODE_CUSTOM_0   = 5'b00010, OPCODE_MISC_MEM = 5'b00011,
-    OPCODE_OP_IMM = 5'b00100, OPCODE_AUIPC      = 5'b00101, OPCODE_OP_IMM_32  = 5'b00110, OPCODE_B48_0    = 5'b00111,
-    OPCODE_STORE  = 5'b01000, OPCODE_STORE_FP   = 5'b01001, OPCODE_CUSTOM_1   = 5'b01010, OPCODE_AMO      = 5'b01011,
-    OPCODE_OP     = 5'b01100, OPCODE_LUI        = 5'b01101, OPCODE_OP_32      = 5'b01110, OPCODE_B64      = 5'b01111,
-    OPCODE_MADD   = 5'b10000, OPCODE_MSUB       = 5'b10001, OPCODE_NMSUB      = 5'b10010, OPCODE_NMADD    = 5'b10011,
-    OPCODE_OP_FP  = 5'b10100, OPCODE_RESERVED_0 = 5'b10101, OPCODE_CUSTOM_2   = 5'b10110, OPCODE_B48_1    = 5'b10111,
-    OPCODE_BRANCH = 5'b11000, OPCODE_JALR       = 5'b11001, OPCODE_RESERVED_1 = 5'b11010, OPCODE_JAL      = 5'b11011,
-    OPCODE_SYSTEM = 5'b11100, OPCODE_RESERVED_3 = 5'b11101, OPCODE_CUSTOM_3   = 5'b11110, OPCODE_BGE80    = 5'b11111
-} opcode_e;
-
-typedef enum logic [2:0] {
-    INSTR_FORMAT_R, INSTR_FORMAT_I, INSTR_FORMAT_S, INSTR_FORMAT_B,
-    INSTR_FORMAT_U, INSTR_FORMAT_J, INSTR_FORMAT_UIMM, INSTR_FORMAT_OTHER
-} instr_format_e;
 
 typedef enum logic [1:0] {
     //Values correspond to RISC-V instruction encoding for potential efficiency gains
@@ -123,6 +105,15 @@ typedef enum logic [1:0] {
     //TODO others
 } alu_op2_src_e;
 
+typedef enum logic [2:0] {
+    SYSTEM_INSTR_ECALL,
+    SYSTEM_INSTR_EBREAK,
+    SYSTEM_INSTR_SRET,
+    SYSTEM_INSTR_MRET,
+    SYSTEM_INSTR_WFI,
+    SYSTEM_INSTR_SFENCE_VMA
+} system_instr_e;
+
 /* ------------------------------------------------------------------------------------------------
  * Pipeline Datapath Structs
  * --------------------------------------------------------------------------------------------- */
@@ -148,11 +139,15 @@ typedef struct packed {
     logic               rd_we;
 
     csr_op_e            csr_op;
+    csr_idx_t           csr_idx;
+    letc_pkg::word_t    csr_rdata;
 
+    reg_idx_t           rs1_idx;//Not used by e1 directly, rather used by TGHM to detect hazards
+    reg_idx_t           rs2_idx;//Same here
     letc_pkg::word_t    rs1_rdata;
     letc_pkg::word_t    rs2_rdata;
-    letc_pkg::word_t    immediate;//Sometimes contains CSR idx (bits 11:0)
-    letc_pkg::word_t    csr_uimm;
+
+    letc_pkg::word_t    immediate;
 
     alu_op1_src_e       alu_op1_src;
     alu_op2_src_e       alu_op2_src;
@@ -171,7 +166,7 @@ typedef struct packed {
     logic               rd_we;
 
     csr_op_e            csr_op;
-    logic [11:0]        csr_idx;
+    csr_idx_t           csr_idx;
     letc_pkg::word_t    old_csr_value;//To be written to rd
 
     letc_pkg::word_t    alu_result;//Can also pass through registers, new CSR value to writeback, mem address, etc
@@ -189,9 +184,12 @@ typedef struct packed {
     reg_idx_t           rd_idx;
     logic               rd_we;
 
-    letc_pkg::word_t    old_csr_value;
-    letc_pkg::word_t    alu_result;
-    letc_pkg::word_t    memory_rdata;
+    csr_op_e            csr_op;
+    csr_idx_t           csr_idx;
+
+    letc_pkg::word_t    old_csr_value;//Written to rd, sometimes
+    letc_pkg::word_t    alu_result;//Sometimes written to rd, or to a CSR
+    letc_pkg::word_t    memory_rdata;//Written to rd, sometimes
 } e2_to_w_s;
 
 /* ------------------------------------------------------------------------------------------------

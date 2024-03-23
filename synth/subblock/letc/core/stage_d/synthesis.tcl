@@ -1,37 +1,30 @@
-#!/bin/bash
+# synthesis.tcl
 # Copyright (C) 2024 John Jekel
 # See the LICENSE file at the root of the project for licensing info.
 #
-# Regression script for Non-UVM testbenches
-
-# Exit on error immediately
-set -e
 
 ####################################################################################################
-# common
+# Variables from Makefile
 ####################################################################################################
 
-make clean simulate TBENCH=common/axi/smoke
-make clean simulate TBENCH=common/fifo/fifo_0r1w
+set RTL_ROOT        [lindex $argv 0]
+set SUBBLOCK_ROOT   [lindex $argv 1]
+set BLOCK_PATH      [lindex $argv 2]
 
 ####################################################################################################
-# example
+# Synthesis Config
 ####################################################################################################
 
-make clean simulate TBENCH=example
+set RTL_TOP letc_core_stage_d
+set CONSTRAINTS_SOURCE $SUBBLOCK_ROOT/usual.xdc
+set RTL_SOURCE "
+    $RTL_ROOT/letc/letc_pkg.sv
+    $RTL_ROOT/letc/core/letc_core_pkg.sv
+    $RTL_ROOT/letc/core/letc_core_stage_d.sv
+"
 
 ####################################################################################################
-# letc
+# Run Out of Context Synthesis
 ####################################################################################################
 
-make clean simulate TBENCH=letc/smoke
-
-#core
-make clean simulate TBENCH=letc/core
-make clean simulate TBENCH=letc/core/alu
-make clean simulate TBENCH=letc/core/branch_comparator
-make clean simulate TBENCH=letc/core/rf
-make clean simulate TBENCH=letc/core/stage_d
-
-#matrix
-#TODO
+source $SUBBLOCK_ROOT/ooc_synth.tcl

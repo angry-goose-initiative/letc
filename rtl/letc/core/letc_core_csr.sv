@@ -31,13 +31,13 @@ module letc_core_csr
 
     //CSR explicit software read interface
     input  logic        i_csr_explicit_ren,
-    input  logic [11:0] i_csr_explicit_raddr,
+    input  csr_idx_t    i_csr_explicit_ridx,
     output word_t       o_csr_explicit_rdata,
     output logic        o_csr_explicit_rill,
 
     //CSR explicit software read interface
     input  logic        i_csr_explicit_wen,
-    input  logic [11:0] i_csr_explicit_waddr,
+    input  csr_idx_t    i_csr_explicit_widx,
     input  word_t       i_csr_explicit_wdata,
     output logic        o_csr_explicit_will
 );
