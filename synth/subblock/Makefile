@@ -12,7 +12,7 @@ SUBBLOCK_ROOT := $(SYNTH_ROOT)/subblock
 help:
 	@echo "This is the Makefile for running out of context synthesis!"
 	@echo ""
-	@echo "Usage: make BLOCK="block/subdirs/synth_folder" synth"
+	@echo "Usage: make BLOCK="block/subdirs/synth_folder" {synth|clean}"
 	@echo ""
 	@echo "Information"
 	@echo "Current Project Root:   $(PROJECT_ROOT)"
@@ -25,4 +25,9 @@ synth:
 	@test -n "$(BLOCK)" || (echo "Can't synthesize without BLOCK set!" && exit 1)
 	cd $(SUBBLOCK_ROOT)/$(BLOCK) && mkdir -p build
 	cd $(SUBBLOCK_ROOT)/$(BLOCK)/build && vivado -mode batch -source $(SUBBLOCK_ROOT)/$(BLOCK)/synthesis.tcl -tclargs $(RTL_ROOT) $(SUBBLOCK_ROOT) $(SUBBLOCK_ROOT)/$(BLOCK)
+
+.PHONY: clean
+clean:
+	@test -n "$(BLOCK)" || (echo "Can't clean without BLOCK set!" && exit 1)
+	cd $(SUBBLOCK_ROOT)/$(BLOCK) && rm -rf build
 

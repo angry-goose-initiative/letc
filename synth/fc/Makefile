@@ -12,7 +12,7 @@ FC_ROOT       := $(SYNTH_ROOT)/fc
 help:
 	@echo "This is the Makefile for running full chip synthesis!"
 	@echo ""
-	@echo "Usage: make synth"
+	@echo "Usage: make {synth|clean}"
 	@echo ""
 	@echo "Information"
 	@echo "Current Project Root:   $(PROJECT_ROOT)"
@@ -21,4 +21,8 @@ help:
 synth:
 	cd $(FC_ROOT) && mkdir -p build
 	cd $(FC_ROOT)/build && vivado -mode batch -source $(FC_ROOT)/fc_synth.tcl -tclargs $(PROJECT_ROOT)
+
+.PHONY: clean
+clean:
+	cd $(FC_ROOT) && rm -rf build
 
