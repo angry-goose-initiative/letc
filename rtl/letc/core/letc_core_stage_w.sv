@@ -44,6 +44,6 @@ module letc_core_stage_w
     input  e2_to_w_s    i_e2_to_w
 );
 
-logic TODO;
+logic todo;
 
 endmodule : letc_core_stage_w

@@ -89,6 +89,6 @@ letc_matrix_top matrix (
 
 //TODO
 
-`endif
+`endif //SIMULATION
 
 endmodule : letc_top

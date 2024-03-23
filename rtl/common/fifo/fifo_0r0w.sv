@@ -118,6 +118,6 @@ assert property (@(posedge i_clk) disable iff (!i_rst_n) !(i_pop & o_empty));
 assert property (@(posedge i_clk) disable iff (!i_rst_n) !(push_idx >= (AWIDTH)'(DEPTH)));
 assert property (@(posedge i_clk) disable iff (!i_rst_n) !(pop_idx  >= (AWIDTH)'(DEPTH)));
 
-`endif
+`endif //SIMULATION
 
 endmodule : fifo_0r0w

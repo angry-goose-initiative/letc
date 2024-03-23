@@ -118,6 +118,6 @@ end
 
 //TODO
 
-`endif
+`endif //SIMULATION
 
 endmodule : letc_core_rf

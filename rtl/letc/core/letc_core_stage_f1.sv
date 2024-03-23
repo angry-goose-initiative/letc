@@ -99,6 +99,6 @@ assign next_seq_pc = {next_seq_pc_word, 2'h0};
 
 //TODO also in simulation init registers to 32'hDEADBEEF to aid debugging
 
-`endif
+`endif //SIMULATION
 
 endmodule : letc_core_stage_f1

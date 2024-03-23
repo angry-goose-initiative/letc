@@ -43,3 +43,27 @@ jobs:
         run: |
           . "$HOME/.cargo/env"
           ./svlint.sh
+
+  verible:
+    strategy:
+      fail-fast: false
+      matrix:
+        #We only support Linux
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@master
+      - name: Install Verible Dependencies
+        shell: bash
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get -y install --no-install-recommends git python3 python3-click python3-unidiff
+      - name: Install Verible
+        uses: chipsalliance/verible-actions-common/install-verible@main
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run Verible Lint
+        working-directory: ${{github.workspace}}/lint
+        run: |
+          ./verible.sh

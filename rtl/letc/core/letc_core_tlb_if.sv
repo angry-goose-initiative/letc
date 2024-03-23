@@ -56,6 +56,6 @@ modport tlb (
 
 //TODO
 
-`endif
+`endif //SIMULATION
 
 endinterface : letc_core_tlb_if

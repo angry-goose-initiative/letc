@@ -51,7 +51,7 @@ word_t  [NUM_REQUESTORS-1:0]    limp_rdata;
 word_t  [NUM_REQUESTORS-1:0]    limp_wdata;
 
 generate
-for (genvar ii = 0; ii < NUM_REQUESTORS; ++ii) begin : breakout_limp
+for (genvar ii = 0; ii < NUM_REQUESTORS; ++ii) begin : g_breakout_limp
     always_comb begin
         limp_valid[ii]      = limp[ii].valid;
         limp[ii].ready      = limp_ready[ii];
@@ -61,7 +61,7 @@ for (genvar ii = 0; ii < NUM_REQUESTORS; ++ii) begin : breakout_limp
         limp[ii].rdata      = limp_rdata[ii];
         limp_wdata[ii]      = limp[ii].wdata;
     end
-end : breakout_limp
+end : g_breakout_limp
 endgenerate
 
 /* ------------------------------------------------------------------------------------------------

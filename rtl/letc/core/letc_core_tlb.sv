@@ -26,6 +26,6 @@ module letc_core_tlb
     //TODO design TLB interface to MMU
 );
 
-logic TODO;
+logic todo;
 
 endmodule : letc_core_tlb

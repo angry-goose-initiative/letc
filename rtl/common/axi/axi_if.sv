@@ -261,13 +261,13 @@ assert property (@(posedge i_aclk) disable iff (!i_arst_n) wvalid  |-> (wvalid t
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) bvalid  |-> (bvalid throughout  bready[->1]));
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) arvalid |-> (arvalid throughout arready[->1]));
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) rvalid  |-> (rvalid throughout  rready[->1]));
-`endif
+`endif //VERILATOR
 
 //Stable while valid
 //TODO
 
 //TODO others
 
-`endif
+`endif //SIMULATION
 
 endinterface : axi_if

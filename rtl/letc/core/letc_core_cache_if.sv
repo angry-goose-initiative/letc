@@ -56,6 +56,6 @@ modport cache (
 
 //TODO
 
-`endif
+`endif //SIMULATION
 
 endinterface : letc_core_cache_if

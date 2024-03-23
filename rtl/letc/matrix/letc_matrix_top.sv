@@ -23,7 +23,8 @@ module letc_matrix_top
     //AXI ports
     axi_if.subordinate  core,//Pre-buffered
     axi_if.manager      ps_gp,//Buffered//FIXME this too
-    axi_if.manager      ps_acp,//Buffered//FIXME width needs to be converted to 64-bit, not in the switch but in another submodule under top; override the data and id widths
+    //FIXME width needs to be converted to 64-bit, not in the switch but in another submodule under top; override the data and id widths
+    axi_if.manager      ps_acp,//Buffered
     axi_if.manager      aclint//Buffered
     //TODO more as nesessary
 );

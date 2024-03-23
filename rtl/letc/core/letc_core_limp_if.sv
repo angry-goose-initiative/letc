@@ -77,6 +77,6 @@ modport axi_fsm (
 
 //TODO
 
-`endif
+`endif //SIMULATION
 
 endinterface : letc_core_limp_if

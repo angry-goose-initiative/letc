@@ -1,0 +1,30 @@
+name: Verible PR Review
+
+#Thanks https://stackoverflow.com/questions/57699839/github-actions-how-to-target-all-branches-except-master
+on:
+  pull_request:
+    branches: [ "**", "!legacy" ]
+jobs:
+  verible_pr_lint:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@master
+      - uses: chipsalliance/verible-linter-action@main
+        with:
+          config_file: '.rules.verible_lint'
+          paths: |
+            ./rtl
+          exclude_paths: |
+            ./rtl/fpga_wrapper
+            ./rtl/legacy
+          extensions: |
+            .sv
+            .v
+            .vh
+            .svh
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+#TODO also verible format
