@@ -36,7 +36,7 @@ module fifo_1r1w #(
     input   logic               i_push,
     output  logic               o_full,
     input   logic [DWIDTH-1:0]  i_wdata,
-    
+
     //Read port (0-cycle latency)
     input   logic               i_pop,
     output  logic               o_empty,

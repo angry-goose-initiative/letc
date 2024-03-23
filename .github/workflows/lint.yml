@@ -1,0 +1,45 @@
+name: LETC Lint
+
+#Thanks https://stackoverflow.com/questions/57699839/github-actions-how-to-target-all-branches-except-master
+on:
+  push:
+    branches: [ "**", "!legacy" ]
+  pull_request:
+    branches: [ "**", "!legacy" ]
+
+jobs:
+  svlint:
+    strategy:
+      fail-fast: false
+      matrix:
+        #We only support Linux
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    timeout-minutes: 120
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache svlint Installation
+        id: cache-svlint
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-svlint-installation
+        with:
+          path: ~/.cargo
+          key: ${{runner.os}}-build-${{env.cache-name}}
+
+      - if: ${{ steps.cache-svlint.outputs.cache-hit != 'true' }}
+        name: Install svlint Compile Dependencies
+        run: sudo apt-get install cargo
+
+      - if: ${{ steps.cache-svlint.outputs.cache-hit != 'true' }}
+        name: Compile svlint
+        run: cargo install svlint
+
+      - name: Run svlint
+        working-directory: ${{github.workspace}}/lint
+        run: |
+          . "$HOME/.cargo/env"
+          ./svlint.sh

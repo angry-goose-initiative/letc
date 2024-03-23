@@ -22,7 +22,7 @@ module letc_core_cache
 
     //Cache interface
     letc_core_cache_if.cache cache_if,
-    
+
     //LIMP interface
     letc_core_limp_if.requestor limp
 );

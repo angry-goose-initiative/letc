@@ -124,7 +124,7 @@ typedef enum logic [1:0] {
 } alu_op2_src_e;
 
 /* ------------------------------------------------------------------------------------------------
- * Pipeline Datapath Structs 
+ * Pipeline Datapath Structs
  * --------------------------------------------------------------------------------------------- */
 
 typedef struct packed {
@@ -195,7 +195,7 @@ typedef struct packed {
 } e2_to_w_s;
 
 /* ------------------------------------------------------------------------------------------------
- * CSR Structs 
+ * CSR Structs
  * --------------------------------------------------------------------------------------------- */
 
 //Note: Only provides CSRs that actually need to be implicitly read by LETC Core logic

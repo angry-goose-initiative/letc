@@ -31,7 +31,7 @@ module letc_core_stage_e2
 
     //From E1
     input e1_to_e2_s i_e1_to_e2,
-    
+
     //To W
     output e2_to_w_s o_e2_to_w
 );

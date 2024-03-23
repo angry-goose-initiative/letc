@@ -21,7 +21,7 @@ module letc_core_mmu
     input logic i_rst_n,
 
     //TODO design MMU interfaces
-    
+
     //LIMP interface
     letc_core_limp_if.requestor limp
 );

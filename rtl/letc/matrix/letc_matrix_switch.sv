@@ -46,7 +46,7 @@ always_comb begin
     default_sub.wlast   = core.wlast;
     default_sub.wid     = core.wid;
     core.wready         = default_sub.wready;
-    
+
     core.bvalid         = default_sub.bvalid;
     core.bresp          = default_sub.bresp;
     core.bid            = default_sub.bid;

@@ -235,9 +235,9 @@ letc_core_stage_w stage_w (
     .i_stage_stall(stage_stall[5]),
 
     //rd Write Port
-    .i_rd_idx(rd_idx),
-    .i_rd_wdata(rd_wdata),
-    .i_rd_wen(rd_wen),
+    .o_rd_idx(rd_idx),
+    .o_rd_wdata(rd_wdata),
+    .o_rd_wen(rd_wen),
 
     //CSR Write Port
     .o_csr_explicit_wen(csr_explicit_wen),
@@ -251,7 +251,7 @@ letc_core_stage_w stage_w (
 
 letc_core_tghm tghm (
     .*,
-    
+
     //Interrupts
     //Passed through via .* above
 

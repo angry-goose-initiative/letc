@@ -81,7 +81,7 @@ fifo_0r1w #(
     .i_push(from_manager.awvalid),
     .o_full(awfifo_full),
     .i_wdata(aw_from_manager),
-    
+
     //Read port (0-cycle latency)
     .i_pop(to_subordinate.awready),
     .o_empty(awfifo_empty),
@@ -129,7 +129,7 @@ fifo_0r1w #(
     .i_push(from_manager.wvalid),
     .o_full(wfifo_full),
     .i_wdata(w_from_manager),
-    
+
     //Read port (0-cycle latency)
     .i_pop(to_subordinate.wready),
     .o_empty(wfifo_empty),
@@ -173,7 +173,7 @@ fifo_0r1w #(
     .i_push(to_subordinate.bvalid),
     .o_full(bfifo_full),
     .i_wdata(b_from_subordinate),
-    
+
     //Read port (0-cycle latency)
     .i_pop(from_manager.bready),
     .o_empty(bfifo_empty),
@@ -224,7 +224,7 @@ fifo_0r1w #(
     .i_push(from_manager.arvalid),
     .o_full(arfifo_full),
     .i_wdata(ar_from_manager),
-    
+
     //Read port (0-cycle latency)
     .i_pop(to_subordinate.arready),
     .o_empty(arfifo_empty),
@@ -274,7 +274,7 @@ fifo_0r1w #(
     .i_push(to_subordinate.rvalid),
     .o_full(rfifo_full),
     .i_wdata(r_from_subordinate),
-    
+
     //Read port (0-cycle latency)
     .i_pop(from_manager.rready),
     .o_empty(rfifo_empty),

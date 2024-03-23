@@ -39,7 +39,7 @@ module fifo_0r0w #(
     input   logic               i_push,
     output  logic               o_full,
     input   logic [DWIDTH-1:0]  i_wdata,
-    
+
     //Read port (0-cycle latency)
     input   logic               i_pop,
     output  logic               o_empty,
@@ -66,7 +66,7 @@ always_comb begin
 
     o_full  = (next_push_idx == pop_idx) & ~i_pop;//Next push would make it indistinguishable from empty
     o_empty = (push_idx == pop_idx) & ~i_push;//If we are pushing we can forward the data, so we are not empty
-    
+
     if (i_push & i_pop & (push_idx == pop_idx)) begin
         o_rdata = i_wdata;//Forward data to get the effective 0-cycle write latency
     end else begin

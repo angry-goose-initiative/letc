@@ -628,4 +628,4 @@ assign led0_b_sync = btn_sync[0];
 assign led1_b_sync = btn_sync[1];
 */
 
-endmodule
+endmodule : coraz7_top

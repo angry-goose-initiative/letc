@@ -23,7 +23,9 @@ set OUTPUT_DIR          ./
 set RTL_TOP coraz7_top
 set CONSTRAINTS_SOURCE $FC_ROOT/constraints.xdc
 set RTL_SOURCE "
+    $RTL_ROOT/common/fifo/fifo_0r0w.sv
     $RTL_ROOT/common/fifo/fifo_0r1w.sv
+    $RTL_ROOT/common/fifo/fifo_1r1w.sv
     $RTL_ROOT/common/cdc/cdc_synchronizer.sv
     $RTL_ROOT/common/axi/axi_pkg.sv
     $RTL_ROOT/common/axi/axi_if.sv
@@ -41,6 +43,14 @@ set RTL_SOURCE "
     $RTL_ROOT/letc/core/letc_core_stage_e1.sv
     $RTL_ROOT/letc/core/letc_core_stage_e2.sv
     $RTL_ROOT/letc/core/letc_core_stage_w.sv
+    $RTL_ROOT/letc/core/letc_core_tghm.sv
+    $RTL_ROOT/letc/core/letc_core_cache.sv
+    $RTL_ROOT/letc/core/letc_core_tlb.sv
+    $RTL_ROOT/letc/core/letc_core_mmu.sv
+    $RTL_ROOT/letc/core/letc_core_csr.sv
+    $RTL_ROOT/letc/core/letc_core_limp_if.sv
+    $RTL_ROOT/letc/core/letc_core_cache_if.sv
+    $RTL_ROOT/letc/core/letc_core_tlb_if.sv
     $RTL_ROOT/letc/core/letc_core_axi_fsm.sv
 
     $RTL_ROOT/letc/matrix/letc_matrix_top.sv

@@ -3,6 +3,7 @@
 The Little Engine That Could (Run Linux) :)
 
 [![LETC Non-UVM Tests](https://github.com/angry-goose-initiative/letc/actions/workflows/nonuvm_tests.yml/badge.svg?branch=main)](https://github.com/angry-goose-initiative/letc/actions/workflows/nonuvm_tests.yml)
+[![LETC Lint](https://github.com/angry-goose-initiative/letc/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/angry-goose-initiative/letc/actions/workflows/lint.yml)
 
 ## Lore
 

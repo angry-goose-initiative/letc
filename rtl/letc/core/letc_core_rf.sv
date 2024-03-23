@@ -34,7 +34,7 @@ module letc_core_rf
     //rs1 Read Port
     input   reg_idx_t   i_rs1_idx,
     output  word_t      o_rs1_rdata,
-    
+
     //rs2 Read Port
     input   reg_idx_t   i_rs2_idx,
     output  word_t      o_rs2_rdata

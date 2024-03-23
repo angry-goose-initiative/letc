@@ -30,9 +30,9 @@ module letc_core_stage_w
     input  logic i_stage_stall,
 
     //rd Write Port
-    output reg_idx_t    i_rd_idx,
-    output word_t       i_rd_wdata,
-    output logic        i_rd_wen,
+    output reg_idx_t    o_rd_idx,
+    output word_t       o_rd_wdata,
+    output logic        o_rd_wen,
 
     //CSR Write Port
     output logic        o_csr_explicit_wen,
