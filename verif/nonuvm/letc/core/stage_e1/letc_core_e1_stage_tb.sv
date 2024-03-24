@@ -74,15 +74,20 @@ default clocking cb @(posedge i_clk);
 
     //IO
     output i_d_to_e1;
-    input o_e1_to_e2;
+    input  o_e1_to_e2;
+
+    output i_bypass_rs1;
+    output i_bypass_rs2;
+    output i_bypassed_rs1_data;
+    output i_bypassed_rs2_data;
 
     //Hazards 
-    input o_stage_ready;
+    input  o_stage_ready;
     output i_stage_flush;
     output i_stage_stall;
 
     //Debug
-    input   o_debug;
+    input  o_debug;
 
     /* verilator lint_on UNUSEDSIGNAL */
 endclocking
@@ -94,7 +99,6 @@ endclocking
 //Note: due to quirks with Verilator, sadly we should try to avoid waiting for the next posedge in tasks
 
 task setup();
-
     //Set initial input states
     cb.i_stage_stall <= 1'b0;
     cb.i_stage_flush <= 1'b0;
