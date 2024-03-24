@@ -98,6 +98,9 @@ task setup();
     //Set initial input states
     cb.i_stage_stall <= 1'b0;
     cb.i_stage_flush <= 1'b0;
+    cb.i_d_to_e1.valid <= 1'b0;
+    cb.i_d_to_e1.rs1_rdata <= 32'h5;
+    cb.i_d_to_e1.rs2_rdata <= 32'h5;
 endtask
 
 /* ------------------------------------------------------------------------------------------------
@@ -112,9 +115,7 @@ initial begin
     ##2;
     cb.i_rst_n <= 1'b1;
     ##2;
-
-
-
+    cb.i_d_to_e1.valid <= 1'b1;
     ##5;
     $finish;
 end
