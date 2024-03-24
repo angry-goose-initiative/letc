@@ -80,10 +80,11 @@ typedef enum logic [3:0] {
     ALU_OP_MINU,
     ALU_OP_MAXU,
     */
-    ALU_OP_MCLR//Mask clear (for CSR instructions); use OR for "MSET"
+    ALU_OP_MCLR,//Mask clear (for CSR instructions); use OR for "MSET"
     //ALU_OP_PASS1//No instructions really need this
     //ALU_OP_PASS2//Using ADD and making the first operand 0 instead
     //FIXME we need a special ALU op that clears the lsb after the addition for JALR
+    ALU_OP_DO_NOTHING //DEBUG ONLY!
 } alu_op_e;
 
 typedef enum logic [1:0] {
