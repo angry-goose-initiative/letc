@@ -82,9 +82,10 @@ typedef enum logic [3:0] {
     ALU_OP_MINU,
     ALU_OP_MAXU,
     */
-    ALU_OP_MCLR//Mask clear (for CSR instructions); use OR for "MSET"
+    ALU_OP_MCLR,//Mask clear (for CSR instructions); use OR for "MSET"
     //ALU_OP_PASS1//No instructions really need this
     //ALU_OP_PASS2//Using ADD and making the first operand 0 instead
+    ALU_OP_DO_NOTHING //DEBUG ONLY!
 } alu_op_e;
 
 typedef enum logic [1:0] {

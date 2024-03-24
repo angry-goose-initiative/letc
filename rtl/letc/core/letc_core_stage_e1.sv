@@ -4,6 +4,7 @@
  *
  * Copyright:
  *  Copyright (C) 2024 John Jekel
+ *  Copytight (C) 2024 Eric Jessee
  * See the LICENSE file at the root of the project for licensing info.
  *
  * TODO longer description
@@ -39,6 +40,29 @@ module letc_core_stage_e1
     output e1_to_e2_s o_e1_to_e2
 );
 
+//Temporary stubs
 assign o_e1_to_e2.valid = 1'b0;//TODO
+
+//ALU
+letc_core_alu alu(.*);
+
+word_t[1:0] i_alu_operands;
+alu_op_e i_alu_operation;
+word_t o_alu_result;
+
+always_ff @(posedge i_clk) begin
+    if (i_d_to_e1.valid) begin
+        i_alu_operation <= ALU_OP_ADD;
+        i_alu_operands[1] <= i_d_to_e1.rs2_rdata;
+        i_alu_operands[0] <= i_d_to_e1.rs1_rdata;
+        o_e1_to_e2.alu_result <= o_alu_result;
+    end
+    else begin
+        i_alu_operation <= ALU_OP_DO_NOTHING; //should output 0xdeadbeef
+        i_alu_operands[0] <= 32'h0;
+        i_alu_operands[1] <= 32'h0;
+        o_e1_to_e2.alu_result <= o_alu_result;
+    end
+end
 
 endmodule : letc_core_stage_e1
