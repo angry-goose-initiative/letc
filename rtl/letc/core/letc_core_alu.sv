@@ -33,6 +33,9 @@ always_comb begin
         ALU_OP_XOR:     o_alu_result =          i_alu_operands[0]  ^          i_alu_operands[1];
         ALU_OP_OR:      o_alu_result =          i_alu_operands[0]  |          i_alu_operands[1];
         ALU_OP_AND:     o_alu_result =          i_alu_operands[0]  &          i_alu_operands[1];
+        ALU_OP_MCLR:    o_alu_result =          i_alu_operands[0]  &         ~i_alu_operands[1];
+        //ALU_OP_PASS1:   o_alu_result = i_alu_operands[0];//Not really needed for any instruction
+        //ALU_OP_PASS2:   o_alu_result = i_alu_operands[1];//Using ADD and making the first operand 0 instead
         default:        o_alu_result = 32'hDEADBEEF;
     endcase
 end

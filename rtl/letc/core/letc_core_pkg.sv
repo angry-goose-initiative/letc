@@ -74,13 +74,24 @@ typedef enum logic [3:0] {
     ALU_OP_SRA,
     ALU_OP_XOR,
     ALU_OP_OR,
-    ALU_OP_AND
+    ALU_OP_AND,
+    //May be needed for atomics in the future if we do them in HW
+    /*
+    ALU_OP_MIN,
+    ALU_OP_MAX,
+    ALU_OP_MINU,
+    ALU_OP_MAXU,
+    */
+    ALU_OP_MCLR//Mask clear (for CSR instructions); use OR for "MSET"
+    //ALU_OP_PASS1//No instructions really need this
+    //ALU_OP_PASS2//Using ADD and making the first operand 0 instead
 } alu_op_e;
 
 typedef enum logic [1:0] {
     MEM_OP_NOP,
     MEM_OP_LOAD,
     MEM_OP_STORE
+    //TODO perhaps something for atomics in the future?
 } mem_op_e;
 
 typedef enum logic {
@@ -96,13 +107,17 @@ typedef enum logic [1:0] {
 } rd_src_e;
 
 typedef enum logic [1:0] {
-    ALU_OP1_SRC_RS1
-    //TODO others
+    ALU_OP1_SRC_RS1,
+    ALU_OP1_SRC_PC,
+    ALU_OP1_SRC_CSR,
+    ALU_OP1_SRC_ZERO//Useful to pass through op2 for lui, etc
 } alu_op1_src_e;
 
 typedef enum logic [1:0] {
-    ALU_OP1_SRC_RS2
-    //TODO others
+    ALU_OP2_SRC_RS1,
+    ALU_OP2_SRC_RS2,
+    ALU_OP2_SRC_IMM,
+    ALU_OP2_SRC_FOUR
 } alu_op2_src_e;
 
 typedef enum logic [2:0] {
