@@ -20,6 +20,7 @@ set CONSTRAINTS_SOURCE $SUBBLOCK_ROOT/usual.xdc
 set RTL_SOURCE "
     $RTL_ROOT/letc/letc_pkg.sv
     $RTL_ROOT/letc/core/letc_core_pkg.sv
+    $RTL_ROOT/letc/core/letc_core_branch_comparator.sv
     $RTL_ROOT/letc/core/letc_core_stage_d.sv
 "
 

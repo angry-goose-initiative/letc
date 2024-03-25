@@ -43,6 +43,8 @@ set RTL_SOURCE "
     $RTL_ROOT/letc/core/letc_core_stage_e1.sv
     $RTL_ROOT/letc/core/letc_core_stage_e2.sv
     $RTL_ROOT/letc/core/letc_core_stage_w.sv
+    $RTL_ROOT/letc/core/letc_core_alu.sv
+    $RTL_ROOT/letc/core/letc_core_branch_comparator.sv
     $RTL_ROOT/letc/core/letc_core_tghm.sv
     $RTL_ROOT/letc/core/letc_core_cache.sv
     $RTL_ROOT/letc/core/letc_core_tlb.sv

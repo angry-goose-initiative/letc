@@ -67,6 +67,7 @@ else
 	@echo "Unsupported wave viewer: $(WAVE_VIEWER)"
 endif
 
+
 else ifeq ($(SIMULATOR),xsim) # XSIM ##############################################################
 
 ifeq ($(WAVE_VIEWER),gtkwave)
@@ -99,6 +100,7 @@ $(OUTPUT_WAVES): $(OUTPUT_EXE)
 
 ifeq ($(SIMULATOR),verilator) # VERILATOR #########################################################
 	$(OUTPUT_EXE) +verilator+rand+reset+2
+	fst2vcd $(OUTPUT_WAVES) -o $(OUTPUT_DIR)/verilator_waves.vcd
 
 else ifeq ($(SIMULATOR),xsim) # XSIM ##############################################################
 
@@ -122,12 +124,13 @@ $(OUTPUT_EXE): $(SOURCES)
 
 ifeq ($(SIMULATOR),verilator) # VERILATOR #########################################################
 
+	#Our design isn't that complex so we prefer compilation speed (-O1) over sim speed (-O3)
 	verilator --exe --build --timing \
-		--timescale $(TIMESCALE) +1800-2012ext+sv -sv -Wall -Wno-fatal -O3 -cc --assert \
+		--timescale $(TIMESCALE) +1800-2012ext+sv -sv -Wall -Wno-fatal -O1 -cc --assert \
 		--trace-threads 2 --trace-structs --trace-fst \
 		--build-jobs 4 \
 		-DSIMULATION -DVERILATOR \
-		-CFLAGS -O3 -CFLAGS -Wall -CFLAGS -Wextra \
+		-CFLAGS -O1 -CFLAGS -Wall -CFLAGS -Wextra \
 		--top-module $(TBENCH_TOP) \
 		-CFLAGS -DSV_TBENCH_NAME=$(TBENCH_TOP) -CFLAGS -DVERILATED_CLASS=V$(TBENCH_TOP) -CFLAGS -DVERILATED_HEADER=\"V$(TBENCH_TOP).h\" -CFLAGS -DWAVES_OUTPUT_PATH=$(OUTPUT_WAVES) \
 		$(VERILATOR_WRAPPER) $(SOURCES) \

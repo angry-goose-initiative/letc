@@ -25,8 +25,8 @@ jobs:
       #- name: Install Verilator
       #  run: sudo apt-get install -y verilator
 
-      - name: Install Verilator Runtime Dependencies
-        run: sudo apt-get install ccache
+      - name: Install Runtime Dependencies
+        run: sudo apt-get install ccache gtkwave
 
       - name: Cache Verilator Installation
         id: cache-verilator

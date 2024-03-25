@@ -30,9 +30,11 @@ module letc_core_tghm
     //Hazard/backpressure signals
     input  logic [5:0] i_stage_ready,
     output logic [5:0] o_stage_flush,
-    output logic [5:0] o_stage_stall
+    output logic [5:0] o_stage_stall,
 
     //Register index signals for hazard detection
+    //TODO actually read enables aren't needed, we'll just always bypass just
+    //in case, even if the registers aren't being read. Just the idxs are needed
     /*
     input logic     i_stage_d_rs1_ren,
     input reg_idx_t i_stage_d_rs1_idx,
@@ -60,12 +62,23 @@ module letc_core_tghm
     input reg_idx_t i_stage_w_rd_idx
     */
 
+    //Bypass signals
+    //Only for general purpose registers; we will use stalling for CSR hazards
+    output logic    o_stage_d_bypass_rs1,
+    output logic    o_stage_d_bypass_rs2,
+    output word_t   o_stage_d_bypass_rs1_rdata,
+    output word_t   o_stage_d_bypass_rs2_rdata
+    //TODO others if needed
+
    //TODO also need to snoop branch target/etc
 
     //TODO bypass signals for perf optimizations down the road
 
     //TODO others
 );
+
+assign o_stage_d_bypass_rs1 = 1'b0;
+assign o_stage_d_bypass_rs2 = 1'b0;
 
 //TODO this stalling logic may need to be made more complicated in the future
 //(ex. stalling for hazards, not just downstream-stage-readiness)

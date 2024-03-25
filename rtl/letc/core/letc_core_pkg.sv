@@ -29,8 +29,6 @@ typedef logic [31:2]    pc_word_t;
 //C extension is not supported so we can save some bits
 typedef logic [31:2]    instr_t;
 
-typedef logic [1:0]     priv_t;
-
 /* ------------------------------------------------------------------------------------------------
  * Parameters
  * --------------------------------------------------------------------------------------------- */
@@ -45,7 +43,7 @@ typedef enum logic [1:0] {
     U_MODE = 2'b00,
     S_MODE = 2'b01,
     M_MODE = 2'b11
-} prv_mode_e;
+} priv_mode_e;
 
 typedef enum logic [1:0] {
     //Values correspond to RISC-V instruction encoding for potential efficiency gains
@@ -85,10 +83,11 @@ typedef enum logic [3:0] {
     ALU_OP_MCLR//Mask clear (for CSR instructions); use OR for "MSET"
     //ALU_OP_PASS1//No instructions really need this
     //ALU_OP_PASS2//Using ADD and making the first operand 0 instead
+    //FIXME we need a special ALU op that clears the lsb after the addition for JALR
 } alu_op_e;
 
 typedef enum logic [1:0] {
-    MEM_OP_NOP,
+    MEM_OP_NOP = 2'b00,
     MEM_OP_LOAD,
     MEM_OP_STORE
     //TODO perhaps something for atomics in the future?
@@ -96,7 +95,7 @@ typedef enum logic [1:0] {
 
 typedef enum logic {
     //Either nothing or read-modify-write
-    CSR_OP_NOP,
+    CSR_OP_NOP = 1'b0,
     CSR_OP_ACCESS
 } csr_op_e;
 
@@ -119,15 +118,6 @@ typedef enum logic [1:0] {
     ALU_OP2_SRC_IMM,
     ALU_OP2_SRC_FOUR
 } alu_op2_src_e;
-
-typedef enum logic [2:0] {
-    SYSTEM_INSTR_ECALL,
-    SYSTEM_INSTR_EBREAK,
-    SYSTEM_INSTR_SRET,
-    SYSTEM_INSTR_MRET,
-    SYSTEM_INSTR_WFI,
-    SYSTEM_INSTR_SFENCE_VMA
-} system_instr_e;
 
 /* ------------------------------------------------------------------------------------------------
  * Pipeline Datapath Structs
@@ -228,7 +218,7 @@ typedef struct packed {
     letc_pkg::word_t stvec;
     letc_pkg::word_t satp;
 
-    priv_t current_priv;//Not really a standard RISC-V CSR but useful to many things
+    priv_mode_e current_priv;//Not really a standard RISC-V CSR but useful to many things
 } csr_implicit_rdata_s;
 
 endpackage : letc_core_pkg

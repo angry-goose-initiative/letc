@@ -64,6 +64,13 @@ logic [5:0] stage_ready;
 logic [5:0] stage_flush;
 logic [5:0] stage_stall;
 
+//Bypass signals
+logic  stage_d_bypass_rs1;
+logic  stage_d_bypass_rs2;
+word_t stage_d_bypass_rs1_rdata;
+word_t stage_d_bypass_rs2_rdata;
+//TODO any other stages that need bypassing
+
 //Memory requests
 letc_core_limp_if limp[2:0](.*);
 
@@ -155,8 +162,6 @@ letc_core_stage_f2 stage_f2 (
 letc_core_stage_d stage_d (
     .*,
 
-    //TODO
-
     //Hazard/backpressure signals
     .o_stage_ready(stage_ready[2]),
     .i_stage_flush(stage_flush[2]),
@@ -170,6 +175,12 @@ letc_core_stage_d stage_d (
     .o_rs2_idx(rs2_idx),
     .i_rs2_rdata(rs2_rdata),
 
+    //Bypass signals
+    .i_bypass_rs1(stage_d_bypass_rs1),
+    .i_bypass_rs2(stage_d_bypass_rs2),
+    .i_bypass_rs1_rdata(stage_d_bypass_rs1_rdata),
+    .i_bypass_rs2_rdata(stage_d_bypass_rs2_rdata),
+
     //CSR Read Port
     .o_csr_explicit_ren(csr_explicit_ren),
     .o_csr_explicit_ridx(csr_explicit_ridx),
@@ -179,6 +190,9 @@ letc_core_stage_d stage_d (
     //Branch signals
     .o_branch_taken(branch_taken),
     .o_branch_target(branch_target),
+
+    //TODO signals for exceptions/cache flushing/etc
+    //TODO any needed implicitly read CSRs
 
     //From F2
     .i_f2_to_d(f2_to_d),
@@ -258,7 +272,16 @@ letc_core_tghm tghm (
     //Hazard/backpressure signals
     .i_stage_ready(stage_ready),
     .o_stage_flush(stage_flush),
-    .o_stage_stall(stage_stall)
+    .o_stage_stall(stage_stall),
+
+    //TODO
+
+    //Bypass signals
+    .o_stage_d_bypass_rs1(stage_d_bypass_rs1),
+    .o_stage_d_bypass_rs2(stage_d_bypass_rs2),
+    .o_stage_d_bypass_rs1_rdata(stage_d_bypass_rs1_rdata),
+    .o_stage_d_bypass_rs2_rdata(stage_d_bypass_rs2_rdata)
+    //TODO others if needed
 
     //TODO
 );
