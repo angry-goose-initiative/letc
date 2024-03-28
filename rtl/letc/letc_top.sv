@@ -1,6 +1,11 @@
 /*
  * File:    letc_top.sv
  * Brief:   The top-level RTL file for LETC
+ *  _     _____ _____ ____
+ * | |   | ____|_   _/ ___|
+ * | |   |  _|   | || |
+ * | |___| |___  | || |___
+ * |_____|_____| |_| \____|
  *
  * Copyright:
  *  Copyright (C) 2023-2024 John Jekel

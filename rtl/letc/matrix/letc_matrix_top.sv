@@ -1,8 +1,14 @@
 /*
  * File:    letc_matrix_top.sv
  * Brief:   TODO
+ *  _     _____ _____ ____   __  __       _        _
+ * | |   | ____|_   _/ ___| |  \/  | __ _| |_ _ __(_)_  __
+ * | |   |  _|   | || |     | |\/| |/ _` | __| '__| \ \/ /
+ * | |___| |___  | || |___  | |  | | (_| | |_| |  | |>  <
+ * |_____|_____| |_| \____| |_|  |_|\__,_|\__|_|  |_/_/\_\
  *
- * Copyright (C) 2024 John Jekel
+ * Copyright:
+ *  Copyright (C) 2024 John Jekel
  * See the LICENSE file at the root of the project for licensing info.
  *
  * TODO longer description
