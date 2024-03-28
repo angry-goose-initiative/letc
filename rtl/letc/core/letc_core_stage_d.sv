@@ -295,7 +295,7 @@ always_comb begin
             ctrl.rd_src         = RD_SRC_ALU;
             ctrl.rd_we          = 1'b1;
             ctrl.alu_op1_src    = ALU_OP1_SRC_PC;
-            ctrl.alu_op2_src    = ALU_OP2_SRC_IMM;
+            ctrl.alu_op2_src    = ALU_OP2_SRC_FOUR;
             ctrl.alu_op         = ALU_OP_ADD;
             ctrl.branch         = BRANCH_JAL;
         end
@@ -357,11 +357,10 @@ always_comb begin
     rs2_rdata = i_bypass_rs2 ? i_bypass_rs2_rdata : i_rs2_rdata;
 end
 
-//FIXME should we be doing i_f2_to_d.valid & !i_stage_stall & !i_stage_flush?
 word_t csr_rdata;
 always_comb begin
     //Assumes no read side effects since we don't handle flushing...
-    o_csr_explicit_ren  = i_f2_to_d.valid & ~i_stage_stall & (ctrl.csr_op == CSR_OP_ACCESS);
+    o_csr_explicit_ren  = i_f2_to_d.valid & !i_stage_stall & !i_stage_flush & (ctrl.csr_op == CSR_OP_ACCESS);
     o_csr_explicit_ridx = csr_idx;
     csr_rdata           = i_csr_explicit_rdata;
     //i_csr_explicit_rill//TODO actually cause exception on illegal CSR read (very low priority)
@@ -389,26 +388,26 @@ always_comb begin
 end
 
 always_comb begin
-    //FIXME should we be doing i_f2_to_d.valid & !i_stage_stall & !i_stage_flush?
     //TODO catch misaligned branches
-    unique0 case (ctrl.branch)
-        BRANCH_COND: begin
-            o_branch_taken  = i_f2_to_d.valid & branch_cmp_result;
-            o_branch_target = i_f2_to_d.pc_word + imm_b[31:2];
-        end
-        BRANCH_JALR: begin
-            o_branch_taken  = i_f2_to_d.valid;
-            o_branch_target = jalr_branch_target[31:2];
-        end
-        BRANCH_JAL: begin
-            o_branch_taken  = i_f2_to_d.valid;
-            o_branch_target = i_f2_to_d.pc_word + imm_j[31:2];
-        end
-        default: begin
-            o_branch_taken  = 1'b0;
-            o_branch_target = 30'hDEADBEE;
-        end
-    endcase
+    o_branch_taken  = 1'b0;
+    o_branch_target = 30'hDEADBEE;
+
+    if (i_f2_to_d.valid & !i_stage_stall & !i_stage_flush) begin//TODO is this the correct criteria for this if?
+        unique0 case (ctrl.branch)
+            BRANCH_COND: begin
+                o_branch_taken  = i_f2_to_d.valid & branch_cmp_result;
+                o_branch_target = i_f2_to_d.pc_word + imm_b[31:2];
+            end
+            BRANCH_JALR: begin
+                o_branch_taken  = i_f2_to_d.valid;
+                o_branch_target = jalr_branch_target[31:2];
+            end
+            BRANCH_JAL: begin
+                o_branch_taken  = i_f2_to_d.valid;
+                o_branch_target = i_f2_to_d.pc_word + imm_j[31:2];
+            end
+        endcase
+    end
 end
 
 /* ------------------------------------------------------------------------------------------------
