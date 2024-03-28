@@ -4,9 +4,12 @@
 -explicit-function-lifetime
 -unpacked-dimensions-range-ordering
 -case-missing-default
+-explicit-function-lifetime
+-explicit-task-lifetime
 +endif-comment
 +legacy-genvar-declaration
 +proper-parameter-declaration
++parameter-name-style=localparam_style:ALL_CAPS;parameter_style:ALL_CAPS
 +signal-name-style
 +suspicious-semicolon
 +mismatched-labels

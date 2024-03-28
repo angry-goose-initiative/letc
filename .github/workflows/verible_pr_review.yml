@@ -17,6 +17,7 @@ jobs:
           config_file: '.rules.verible_lint'
           paths: |
             ./rtl
+            ./verif/nonuvm
           exclude_paths: |
             ./rtl/fpga_wrapper
             ./rtl/legacy

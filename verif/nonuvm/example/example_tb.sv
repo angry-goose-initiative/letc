@@ -100,7 +100,7 @@ default clocking cb @(posedge i_clk);
     input  c3;
 
     input  counter_out;
-    
+
     output a4;
     input  b4;
 endclocking

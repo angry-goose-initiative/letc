@@ -1,11 +1,11 @@
 /**
  * File    fifo_0r1w_tb.sv
  * Brief   TODO
- * 
+ *
  * Copyright:
  *  Copyright (C) 2024 John Jekel
  * See the LICENSE file at the root of the project for licensing info.
- * 
+ *
  * TODO longer description
  *
 */
@@ -103,7 +103,7 @@ endtask
 
 task push(input logic [DWIDTH-1:0] data);
 begin
-    $display("Pushing %h", data);
+    $display("Pushing 'h%h", data);
 
     cb.i_push   <= 1'b1;
     cb.i_wdata  <= data;
@@ -112,7 +112,7 @@ endtask
 
 task pop();
 begin
-    $display("Popped %h", o_rdata);
+    $display("Popped 'h%h", o_rdata);
 
     cb.i_pop <= 1'b1;
 end
@@ -121,7 +121,7 @@ endtask
 task peak();
 begin
     assert(o_empty == 1'b0);
-    $display("Peaked %h", o_rdata);
+    $display("Peaked 'h%h", o_rdata);
 end
 endtask
 

@@ -1,11 +1,11 @@
 /**
  * File    letc_core_alu_tb.sv
  * Brief   TODO
- * 
+ *
  * Copyright:
  *  Copyright (C) 2024 John Jekel
  * See the LICENSE file at the root of the project for licensing info.
- * 
+ *
  * TODO longer description
  *
 */
@@ -71,7 +71,7 @@ initial begin
     i_alu_operation = ALU_OP_SLT;
     #1;
     assert(o_alu_result == 32'h00000001);
-    
+
     //ALU_OP_SLTU
     i_alu_operands[0] = 32'hFFFFFFFF;//Now this is unsigned, so a large number
     i_alu_operands[1] = 32'h00001234;
