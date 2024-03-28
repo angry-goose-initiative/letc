@@ -295,7 +295,7 @@ always_comb begin
             ctrl.rd_src         = RD_SRC_ALU;
             ctrl.rd_we          = 1'b1;
             ctrl.alu_op1_src    = ALU_OP1_SRC_PC;
-            ctrl.alu_op2_src    = ALU_OP2_SRC_IMM;
+            ctrl.alu_op2_src    = ALU_OP2_SRC_FOUR;
             ctrl.alu_op         = ALU_OP_ADD;
             ctrl.branch         = BRANCH_JAL;
         end
@@ -357,11 +357,10 @@ always_comb begin
     rs2_rdata = i_bypass_rs2 ? i_bypass_rs2_rdata : i_rs2_rdata;
 end
 
-//FIXME should we be doing i_f2_to_d.valid & !i_stage_stall & !i_stage_flush?
 word_t csr_rdata;
 always_comb begin
     //Assumes no read side effects since we don't handle flushing...
-    o_csr_explicit_ren  = i_f2_to_d.valid & ~i_stage_stall & (ctrl.csr_op == CSR_OP_ACCESS);
+    o_csr_explicit_ren  = i_f2_to_d.valid & !i_stage_flush & (ctrl.csr_op == CSR_OP_ACCESS);
     o_csr_explicit_ridx = csr_idx;
     csr_rdata           = i_csr_explicit_rdata;
     //i_csr_explicit_rill//TODO actually cause exception on illegal CSR read (very low priority)
@@ -389,26 +388,26 @@ always_comb begin
 end
 
 always_comb begin
-    //FIXME should we be doing i_f2_to_d.valid & !i_stage_stall & !i_stage_flush?
     //TODO catch misaligned branches
-    unique0 case (ctrl.branch)
-        BRANCH_COND: begin
-            o_branch_taken  = i_f2_to_d.valid & branch_cmp_result;
-            o_branch_target = i_f2_to_d.pc_word + imm_b[31:2];
-        end
-        BRANCH_JALR: begin
-            o_branch_taken  = i_f2_to_d.valid;
-            o_branch_target = jalr_branch_target[31:2];
-        end
-        BRANCH_JAL: begin
-            o_branch_taken  = i_f2_to_d.valid;
-            o_branch_target = i_f2_to_d.pc_word + imm_j[31:2];
-        end
-        default: begin
-            o_branch_taken  = 1'b0;
-            o_branch_target = 30'hDEADBEE;
-        end
-    endcase
+    o_branch_taken  = 1'b0;
+    o_branch_target = 30'hDEADBEE;
+
+    if (i_f2_to_d.valid & !i_stage_flush) begin
+        unique0 case (ctrl.branch)
+            BRANCH_COND: begin
+                o_branch_taken  = i_f2_to_d.valid & branch_cmp_result;
+                o_branch_target = i_f2_to_d.pc_word + imm_b[31:2];
+            end
+            BRANCH_JALR: begin
+                o_branch_taken  = i_f2_to_d.valid;
+                o_branch_target = jalr_branch_target[31:2];
+            end
+            BRANCH_JAL: begin
+                o_branch_taken  = i_f2_to_d.valid;
+                o_branch_target = i_f2_to_d.pc_word + imm_j[31:2];
+            end
+        endcase
+    end
 end
 
 /* ------------------------------------------------------------------------------------------------
@@ -430,7 +429,7 @@ end
 assign o_stage_ready = 1'b1;//The decode stage always takes only a single cycle; no caches here!
 
 always_ff @(posedge i_clk) begin
-    if (~i_rst_n) begin
+    if (!i_rst_n) begin
         o_d_to_e1.valid <= 1'b0;
     end else begin
         if (i_stage_flush) begin
@@ -443,7 +442,7 @@ end
 
 always_ff @(posedge i_clk) begin
     //Save resources by not resetting the datapath; which is fine since `valid` above is reset
-    //if (i_f2_to_d.valid & !i_stage_stall) begin//More power efficient but worse for timing
+    //if (i_f2_to_d.valid & !i_stage_stall) begin//More power efficient but worse for timing and area
     if (!i_stage_stall) begin
         o_d_to_e1.pc_word <= i_f2_to_d.pc_word;
 
@@ -478,9 +477,44 @@ end
 
 `ifdef SIMULATION
 
-assert property (@(posedge i_clk) disable iff (!i_rst_n) !(i_stage_flush && i_stage_stall));
+//Note: We don't assume (most) data inputs will be known, but we do have assumptions about input control signals
 
-//TODO more
+//Assumptions of inputs to the stage
+assert property (@(posedge i_clk) disable iff (!i_rst_n) !$isunknown(i_f2_to_d.valid));
+assert property (@(posedge i_clk) disable iff (!i_rst_n) !$isunknown(i_stage_flush));
+assert property (@(posedge i_clk) disable iff (!i_rst_n) !$isunknown(i_stage_stall));
+assert property (@(posedge i_clk) disable iff (!i_rst_n) !(i_stage_flush && i_stage_stall));
+assert property (@(posedge i_clk) disable iff (!i_rst_n) i_f2_to_d.valid |-> !$isunknown(i_f2_to_d.instr));
+assert property (@(posedge i_clk) disable iff (!i_rst_n) o_csr_explicit_ren |-> !$isunknown(i_csr_explicit_rill));
+
+//Make sure output control signals unguarded by valids (or valids themselves) are never unknown
+assert property (@(posedge i_clk) disable iff (!i_rst_n)
+    !i_rst_n |=> !$isunknown(o_d_to_e1.valid)//Extra |=> needed to deal with the reset
+);
+`ifndef XSIM
+//FIXME why is o_stage_ready unknown in XSIM, but 1'b1 in Verilator and VSIM (letc_core_tb only)?
+assert property (@(posedge i_clk) disable iff (!i_rst_n) !$isunknown(o_stage_ready));
+`endif //XSIM
+assert property (@(posedge i_clk) disable iff (!i_rst_n) !$isunknown(o_csr_explicit_ren));
+assert property (@(posedge i_clk) disable iff (!i_rst_n)
+    (!$isunknown(rs1_rdata) && !$isunknown(rs2_rdata)) |-> !$isunknown(o_branch_taken)
+);
+
+//Valid means not unknown and, well, valid for control signals
+assert property (@(posedge i_clk) disable iff (!i_rst_n) o_d_to_e1.valid |-> !$isunknown(o_d_to_e1.rd_we));
+assert property (@(posedge i_clk) disable iff (!i_rst_n) o_d_to_e1.valid |-> !$isunknown(o_d_to_e1.csr_op));
+assert property (@(posedge i_clk) disable iff (!i_rst_n) o_d_to_e1.valid |-> !$isunknown(o_d_to_e1.memory_op));
+assert property (@(posedge i_clk) disable iff (!i_rst_n) o_d_to_e1.valid |-> (o_d_to_e1.memory_op != mem_op_e'(2'b11)));
+
+//Outputs should remain constant if the stage is stalled (assumed stage before this also gets stalled)
+assert property (@(posedge i_clk) disable iff (!i_rst_n) i_stage_stall |-> $stable(o_d_to_e1));
+assert property (@(posedge i_clk) disable iff (!i_rst_n) i_stage_stall |-> $stable(o_stage_ready));
+assert property (@(posedge i_clk) disable iff (!i_rst_n) i_stage_stall |-> $stable(o_csr_explicit_ren));
+assert property (@(posedge i_clk) disable iff (!i_rst_n) i_stage_stall |-> $stable(o_csr_explicit_ridx));
+assert property (@(posedge i_clk) disable iff (!i_rst_n) i_stage_stall |-> $stable(o_branch_taken));
+assert property (@(posedge i_clk) disable iff (!i_rst_n) i_stage_stall |-> $stable(o_branch_target));
+assert property (@(posedge i_clk) disable iff (!i_rst_n) i_stage_stall |-> $stable(o_rs1_idx));
+assert property (@(posedge i_clk) disable iff (!i_rst_n) i_stage_stall |-> $stable(o_rs2_idx));
 
 `endif //SIMULATION
 
