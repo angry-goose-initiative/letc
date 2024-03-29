@@ -18,6 +18,8 @@ help:
 	@echo ""
 	@echo "Usage: make TBENCH="block/subdirs/tbench_folder" SIMULATOR={verilator|xsim|vsim} WAVE_VIEWER={gtkwave|native} {compile|simulate|waves|clean}"
 	@echo ""
+	@echo "If you have an xsim view saved to the testbench root, you can also specify VIEW={your_saved_view.wcfg}"
+	@echo ""
 	@echo "Information"
 	@echo "Current Project Root:   $(PROJECT_ROOT)"
 	@echo "Current Testbench Root: $(TBENCH_ROOT)"

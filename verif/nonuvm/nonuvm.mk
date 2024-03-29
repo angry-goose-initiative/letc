@@ -75,7 +75,11 @@ else ifeq ($(SIMULATOR),xsim) # XSIM ###########################################
 ifeq ($(WAVE_VIEWER),gtkwave)
 	gtkwave $(OUTPUT_WAVES)
 else
+ifdef VIEW
+	cd $(OUTPUT_DIR) && xsim --gui $(OUTPUT_WAVES) --view $(TBENCH_ROOT)/$(VIEW)
+else
 	cd $(OUTPUT_DIR) && xsim --gui $(OUTPUT_WAVES)
+endif
 endif
 
 else ifeq ($(SIMULATOR),vsim) # VSIM ##############################################################
