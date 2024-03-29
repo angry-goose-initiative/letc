@@ -30,42 +30,67 @@ module letc_matrix_switch
 
 //TODO
 
-//TESTING just wire core directly to default_sub
+//TESTING just wire core directly to ps_gp (useful to get some initial synthesis numbers)
+//TODO we need to choose between this, default_sub, and the aclint (and potentially others in the future)
 always_comb begin
-    default_sub.awvalid = core.awvalid;
-    default_sub.awaddr  = core.awaddr;
-    default_sub.awlen   = core.awlen;
-    default_sub.awsize  = core.awsize;
-    default_sub.awburst = core.awburst;
-    default_sub.awid    = core.awid;
-    core.awready        = default_sub.awready;
+    ps_gp.awvalid   = core.awvalid;
+    ps_gp.awaddr    = core.awaddr;
+    ps_gp.awlen     = core.awlen;
+    ps_gp.awsize    = core.awsize;
+    ps_gp.awburst   = core.awburst;
+    ps_gp.awid      = core.awid;
+    core.awready    = ps_gp.awready;
 
-    default_sub.wvalid  = core.wvalid;
-    default_sub.wdata   = core.wdata;
-    default_sub.wstrb   = core.wstrb;
-    default_sub.wlast   = core.wlast;
-    default_sub.wid     = core.wid;
-    core.wready         = default_sub.wready;
+    ps_gp.wvalid    = core.wvalid;
+    ps_gp.wdata     = core.wdata;
+    ps_gp.wstrb     = core.wstrb;
+    ps_gp.wlast     = core.wlast;
+    ps_gp.wid       = core.wid;
+    core.wready     = ps_gp.wready;
 
-    core.bvalid         = default_sub.bvalid;
-    core.bresp          = default_sub.bresp;
-    core.bid            = default_sub.bid;
-    default_sub.bready  = core.bready;
+    core.bvalid     = ps_gp.bvalid;
+    core.bresp      = ps_gp.bresp;
+    core.bid        = ps_gp.bid;
+    ps_gp.bready    = core.bready;
 
-    default_sub.arvalid = core.arvalid;
-    default_sub.araddr  = core.araddr;
-    default_sub.arlen   = core.arlen;
-    default_sub.arsize  = core.arsize;
-    default_sub.arburst = core.arburst;
-    default_sub.arid    = core.arid;
-    core.arready        = default_sub.arready;
+    ps_gp.arvalid   = core.arvalid;
+    ps_gp.araddr    = core.araddr;
+    ps_gp.arlen     = core.arlen;
+    ps_gp.arsize    = core.arsize;
+    ps_gp.arburst   = core.arburst;
+    ps_gp.arid      = core.arid;
+    core.arready    = ps_gp.arready;
 
-    core.rvalid         = default_sub.rvalid;
-    core.rdata          = default_sub.rdata;
-    core.rresp          = default_sub.rresp;
-    core.rid            = default_sub.rid;
-    core.rlast          = default_sub.rlast;
-    default_sub.rready  = core.rready;
+    core.rvalid     = ps_gp.rvalid;
+    core.rdata      = ps_gp.rdata;
+    core.rresp      = ps_gp.rresp;
+    core.rid        = ps_gp.rid;
+    core.rlast      = ps_gp.rlast;
+    ps_gp.rready    = core.rready;
 end
+
+/* ------------------------------------------------------------------------------------------------
+ * Tying off ACP port (for now)
+ * --------------------------------------------------------------------------------------------- */
+
+//TODO for now we'll just be using the ps_gp port to simplify LETC
+//per a meeting we had a few weeks ago. Maybe we'll use the ACP port later.
+always_comb begin
+    ps_acp.awvalid = 1'b0;
+    ps_acp.wvalid  = 1'b0;
+    ps_acp.bready  = 1'b0;
+    ps_acp.arvalid = 1'b0;
+    ps_acp.rready  = 1'b0;
+end
+
+/* ------------------------------------------------------------------------------------------------
+ * Assertions
+ * --------------------------------------------------------------------------------------------- */
+
+`ifdef SIMULATION
+
+//TODO
+
+`endif //SIMULATION
 
 endmodule : letc_matrix_switch

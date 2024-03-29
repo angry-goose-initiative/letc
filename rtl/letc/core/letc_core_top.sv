@@ -105,6 +105,8 @@ letc_core_cache_if l1dcache_if(.*);
 letc_core_tlb_if itlb_if(.*);
 letc_core_tlb_if dtlb_if(.*);
 
+assign o_debug = d_to_e1[7:0];//TESTING
+
 /* ------------------------------------------------------------------------------------------------
  * Module Instantiations
  * --------------------------------------------------------------------------------------------- */
@@ -164,11 +166,17 @@ letc_core_stage_f2 stage_f2 (
     .o_f2_to_d(f2_to_d)
 );
 
+//FIXME why does XSIM act like stage_ready has multiple drivers
+//unless we do this indirect assignment instead?
+logic xsim_workaround_stage_d_ready;
+assign stage_ready[2] = xsim_workaround_stage_d_ready;
+
 letc_core_stage_d stage_d (
     .*,
 
     //Hazard/backpressure signals
-    .o_stage_ready(stage_ready[2]),
+    //.o_stage_ready(stage_ready[2]),
+    .o_stage_ready(xsim_workaround_stage_d_ready),
     .i_stage_flush(stage_flush[2]),
     .i_stage_stall(stage_stall[2]),
 

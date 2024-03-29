@@ -32,4 +32,14 @@ always_comb begin
     axi.rvalid  = 1'b1;
 end
 
+/* ------------------------------------------------------------------------------------------------
+ * Assertions
+ * --------------------------------------------------------------------------------------------- */
+
+`ifdef SIMULATION
+
+//TODO
+
+`endif //SIMULATION
+
 endmodule : letc_matrix_default_subordinate

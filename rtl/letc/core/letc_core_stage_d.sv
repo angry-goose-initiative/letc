@@ -491,10 +491,7 @@ assert property (@(posedge i_clk) disable iff (!i_rst_n) o_csr_explicit_ren |-> 
 assert property (@(posedge i_clk) disable iff (!i_rst_n)
     !i_rst_n |=> !$isunknown(o_d_to_e1.valid)//Extra |=> needed to deal with the reset
 );
-`ifndef XSIM
-//FIXME why is o_stage_ready unknown in XSIM, but 1'b1 in Verilator and VSIM (letc_core_tb only)?
 assert property (@(posedge i_clk) disable iff (!i_rst_n) !$isunknown(o_stage_ready));
-`endif //XSIM
 assert property (@(posedge i_clk) disable iff (!i_rst_n) !$isunknown(o_csr_explicit_ren));
 assert property (@(posedge i_clk) disable iff (!i_rst_n)
     (!$isunknown(rs1_rdata) && !$isunknown(rs2_rdata)) |-> !$isunknown(o_branch_taken)

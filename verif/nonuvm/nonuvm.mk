@@ -62,7 +62,9 @@ waves: $(OUTPUT_WAVES)
 ifeq ($(SIMULATOR),verilator) # VERILATOR #########################################################
 
 ifeq ($(WAVE_VIEWER),gtkwave)
-	gtkwave $(OUTPUT_WAVES)
+	#FST issues with some blocks, the VCDs are more reliable (but give up enum support sadly)
+	#gtkwave $(OUTPUT_WAVES)
+	gtkwave $(OUTPUT_DIR)/verilator_waves.vcd
 else
 	@echo "Unsupported wave viewer: $(WAVE_VIEWER)"
 endif

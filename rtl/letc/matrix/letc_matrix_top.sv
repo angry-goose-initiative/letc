@@ -54,11 +54,11 @@ letc_matrix_default_subordinate default_subordinate_inst (
 
 //Buffering adds latency (two cycles in total) but eases timing
 
-axi_if core_buffered(.i_aclk(i_clk), .i_arst_n(i_rst_n));
-axi_if default_subordinate_pre_buffered(.i_aclk(i_clk), .i_arst_n(i_rst_n));
-axi_if ps_gp_pre_buffered(.i_aclk(i_clk), .i_arst_n(i_rst_n));
-axi_if ps_acp_pre_buffered(.i_aclk(i_clk), .i_arst_n(i_rst_n));
-axi_if aclint_pre_buffered(.i_aclk(i_clk), .i_arst_n(i_rst_n));
+axi_if                  core_buffered(.i_aclk(i_clk), .i_arst_n(i_rst_n));
+axi_if                  default_subordinate_pre_buffered(.i_aclk(i_clk), .i_arst_n(i_rst_n));
+axi_if                  ps_gp_pre_buffered(.i_aclk(i_clk), .i_arst_n(i_rst_n));
+axi_if #(.DWIDTH(64))   ps_acp_pre_buffered(.i_aclk(i_clk), .i_arst_n(i_rst_n));
+axi_if                  aclint_pre_buffered(.i_aclk(i_clk), .i_arst_n(i_rst_n));
 
 axi_buffer core_buffer (
     .*,
@@ -78,7 +78,7 @@ axi_buffer ps_gp_buffer (
     .to_subordinate(ps_gp)
 );
 
-axi_buffer ps_acp_buffer (
+axi_buffer ps_acp_buffer (//FIXME need to parameterize this to be 64-bit
     .*,
     .from_manager(ps_acp_pre_buffered.subordinate),
     .to_subordinate(ps_acp)
@@ -105,5 +105,15 @@ letc_matrix_switch switch (
     .aclint(aclint_pre_buffered.manager)
     //TODO more as nesessary
 );
+
+/* ------------------------------------------------------------------------------------------------
+ * Assertions
+ * --------------------------------------------------------------------------------------------- */
+
+`ifdef SIMULATION
+
+//TODO
+
+`endif //SIMULATION
 
 endmodule : letc_matrix_top

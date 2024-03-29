@@ -116,7 +116,18 @@ modport manager (
     input  rid,
     input  rdata,
     input  rresp,
-    input  rlast
+    input  rlast,
+
+    //Functions
+    import aw_transfer_complete,
+    import w_transfer_complete,
+    import b_transfer_complete,
+    import ar_transfer_complete,
+    import r_transfer_complete,
+    import b_error_resp,
+    import r_error_resp,
+    import aw_num_beats,
+    import ar_num_beats
 );
 
 modport subordinate (
@@ -158,7 +169,18 @@ modport subordinate (
     output rid,
     output rdata,
     output rresp,
-    output rlast
+    output rlast,
+
+    //Functions
+    import aw_transfer_complete,
+    import w_transfer_complete,
+    import b_transfer_complete,
+    import ar_transfer_complete,
+    import r_transfer_complete,
+    import b_error_resp,
+    import r_error_resp,
+    import aw_num_beats,
+    import ar_num_beats
 );
 
 /* ------------------------------------------------------------------------------------------------

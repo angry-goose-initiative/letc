@@ -77,11 +77,14 @@ module letc_core_tghm
     //TODO others
 );
 
+//TODO
 assign o_stage_d_bypass_rs1 = 1'b0;
 assign o_stage_d_bypass_rs2 = 1'b0;
+assign o_stage_flush = '0;
 
 //TODO this stalling logic may need to be made more complicated in the future
 //(ex. stalling for hazards, not just downstream-stage-readiness)
+/*
 logic [5:0] stage_stall;
 always_comb begin
     stage_stall[5] = 1'b0;
@@ -90,5 +93,7 @@ always_comb begin
     end
     o_stage_stall = stage_stall;
 end
+*/
+assign o_stage_stall = '0;
 
 endmodule : letc_core_tghm

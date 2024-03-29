@@ -193,6 +193,7 @@ always_comb begin
                 next_state = GET_BRESP;
             end
         end
+        default: next_state = IDLE;//This should never happen
     endcase
 end
 
@@ -209,7 +210,7 @@ always_comb begin
     ready_to_requestor = 1'b0;
 
     if (selected_valid) begin
-        unique case (state)
+        unique0 case (state)
             IDLE: begin
                 if (selected_wen_nren) begin//Write
                     axi.awvalid = 1'b1;
@@ -259,6 +260,7 @@ always_comb begin
         end
         SIZE_HALFWORD:  axi.wstrb = selected_addr[1] ? 4'b1100 : 4'b0011;
         SIZE_WORD:      axi.wstrb = 4'b1111;
+        default: axi.wstrb = 4'b0000;//This should never occur
     endcase
 end
 
@@ -276,6 +278,7 @@ always_comb begin
         end
         SIZE_HALFWORD:  processed_rdata = selected_addr[1] ? {16'h0, axi.rdata[31:16]} : {16'h0, axi.rdata[15:0]};
         SIZE_WORD:      processed_rdata = axi.rdata;
+        default: processed_rdata = 32'hDEADBEEF;//This should never occur
     endcase
 
     //Connect the data to all requestors
@@ -292,6 +295,7 @@ always_comb begin
         SIZE_BYTE:      processed_wdata = {4{selected_wdata[7:0]}};
         SIZE_HALFWORD:  processed_wdata = {2{selected_wdata[15:0]}};
         SIZE_WORD:      processed_wdata = selected_wdata;
+        default: processed_wdata = 32'hDEADBEEF;//This should never occur
     endcase
 
     axi.wdata = processed_wdata;
@@ -305,9 +309,7 @@ always_comb begin
     //LETC Core doesn't take advantage of multiple AXI IDs. Reduces design complexity.
     axi.awid    = (axi_pkg::IDWIDTH)'(AXI_ID);
     axi.wid     = (axi_pkg::IDWIDTH)'(AXI_ID);//Unused in AXI4, but we'll set it for completeness
-    axi.bid     = (axi_pkg::IDWIDTH)'(AXI_ID);
     axi.arid    = (axi_pkg::IDWIDTH)'(AXI_ID);
-    axi.rid     = (axi_pkg::IDWIDTH)'(AXI_ID);
 
     //LETC Core doesn't do bursts. Reduces design complexity and resource usage (adders, etc)
     axi.awlen   = '0;//Each transaction is 1 beat only

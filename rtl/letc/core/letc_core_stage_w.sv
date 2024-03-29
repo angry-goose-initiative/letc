@@ -45,5 +45,6 @@ module letc_core_stage_w
 );
 
 logic todo;
+assign o_stage_ready = 1'b1;
 
 endmodule : letc_core_stage_w

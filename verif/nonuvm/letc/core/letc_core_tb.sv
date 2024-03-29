@@ -45,7 +45,7 @@ logic [7:0] o_debug;
  * DUT
  * --------------------------------------------------------------------------------------------- */
 
-//letc_core_top dut (.*);
+letc_core_top dut (.*);
 
 /* ------------------------------------------------------------------------------------------------
  * Clocking
@@ -84,7 +84,12 @@ endclocking
 task setup();
 begin
     //Set initial input states
-    //TODO axi
+    //FIXME use cb
+    axi.arready = 1'b0;
+    axi.rvalid  = 1'b0;
+    axi.awready = 1'b0;
+    axi.wready  = 1'b0;
+    axi.bvalid  = 1'b0;
     i_timer_irq_pending = 1'b0;
     i_external_irq_pending = 1'b0;
 end
