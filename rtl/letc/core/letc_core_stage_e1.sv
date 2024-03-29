@@ -32,7 +32,8 @@ module letc_core_stage_e1
     output logic  o_stage_ready,
     input  logic  i_stage_flush,
     input  logic  i_stage_stall,
-    
+
+    //bypass signals
     input  logic  i_bypass_rs1,
     input  logic  i_bypass_rs2,
     input  word_t i_bypassed_rs1_data,
@@ -84,20 +85,48 @@ always_comb begin
     i_alu_operation = i_d_to_e1.alu_op;
 end
 
+//tlb interface
+//TODO tlb if logic will provide ready signal
+//rest of stage is always ready
+assign o_stage_ready = 1'b1;
+
+//output flops
 always_ff @(posedge i_clk) begin
     if (!i_rst_n) begin
-        o_e1_to_e2.alu_result <= 32'h0;
-        o_e1_to_e2.valid      <= 1'b0;
-        o_e1_to_e2.rd_we      <= 1'b0;
+        o_e1_to_e2.valid <= 1'b0;
+    end else begin
+        if (i_stage_flush) begin
+            o_e1_to_e2.valid <= 1'b0;
+        end else if (!i_stage_stall) begin
+            o_e1_to_e2.valid <= i_d_to_e1.valid;
+        end
     end
-    else begin
-        o_e1_to_e2.alu_result <= o_alu_result;
-        o_e1_to_e2.valid      <= 1'b1; //when should this be 0?
+end
+
+always_ff @(posedge i_clk) begin
+    if (!i_stage_stall) begin
         //passthroughs
         o_e1_to_e2.rd_src <= i_d_to_e1.rd_src;
         o_e1_to_e2.rd_idx <= i_d_to_e1.rd_idx;
         o_e1_to_e2.rd_we  <= i_d_to_e1.rd_we;
+
+        o_e1_to_e2.csr_op <= i_d_to_e1.csr_op;
+        o_e1_to_e2.csr_idx <= i_d_to_e1.csr_idx;
+        o_e1_to_e2.old_csr_value <= i_d_to_e1.csr_rdata;
+
+        o_e1_to_e2.memory_op <= i_d_to_e1.memory_op;
+        o_e1_to_e2.memory_signed <= i_d_to_e1.memory_signed;
+        o_e1_to_e2.memory_size <= i_d_to_e1.memory_size;
+        o_e1_to_e2.rs2_rdata <= i_d_to_e1.rs2_rdata;
+        //modified outputs
+        o_e1_to_e2.alu_result <= o_alu_result;
     end
 end
+
+`ifdef SIMULATION
+
+assert property (@(posedge i_clk) disable iff (!i_rst_n) !(i_stage_flush && i_stage_stall));
+
+`endif //SIMULATION
 
 endmodule : letc_core_stage_e1
