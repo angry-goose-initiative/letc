@@ -52,7 +52,11 @@ pc_word_t pc_word, next_pc_word, next_seq_pc_word;
 assign next_seq_pc_word = pc_word + 29'h1;
 
 always_comb begin
-    next_pc_word = next_seq_pc_word;//TODO this will vary
+    if (branch_taken) begin
+        next_pc_word = i_branch_target;
+    end else begin
+        next_pc_word = next_seq_pc_word;
+    end
 end
 
 always_ff @(posedge i_clk) begin
