@@ -47,11 +47,15 @@ module letc_core_stage_e1
 );
 
 //ALU
-letc_core_alu alu(.*);
+word_t[1:0] alu_operands;
+alu_op_e    alu_operation;
+word_t      alu_result;
 
-word_t[1:0] i_alu_operands;
-alu_op_e    i_alu_operation;
-word_t      o_alu_result;
+letc_core_alu alu(
+    .i_alu_operands(alu_operands),
+    .i_alu_operation(alu_operation),
+    .o_alu_result(alu_result)
+);
 
 //rs1 and rs2 bypass muxing
 word_t rs1;
@@ -65,24 +69,24 @@ end
 //op1
 always_comb begin
     unique case (i_d_to_e1.alu_op1_src)
-        ALU_OP1_SRC_RS1:  i_alu_operands[0] = rs1;
-        ALU_OP1_SRC_PC:   i_alu_operands[0] = i_d_to_e1.pc_word;
-        ALU_OP1_SRC_CSR:  i_alu_operands[0] = i_d_to_e1.csr_rdata;
-        ALU_OP1_SRC_ZERO: i_alu_operands[0] = 32'h0;
+        ALU_OP1_SRC_RS1:  alu_operands[0] = rs1;
+        ALU_OP1_SRC_PC:   alu_operands[0] = i_d_to_e1.pc_word;
+        ALU_OP1_SRC_CSR:  alu_operands[0] = i_d_to_e1.csr_rdata;
+        ALU_OP1_SRC_ZERO: alu_operands[0] = 32'h0;
     endcase
 end
 //op2
 always_comb begin
     unique case (i_d_to_e1.alu_op2_src)
-        ALU_OP2_SRC_RS1:  i_alu_operands[1] = rs1;
-        ALU_OP2_SRC_RS2:  i_alu_operands[1] = rs2;
-        ALU_OP2_SRC_IMM:  i_alu_operands[1] = i_d_to_e1.immediate;
-        ALU_OP2_SRC_FOUR: i_alu_operands[1] = 32'h4;
+        ALU_OP2_SRC_RS1:  alu_operands[1] = rs1;
+        ALU_OP2_SRC_RS2:  alu_operands[1] = rs2;
+        ALU_OP2_SRC_IMM:  alu_operands[1] = i_d_to_e1.immediate;
+        ALU_OP2_SRC_FOUR: alu_operands[1] = 32'h4;
     endcase
 end
 //operation
 always_comb begin
-    i_alu_operation = i_d_to_e1.alu_op;
+    alu_operation = i_d_to_e1.alu_op;
 end
 
 //tlb interface
@@ -119,7 +123,7 @@ always_ff @(posedge i_clk) begin
         o_e1_to_e2.memory_size <= i_d_to_e1.memory_size;
         o_e1_to_e2.rs2_rdata <= i_d_to_e1.rs2_rdata;
         //modified outputs
-        o_e1_to_e2.alu_result <= o_alu_result;
+        o_e1_to_e2.alu_result <= alu_result;
     end
 end
 
