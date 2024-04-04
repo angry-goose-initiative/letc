@@ -82,8 +82,8 @@ word_t stage_e1_bypass_rs1_rdata;
 word_t stage_e1_bypass_rs2_rdata;
 //TODO any other stages that need bypassing
 
-//Memory requests
-letc_core_limp_if limp[2:0](.*);
+//Memory requests to the AXI FSM
+letc_core_limp_if axi_fsm_limp[2:0](.*);
 
 //Implicitly read CSRs by LETC Core logic, always valid
 csr_implicit_rdata_s csr_implicit_rdata;
@@ -104,12 +104,16 @@ word_t          csr_explicit_wdata;
 logic           csr_explicit_will;
 
 //Cache interfaces
-letc_core_cache_if l1icache_if(.*);
-letc_core_cache_if l1dcache_if(.*);
+letc_core_limp_if l1icache_limp(.*);
+letc_core_limp_if l1dcache_limp(.*);
 
 //TLB interfaces
 letc_core_tlb_if itlb_if(.*);
 letc_core_tlb_if dtlb_if(.*);
+
+//Signal to flush all caches and TLBs
+//TODO how to detect if the flush is complete?
+logic global_cache_flush;
 
 assign o_debug = d_to_e1[7:0];//TESTING
 
@@ -303,8 +307,11 @@ letc_core_tghm tghm (
     .o_stage_d_bypass_rs1(stage_d_bypass_rs1),
     .o_stage_d_bypass_rs2(stage_d_bypass_rs2),
     .o_stage_d_bypass_rs1_rdata(stage_d_bypass_rs1_rdata),
-    .o_stage_d_bypass_rs2_rdata(stage_d_bypass_rs2_rdata)
+    .o_stage_d_bypass_rs2_rdata(stage_d_bypass_rs2_rdata),
     //TODO others if needed
+
+    //Signal to flush all caches and TLBs
+    .o_global_cache_flush(global_cache_flush)
 
     //TODO
 );
@@ -312,25 +319,33 @@ letc_core_tghm tghm (
 letc_core_cache l1icache (//TODO perhaps parameters for read only?
     .*,
 
-    //Cache interface
-    .cache_if(l1icache_if),
+    //Signal to flush all cache lines
+    .i_flush_cache(global_cache_flush),
 
-    //LIMP interface
-    .limp(limp[0])
+    //Cache interface (LIMP)
+    .stage_limp(l1icache_limp),
+
+    //LIMP interface to AXI FSM
+    .axi_fsm_limp(axi_fsm_limp[0])
 );
 
 letc_core_cache l1dcache (
     .*,
 
-    //Cache interface
-    .cache_if(l1dcache_if),
+    //Signal to flush all cache lines
+    .i_flush_cache(global_cache_flush),
 
-    //LIMP interface
-    .limp(limp[1])
+    //Cache interface (LIMP)
+    .stage_limp(l1dcache_limp),
+
+    //LIMP interface to AXI FSM
+    .axi_fsm_limp(axi_fsm_limp[1])
 );
 
 letc_core_tlb itlb (
     .*,
+
+    //TODO signal to flush
 
     //TLB interface
     .tlb_if(itlb_if)
@@ -340,6 +355,8 @@ letc_core_tlb itlb (
 
 letc_core_tlb dtlb (
     .*,
+
+    //TODO signal to flush
 
     //TLB interface
     .tlb_if(dtlb_if)
@@ -353,7 +370,7 @@ letc_core_mmu mmu (
     //TODO design MMU interfaces
 
     //LIMP interface
-    .limp(limp[2])
+    .limp(axi_fsm_limp[2])
 );
 
 letc_core_csr csr (
@@ -379,13 +396,13 @@ letc_core_csr csr (
 );
 
 letc_core_axi_fsm axi_fsm (
-    .*
+    .*,
 
     //Core IO
     //axi connected thanks to .* above
 
     //Internal Core Connections
-    //limp connected thanks to .* above
+    .limp(axi_fsm_limp)
 );
 
 endmodule : letc_core_top

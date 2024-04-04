@@ -53,7 +53,7 @@ modport requestor (
     output wdata
 );
 
-modport axi_fsm (
+modport servicer (
     input  valid,
     output ready,
     input  wen_nren,

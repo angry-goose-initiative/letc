@@ -67,12 +67,16 @@ module letc_core_tghm
     output logic    o_stage_d_bypass_rs1,
     output logic    o_stage_d_bypass_rs2,
     output word_t   o_stage_d_bypass_rs1_rdata,
-    output word_t   o_stage_d_bypass_rs2_rdata
+    output word_t   o_stage_d_bypass_rs2_rdata,
     //TODO others if needed
 
    //TODO also need to snoop branch target/etc
 
     //TODO bypass signals for perf optimizations down the road
+
+    //Signal to flush all caches and TLBs
+    //TODO how to detect if the flush is complete?
+    output logic o_global_cache_flush
 
     //TODO others
 );
@@ -81,6 +85,7 @@ module letc_core_tghm
 assign o_stage_d_bypass_rs1 = 1'b0;
 assign o_stage_d_bypass_rs2 = 1'b0;
 assign o_stage_flush = '0;
+assign o_global_cache_flush = 1'b0;
 
 //TODO this stalling logic may need to be made more complicated in the future
 //(ex. stalling for hazards, not just downstream-stage-readiness)

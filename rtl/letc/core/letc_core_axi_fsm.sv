@@ -31,7 +31,7 @@ module letc_core_axi_fsm
     //Internal Core Connections
     //Sadly this needs to be unpacked since these are interfaces. But we've
     //ensured this is synthesizable
-    letc_core_limp_if.axi_fsm limp [NUM_REQUESTORS-1:0]
+    letc_core_limp_if.servicer limp [NUM_REQUESTORS-1:0]
 );
 
 //TODO in future this can be made much more efficient by allowing reads and writes simulataneously
