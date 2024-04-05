@@ -52,7 +52,7 @@ end
 
 always_ff @(posedge i_clk) begin
     o_f2_to_d.pc_word <= i_f1_to_f2.pc_word;
-    o_f2_to_d.instr <= instr_mem[i_f1_to_f2.fetch_addr[9:0]][31:2];
+    o_f2_to_d.instr <= instr_mem[i_f1_to_f2.fetch_addr[11:2]][31:2];
 end
 
 initial begin//TESTING this is not synthesizable (except on FPGA kinda sorta)
