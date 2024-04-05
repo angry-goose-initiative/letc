@@ -18,6 +18,7 @@ make clean synth BLOCK=common/fifo/fifo_0r0w
 make clean synth BLOCK=common/fifo/fifo_0r1w
 make clean synth BLOCK=common/fifo/fifo_1r1w
 make clean synth BLOCK=common/sram/amd_bram
+make clean synth BLOCK=common/sram/amd_lutram
 
 make clean synth BLOCK=letc/core
 make clean synth BLOCK=letc/core/axi_fsm
