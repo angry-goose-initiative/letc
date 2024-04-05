@@ -36,7 +36,6 @@ rtl/letc/core/letc_core_tlb.sv
 rtl/letc/core/letc_core_mmu.sv
 rtl/letc/core/letc_core_csr.sv
 rtl/letc/core/letc_core_limp_if.sv
-rtl/letc/core/letc_core_cache_if.sv
 rtl/letc/core/letc_core_tlb_if.sv
 rtl/letc/core/letc_core_axi_fsm.sv
 
