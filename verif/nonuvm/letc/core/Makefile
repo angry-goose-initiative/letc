@@ -10,6 +10,7 @@
 
 TBENCH_TOP  := letc_core_tb
 RTL_SOURCES := \
+    $(RTL_ROOT)/common/sram/amd_lutram.sv \
     $(RTL_ROOT)/common/axi/axi_pkg.sv \
     $(RTL_ROOT)/common/axi/axi_if.sv \
     $(RTL_ROOT)/letc/letc_pkg.sv \

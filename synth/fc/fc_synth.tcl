@@ -23,6 +23,7 @@ set OUTPUT_DIR          ./
 set RTL_TOP coraz7_top
 set CONSTRAINTS_SOURCE $FC_ROOT/constraints.xdc
 set RTL_SOURCE "
+    $RTL_ROOT/common/sram/amd_lutram.sv
     $RTL_ROOT/common/fifo/fifo_0r0w.sv
     $RTL_ROOT/common/fifo/fifo_0r1w.sv
     $RTL_ROOT/common/fifo/fifo_1r1w.sv
