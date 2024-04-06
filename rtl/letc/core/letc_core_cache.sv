@@ -93,11 +93,13 @@ index_t      cache_write_index;
 cache_line_s cache_line_to_write, cache_line_to_read;
 amd_lutram #(
     .DEPTH (CACHE_DEPTH),
+    .BWIDTH(WORD_WIDTH),
     .DWIDTH($bits(cache_line_s))
 ) sram (
     .i_wclk(i_clk),
     .i_wen(cache_line_wen),
     .i_waddr(cache_write_index),
+    .i_wben('1),//TODO
     .i_wdata(cache_line_to_write),
 
     .i_raddr(stage_index),
