@@ -65,10 +65,16 @@ logic [5:0] stage_flush;
 logic [5:0] stage_stall;
 
 //Bypass signals
+//d1
 logic  stage_d_bypass_rs1;
 logic  stage_d_bypass_rs2;
 word_t stage_d_bypass_rs1_rdata;
 word_t stage_d_bypass_rs2_rdata;
+//e1
+logic  stage_e1_bypass_rs1;
+logic  stage_e1_bypass_rs2;
+word_t stage_e1_bypass_rs1_rdata;
+word_t stage_e1_bypass_rs2_rdata;
 //TODO any other stages that need bypassing
 
 //Memory requests
@@ -204,10 +210,14 @@ letc_core_stage_d stage_d (
 letc_core_stage_e1 stage_e1 (
     .*,
 
-    //TODO
-
-    //TLB interface
+    //TLB interface (TODO)
     .dtlb_if(dtlb_if),
+
+    //Bypass signals
+    .i_bypass_rs1(stage_e1_bypass_rs1),
+    .i_bypass_rs2(stage_e1_bypass_rs2),
+    .i_bypassed_rs1_data(stage_e1_bypass_rs1_rdata),
+    .i_bypassed_rs2_data(stage_e1_bypass_rs2_rdata),
 
     //Hazard/backpressure signals
     .o_stage_ready(stage_ready[3]),
