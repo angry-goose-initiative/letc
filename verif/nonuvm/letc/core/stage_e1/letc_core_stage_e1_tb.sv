@@ -110,7 +110,6 @@ task setup();
     cb.i_stage_stall <= 1'b0;
     cb.i_stage_flush <= 1'b0;
     cb.i_d_to_e1.valid <= 1'b0;
-    cb.i_d_to_e1.alu_op <= ALU_OP_DO_NOTHING;
     cb.i_bypass_rs1 <= 1'b0;
     cb.i_bypass_rs2 <= 1'b0;
 endtask
