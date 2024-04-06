@@ -126,9 +126,32 @@ end
  * Hit Detection and Read Logic
  * --------------------------------------------------------------------------------------------- */
 
-logic hit;
+logic   hit;
+word_t  hit_word;
 
-//TODO
+always_comb begin
+    if (stage_limp.valid && !stage_limp.wen_nren && cache_line_valid[stage_index]) begin
+        hit = cache_line_to_read.tag == stage_tag_compare_value;
+    end else begin
+        hit = 1'b0;
+    end
+
+    hit_word = cache_line_to_read.data[stage_word_offset];
+
+    unique case (stage_limp.size)
+        SIZE_BYTE: begin
+            unique case (stage_byte_offset)
+                2'b00: stage_limp.rdata = {24'h0, hit_word[7:0]};
+                2'b01: stage_limp.rdata = {24'h0, hit_word[15:8]};
+                2'b10: stage_limp.rdata = {24'h0, hit_word[23:16]};
+                2'b11: stage_limp.rdata = {24'h0, hit_word[31:24]};
+            endcase
+        end
+        SIZE_HALFWORD:  stage_limp.rdata = stage_byte_offset[1] ? {16'h0, hit_word[31:16]} : {16'h0, hit_word[15:0]};
+        SIZE_WORD:      stage_limp.rdata = hit_word;
+        default: stage_limp.rdata = 32'hDEADBEEF;//This should never occur
+    endcase
+end
 
 /* ------------------------------------------------------------------------------------------------
  * Line Refilling FSM and Write Logic

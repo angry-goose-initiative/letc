@@ -165,6 +165,7 @@ initial begin
     stage_limp_size     <= SIZE_WORD;
     stage_limp_addr     <= 32'hABCD1234;
     ##1;//One cycle for inputs to take effect
+    assert(!stage_limp_ready);//Since the cache is empty, this won't be ready right away
     while (!stage_limp_ready) begin
         $display("Waiting for stage_limp_ready");
         ##1;
