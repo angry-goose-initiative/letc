@@ -62,3 +62,4 @@ verif/nonuvm/letc/core/letc_core_tb.sv
 verif/nonuvm/letc/core/alu/letc_core_alu_tb.sv
 verif/nonuvm/letc/core/branch_comparator/letc_core_branch_comparator_tb.sv
 verif/nonuvm/letc/core/stage_d/letc_core_stage_d_tb.sv
+verif/nonuvm/letc/core/stage_e1/letc_core_stage_e1_tb.sv

@@ -1,12 +1,12 @@
 /**
  * File    letc_core_stage_e1_tb.sv
  * Brief   Testbench for LETC Core 1st Execute stage
- * 
+ *
  * Copyright:
  *  Copyright (C) 2024 John Jekel
  *  Copyright (C) 2024 Eric Jessee
  * See the LICENSE file at the root of the project for licensing info.
- * 
+ *
  * TODO Longer description
  *
 */
@@ -88,7 +88,7 @@ default clocking cb @(posedge i_clk);
     output i_bypassed_rs1_data;
     output i_bypassed_rs2_data;
 
-    //Hazards 
+    //Hazards
     input  o_stage_ready;
     output i_stage_flush;
     output i_stage_stall;
