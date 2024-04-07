@@ -87,23 +87,38 @@ end
 //The refilling FSM is the only thing that needs to write to the SRAM, and
 //the stage using the cache only needs to read it! (with tag comparison also being snooped by the
 //refilling FSM)
-logic                cache_line_wen;
 index_t              cache_write_index;
-logic [WORD_WIDTH:0] cache_line_wben;
+logic [CACHE_LINE_WORDS-1:0] cache_line_wben;
 cache_line_s         cache_line_to_write, cache_line_to_read;
 amd_lutram #(
     .DEPTH (CACHE_DEPTH),
     .BWIDTH(WORD_WIDTH),
-    .DWIDTH($bits(cache_line_s))
-) sram (
+    .DWIDTH($bits(cache_line_s) - $bits(tag_t)) //just storing the data words now
+) data_sram (
     .i_wclk(i_clk),
-    .i_wen(cache_line_wen),
+    .i_wen(axi_fsm_limp.ready),
     .i_waddr(cache_write_index),
     .i_wben(cache_line_wben),
-    .i_wdata(cache_line_to_write),
+    .i_wdata(cache_line_to_write.data),
 
     .i_raddr(stage_index),
-    .o_rdata(cache_line_to_read)
+    .o_rdata(cache_line_to_read.data)
+);
+
+logic tag_wen;
+amd_lutram #(
+    .DEPTH (CACHE_DEPTH),
+    .BWIDTH($bits(tag_t)),
+    .DWIDTH($bits(tag_t))
+) tags_sram (
+    .i_wclk(i_clk),
+    .i_wen(tag_wen),
+    .i_waddr(cache_write_index),
+    .i_wben('1),
+    .i_wdata(cache_line_to_write.tag),
+
+    .i_raddr(stage_index),
+    .o_rdata(cache_line_to_read.tag)
 );
 
 //Valid Flops
@@ -114,13 +129,11 @@ always_ff @(posedge i_clk) begin
     end else begin
         if (i_flush_cache) begin
             cache_line_valid <= '0;
-        end else if (cache_line_wen) begin
+        end else if (axi_fsm_limp.ready) begin //data ready from the axi fsm means the cache line is being written
             //Since this is a write-through cache, and there is no need to invalidate lines
             //for cache coherency for example, the only time a cache line can
             //become valid is when we write to it; and then it can never become invalid
             //again until the cache is flushed!
-            //when a line is evicted, the line that took its place is also
-            //valid.
             cache_line_valid[cache_write_index] <= 1'b1;
         end
     end
@@ -161,54 +174,129 @@ end
  * Line Refilling FSM and Write Logic
  * --------------------------------------------------------------------------------------------- */
 
-//TODO implement this
-//------fsm pseudocode--------//
-//state 1: idle.
-//  if request:
-    // next_state = compare tag
-//  else:
-    // next_state = idle
-//state 2: compare tag.
-//  (address splitting exposes correct cache line)
-//  (hit logic compares tag)
-//  if hit:
-    // stage_limp.ready = 1
-    // next_state = idle
-//  else:
-    // axi_fsm_limp.addr = stage_limp.addr //does this need to be flopped?
-    // axi_fsm_limp.valid = 1
-    // cache_line_wben = 1
-    // next_state = refill
-//state 3: refill 1
-//  if axi_fsm_limp.ready:
-    // cache_line_wen = 1
-    // next_state = refill 2
-//  else:
-    // next_state = refill 1
-//state 4: refill 2
-    // cache_line_wen = 0
-    // cache_line_wben <<= 1 //how to ensure a shift register is inferred?
-    // axi_fsm_limp.addr += 4
-    // next_state = refill 3
-//state 5: refill 3
-//  if cache_line_wben == (1<<WORD_WIDTH): //should be a constant compare
-    // stage_limp.ready = 1
-    // next_state = idle
-//  else
-    // next_state = refill 1
+//address counter
+//this module will facilitate fetching multiple words from memory
+//to fill one cache line. Can be loaded directly with the address,
+//and then will increment it while it is enabled.
+logic addr_counter_en;
+logic addr_counter_load;
+address_counter #(
+    .ADDR_WIDTH(PADDR_WIDTH)
+) address_counter (
+    .i_clk(i_clk),
+    .i_rst_n(i_rst_n),
+    .i_addr(stage_limp.addr),
+    .o_addr(axi_fsm_limp.addr),
+    .i_en(addr_counter_en),
+    .i_load(addr_counter_load)
+);
 
-always_comb begin
-    cache_line_to_write.tag = stage_tag_compare_value;
+//shift register
+//since the byte enables will be "one hot", we will use a shift
+//register to drive them. When a word is loaded from memory, we can
+//shift the enable to the left to enable the next word.
+logic sr_rst_n;
+localparam [CACHE_LINE_WORDS-1:0] SR_INIT = 'b1;
+shift_register #(
+    .WIDTH(CACHE_LINE_WORDS),
+    .INIT(SR_INIT)
+) cache_line_wben_shifter (
+    .i_clk(i_clk),
+    .i_rst_n(sr_rst_n),
+    .i_sdata('0), //if we initialize with 1, only need to shift in 0s
+    .i_shift(axi_fsm_limp.ready), //anytime we write a byte, we shift
+    .i_oe('1), //cache sram wen will control writes, so this is unneeded.
+    .o_data(cache_line_wben),
+    .o_carryout()
+);
+
+typedef enum logic [1:0] {
+    CACHE_STATE_IDLE = 2'h0,
+    CACHE_STATE_FILL,
+    CACHE_STATE_WRITE_TAG
+} cache_state_e;
+
+logic [1:0] cache_state_current;
+logic [1:0] cache_state_next;
+logic [OFFSET_WIDTH:0] cache_write_offset;
+
+//state transitions
+always_ff @(posedge i_clk) begin
+    if (!i_rst_n) begin
+        cache_state_current <= CACHE_STATE_IDLE;
+    end else begin
+        cache_state_current <= cache_state_next;
+    end
 end
+
+//fsm state flow
+always_ff @(cache_state_current) begin
+    unique case (cache_state_current)
+        CACHE_STATE_IDLE: begin
+            cache_write_offset <= '0;
+            if (!hit) begin
+                cache_state_next <= CACHE_STATE_FILL;
+            end else begin
+                cache_state_next <= CACHE_STATE_IDLE;
+            end
+        end
+        CACHE_STATE_FILL: begin
+            if (axi_fsm_limp.ready) begin
+            //filling is complete when the last byte enable has been set
+                if (cache_line_wben == (1<<CACHE_LINE_WORDS-1)) begin
+                    cache_state_next <= CACHE_STATE_WRITE_TAG;
+                end else begin
+                    cache_write_offset <= cache_write_offset + 1;
+                    cache_state_next <= CACHE_STATE_FILL;
+                end
+            end
+        end
+        CACHE_STATE_WRITE_TAG: begin
+            cache_state_next <= CACHE_STATE_IDLE;
+        end
+    endcase
+end
+
+//write logic
+always_comb begin
+    //cache lines
+    cache_line_to_write.tag  = stage_tag_compare_value;
+    cache_line_to_write.data[cache_write_offset] = axi_fsm_limp.rdata;
+    cache_write_index        = stage_index;
+    //state dependent outputs
+    unique case (cache_state_current)
+        CACHE_STATE_IDLE: begin
+            addr_counter_load  = hit ? 1'b0 : 1'b1;
+            addr_counter_en    = 1'b0;
+            sr_rst_n           = 1'b0;
+            tag_wen            = 1'b0;
+            axi_fsm_limp.valid = 1'b0;
+        end
+        CACHE_STATE_FILL: begin
+            addr_counter_load  = 1'b0;
+            addr_counter_en    = axi_fsm_limp.ready;
+            sr_rst_n           = 1'b1;
+            tag_wen            = 1'b0;
+            axi_fsm_limp.valid = 1'b1;
+        end
+        CACHE_STATE_WRITE_TAG: begin
+            addr_counter_load  = 1'b0;
+            addr_counter_en    = 1'b0;
+            sr_rst_n           = 1'b0;
+            tag_wen            = 1'b1;
+            axi_fsm_limp.valid = 1'b0;
+        end
+    endcase
+end
+
+//FIXME
+assign stage_limp.ready = 1'b0;
+assign axi_fsm_limp.wen_nren = 1'b0;
+assign axi_fsm_limp.size = SIZE_WORD;
 
 /* ------------------------------------------------------------------------------------------------
  * Output Logic
  * --------------------------------------------------------------------------------------------- */
-
-//TODO
-
-assign stage_limp.ready     = 1'b0;//TODO
-assign axi_fsm_limp.valid   = 1'b0;//TODO
 
 /* ------------------------------------------------------------------------------------------------
  * Assertions
