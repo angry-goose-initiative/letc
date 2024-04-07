@@ -87,10 +87,10 @@ end
 //The refilling FSM is the only thing that needs to write to the SRAM, and
 //the stage using the cache only needs to read it! (with tag comparison also being snooped by the
 //refilling FSM)
-//TODO need to expose byte enables to make things simpler for us
-logic        cache_line_wen;
-index_t      cache_write_index;
-cache_line_s cache_line_to_write, cache_line_to_read;
+logic                cache_line_wen;
+index_t              cache_write_index;
+logic [WORD_WIDTH:0] cache_line_wben;
+cache_line_s         cache_line_to_write, cache_line_to_read;
 amd_lutram #(
     .DEPTH (CACHE_DEPTH),
     .BWIDTH(WORD_WIDTH),
@@ -99,7 +99,7 @@ amd_lutram #(
     .i_wclk(i_clk),
     .i_wen(cache_line_wen),
     .i_waddr(cache_write_index),
-    .i_wben('1),//TODO
+    .i_wben(cache_line_wben),
     .i_wdata(cache_line_to_write),
 
     .i_raddr(stage_index),
@@ -119,6 +119,8 @@ always_ff @(posedge i_clk) begin
             //for cache coherency for example, the only time a cache line can
             //become valid is when we write to it; and then it can never become invalid
             //again until the cache is flushed!
+            //when a line is evicted, the line that took its place is also
+            //valid.
             cache_line_valid[cache_write_index] <= 1'b1;
         end
     end
@@ -159,7 +161,41 @@ end
  * Line Refilling FSM and Write Logic
  * --------------------------------------------------------------------------------------------- */
 
-//TODO
+//TODO implement this
+//------fsm pseudocode--------//
+//state 1: idle.
+//  if request:
+    // next_state = compare tag
+//  else:
+    // next_state = idle
+//state 2: compare tag.
+//  (address splitting exposes correct cache line)
+//  (hit logic compares tag)
+//  if hit:
+    // stage_limp.ready = 1
+    // next_state = idle
+//  else:
+    // axi_fsm_limp.addr = stage_limp.addr //does this need to be flopped?
+    // axi_fsm_limp.valid = 1
+    // cache_line_wben = 1
+    // next_state = refill
+//state 3: refill 1
+//  if axi_fsm_limp.ready:
+    // cache_line_wen = 1
+    // next_state = refill 2
+//  else:
+    // next_state = refill 1
+//state 4: refill 2
+    // cache_line_wen = 0
+    // cache_line_wben <<= 1 //how to ensure a shift register is inferred?
+    // axi_fsm_limp.addr += 4
+    // next_state = refill 3
+//state 5: refill 3
+//  if cache_line_wben == (1<<WORD_WIDTH): //should be a constant compare
+    // stage_limp.ready = 1
+    // next_state = idle
+//  else
+    // next_state = refill 1
 
 always_comb begin
     cache_line_to_write.tag = stage_tag_compare_value;
