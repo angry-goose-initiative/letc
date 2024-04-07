@@ -38,7 +38,7 @@ paddr_t addr;
 word_t  rdata;
 word_t  wdata;
 //TODO fault signal if unaligned, AXI errors, etc
-
+//TODO bypass signal for direct memory access from stage
 /* ------------------------------------------------------------------------------------------------
  * Modports
  * --------------------------------------------------------------------------------------------- */
