@@ -301,17 +301,40 @@ letc_core_tghm tghm (
     .o_stage_flush(stage_flush),
     .o_stage_stall(stage_stall),
 
-    //TODO
+    //Register index signals for hazard detection
+    //Even if we aren't actually reading registers, to be safe, we will still bypass/stall
+    .i_stage_d_valid(f2_to_d.valid),
+    .i_stage_d_rs1_idx(rs1_idx),
+    .i_stage_d_rs2_idx(rs2_idx),
+    .i_stage_e1_valid(d_to_e1.valid),
+    .i_stage_e1_rs1_idx(d_to_e1.rs1_idx),
+    .i_stage_e1_rs2_idx(d_to_e1.rs2_idx),
+    .i_stage_e1_rd_we(d_to_e1.rd_we),
+    .i_stage_e1_rd_idx(d_to_e1.rd_idx),
+    .i_stage_e2_valid(e1_to_e2.valid),
+    .i_stage_e2_rd_we(e1_to_e2.rd_we),
+    .i_stage_e2_rd_idx(e1_to_e2.rd_idx),
+    .i_stage_w_valid(e2_to_w.valid),
+    .i_stage_w_rd_we(e2_to_w.rd_we),
+    .i_stage_w_rd_idx(e2_to_w.rd_idx),
 
     //Bypass signals
     .o_stage_d_bypass_rs1(stage_d_bypass_rs1),
     .o_stage_d_bypass_rs2(stage_d_bypass_rs2),
     .o_stage_d_bypass_rs1_rdata(stage_d_bypass_rs1_rdata),
     .o_stage_d_bypass_rs2_rdata(stage_d_bypass_rs2_rdata),
-    //TODO others if needed
+    .o_stage_e1_bypass_rs1(stage_e1_bypass_rs1),
+    .o_stage_e1_bypass_rs2(stage_e1_bypass_rs2),
+    .o_stage_e1_bypass_rs1_rdata(stage_e1_bypass_rs1_rdata),
+    .o_stage_e1_bypass_rs2_rdata(stage_e1_bypass_rs2_rdata),
+    .i_stage_e2_alu_result(e1_to_e2.alu_result),
+    .i_stage_w_rd_wdata(rd_wdata),
 
     //Signal to flush all caches and TLBs
-    .o_global_cache_flush(global_cache_flush)
+    .o_global_cache_flush(global_cache_flush),
+
+    //Branch snooping (to flush earlier stages on a branch)
+    .i_branch_taken(branch_taken)
 
     //TODO
 );

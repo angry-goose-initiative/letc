@@ -110,7 +110,7 @@ initial begin
 
     //cb.//TODO
 
-    ##5;
+    ##50;
     $finish;
 end
 

@@ -57,13 +57,15 @@ end
 
 initial begin//TESTING this is not synthesizable (except on FPGA kinda sorta)
     for (int i = 0; i < 1024; ++i) begin
-        instr_mem[i] = 32'hDEADBEEF;
+        instr_mem[i] = 32'h00000013;//nop
     end
 
     //TEMPORARY for testing preload the instruction mem with a test program
     instr_mem[0] = 32'h00000013;//addi x0, x0, 0
     instr_mem[1] = 32'habcd1117;//auipc sp, 0xabcd1
-    instr_mem[2] = 32'hfc20e6e3;//bltu x1, x2, offset -0x34
+    instr_mem[2] = 32'h12300093;//li x1, 0x123
+    instr_mem[3] = 32'h56700113;//li x2, 0x567
+    instr_mem[4] = 32'hfc20e6e3;//bltu x1, x2, offset -0x34
 end
 
 assign o_stage_ready = 1'b1;//TESTING
