@@ -230,29 +230,27 @@ always_ff @(posedge i_clk) begin
 end
 
 //fsm state flow
-always_ff @(cache_state_current) begin
+always_comb begin
     unique case (cache_state_current)
         CACHE_STATE_IDLE: begin
-            cache_write_offset <= '0;
             if (!hit) begin
-                cache_state_next <= CACHE_STATE_FILL;
+                cache_state_next = CACHE_STATE_FILL;
             end else begin
-                cache_state_next <= CACHE_STATE_IDLE;
+                cache_state_next = CACHE_STATE_IDLE;
             end
         end
         CACHE_STATE_FILL: begin
             if (axi_fsm_limp.ready) begin
             //filling is complete when the last byte enable has been set
-                if (cache_line_wben == (1<<CACHE_LINE_WORDS-1)) begin
-                    cache_state_next <= CACHE_STATE_WRITE_TAG;
+                if (cache_line_wben == (1<<CACHE_LINE_WORDS-1)) begin //how to make sure this is a constant?
+                    cache_state_next = CACHE_STATE_WRITE_TAG;
                 end else begin
-                    cache_write_offset <= cache_write_offset + 1;
-                    cache_state_next <= CACHE_STATE_FILL;
+                    cache_state_next = CACHE_STATE_FILL;
                 end
             end
         end
         CACHE_STATE_WRITE_TAG: begin
-            cache_state_next <= CACHE_STATE_IDLE;
+            cache_state_next = CACHE_STATE_IDLE;
         end
     endcase
 end
@@ -261,9 +259,26 @@ end
 always_comb begin
     //cache lines
     cache_line_to_write.tag  = stage_tag_compare_value;
-    cache_line_to_write.data[cache_write_offset] = axi_fsm_limp.rdata;
-    cache_write_index        = stage_index;
+    //byte enables will take care of allowing the correct word to be written.
+    //this means we can connect all of the cache line write words in parallel
+    for (int i=0; i<CACHE_LINE_WORDS; i++) begin
+        cache_line_to_write.data[i] = axi_fsm_limp.rdata;
+    end
+    //the write index will always be the same as the read index, since
+    //we are filling on a miss to that particular index
+    cache_write_index = stage_index;
     //state dependent outputs
+end
+
+//FIXME
+assign stage_limp.ready = 1'b0;
+assign axi_fsm_limp.wen_nren = 1'b0;
+assign axi_fsm_limp.size = SIZE_WORD;
+
+/* ------------------------------------------------------------------------------------------------
+ * Output Logics
+ * --------------------------------------------------------------------------------------------- */
+always_comb begin   
     unique case (cache_state_current)
         CACHE_STATE_IDLE: begin
             addr_counter_load  = hit ? 1'b0 : 1'b1;
@@ -288,16 +303,6 @@ always_comb begin
         end
     endcase
 end
-
-//FIXME
-assign stage_limp.ready = 1'b0;
-assign axi_fsm_limp.wen_nren = 1'b0;
-assign axi_fsm_limp.size = SIZE_WORD;
-
-/* ------------------------------------------------------------------------------------------------
- * Output Logic
- * --------------------------------------------------------------------------------------------- */
-
 /* ------------------------------------------------------------------------------------------------
  * Assertions
  * --------------------------------------------------------------------------------------------- */
