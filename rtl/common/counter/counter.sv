@@ -1,6 +1,6 @@
 /*
- * File:    address_counter.sv
- * Brief:   Simple module that stores a memory address value and increments it.
+ * File:    counter.sv
+ * Brief:   Simple module that stores a value and increments it.
  *
  * Copyright:
  *  Copyright (C) 2024 Eric Jessee

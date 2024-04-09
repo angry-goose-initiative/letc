@@ -17,6 +17,8 @@ rtl/common/cdc/cdc_synchronizer.sv
 rtl/common/axi/axi_pkg.sv
 rtl/common/axi/axi_if.sv
 rtl/common/axi/axi_buffer.sv
+rtl/common/counter/counter.sv
+rtl/common/shift_register/shift_register.sv
 
 rtl/letc/letc_pkg.sv
 rtl/letc/letc_top.sv
@@ -57,6 +59,8 @@ rtl/letc/periph/letc_periph_sram.sv
 verif/nonuvm/smoke_tb.sv
 
 verif/nonuvm/common/fifo/fifo_0r1w/fifo_0r1w_tb.sv
+verif/nonuvm/common/counter/counter_tb.sv
+verif/nonuvm/common/shift_register/shift_register_tb.sv
 
 verif/nonuvm/example/example_tb.sv
 

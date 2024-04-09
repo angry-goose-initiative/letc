@@ -11,7 +11,7 @@
 TBENCH_TOP  := letc_core_cache_tb
 RTL_SOURCES := \
     $(RTL_ROOT)/common/sram/amd_lutram.sv \
-    $(RTL_ROOT)/common/address_counter/address_counter.sv \
+    $(RTL_ROOT)/common/counter/counter.sv \
     $(RTL_ROOT)/common/shift_register/shift_register.sv \
     $(RTL_ROOT)/letc/letc_pkg.sv \
     $(RTL_ROOT)/letc/core/letc_core_pkg.sv \

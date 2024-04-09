@@ -180,8 +180,9 @@ end
 //and then will increment it while it is enabled.
 logic addr_counter_en;
 logic addr_counter_load;
-address_counter #(
-    .ADDR_WIDTH(PADDR_WIDTH)
+counter #(
+    .WIDTH(PADDR_WIDTH),
+    .STEP(4)
 ) address_counter (
     .i_clk(i_clk),
     .i_rst_n(i_rst_n),
@@ -196,16 +197,20 @@ address_counter #(
 //register to drive them. When a word is loaded from memory, we can
 //shift the enable to the left to enable the next word.
 logic sr_rst_n;
-localparam [CACHE_LINE_WORDS-1:0] SR_INIT = 'b1;
+logic sr_load;
+logic [CACHE_LINE_WORDS-1:0] sr_load_data;
+//we will tie off the load data to 1, since we always want to start
+//with the first bit set.
+assign sr_load_data = 'b1;
 shift_register #(
-    .WIDTH(CACHE_LINE_WORDS),
-    .INIT(SR_INIT)
+    .WIDTH(CACHE_LINE_WORDS)
 ) cache_line_wben_shifter (
     .i_clk(i_clk),
-    .i_rst_n(sr_rst_n),
+    .i_rst_n(i_rst_n),
     .i_sdata('0), //if we initialize with 1, only need to shift in 0s
     .i_shift(axi_fsm_limp.ready), //anytime we write a byte, we shift
-    .i_oe('1), //cache sram wen will control writes, so this is unneeded.
+    .i_load(sr_load),
+    .i_ldata(sr_load_data),
     .o_data(cache_line_wben),
     .o_carryout()
 );
@@ -276,28 +281,28 @@ assign axi_fsm_limp.wen_nren = 1'b0;
 assign axi_fsm_limp.size = SIZE_WORD;
 
 /* ------------------------------------------------------------------------------------------------
- * Output Logics
+ * Output Logic
  * --------------------------------------------------------------------------------------------- */
-always_comb begin   
+always_comb begin
     unique case (cache_state_current)
         CACHE_STATE_IDLE: begin
             addr_counter_load  = hit ? 1'b0 : 1'b1;
             addr_counter_en    = 1'b0;
-            sr_rst_n           = 1'b0;
+            sr_load            = 1'b1;
             tag_wen            = 1'b0;
             axi_fsm_limp.valid = 1'b0;
         end
         CACHE_STATE_FILL: begin
             addr_counter_load  = 1'b0;
             addr_counter_en    = axi_fsm_limp.ready;
-            sr_rst_n           = 1'b1;
+            sr_load            = 1'b0;
             tag_wen            = 1'b0;
             axi_fsm_limp.valid = 1'b1;
         end
         CACHE_STATE_WRITE_TAG: begin
             addr_counter_load  = 1'b0;
             addr_counter_en    = 1'b0;
-            sr_rst_n           = 1'b0;
+            sr_load            = 1'b0;
             tag_wen            = 1'b1;
             axi_fsm_limp.valid = 1'b0;
         end
