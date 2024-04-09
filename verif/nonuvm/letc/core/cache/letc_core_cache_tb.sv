@@ -181,6 +181,8 @@ initial begin
     //TODO more
 
     axi_fsm_limp_ready <= 1'b0;
+`ifndef VERILATOR
+    //Verilator sometimes doesn't like deassign
     deassign axi_fsm_limp_rdata;
 
     /////////////////////////////
@@ -194,6 +196,8 @@ initial begin
     /////////////////////////////
 
     //TODO
+
+`endif //VERILATOR
 
     ##10;
     $finish;
