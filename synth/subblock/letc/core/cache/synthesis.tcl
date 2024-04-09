@@ -19,6 +19,8 @@ set RTL_TOP letc_core_cache
 set CONSTRAINTS_SOURCE $SUBBLOCK_ROOT/usual.xdc
 set RTL_SOURCE "
     $RTL_ROOT/common/sram/amd_lutram.sv
+    $RTL_ROOT/common/counter/counter.sv
+    $RTL_ROOT/common/shift_register/shift_register.sv
     $RTL_ROOT/letc/letc_pkg.sv
     $RTL_ROOT/letc/core/letc_core_pkg.sv
     $RTL_ROOT/letc/core/letc_core_limp_if.sv

@@ -17,6 +17,8 @@ rtl/common/cdc/cdc_synchronizer.sv
 rtl/common/axi/axi_pkg.sv
 rtl/common/axi/axi_if.sv
 rtl/common/axi/axi_buffer.sv
+rtl/common/sram/amd_bram.sv
+rtl/common/sram/amd_lutram.sv
 rtl/common/counter/counter.sv
 rtl/common/shift_register/shift_register.sv
 
@@ -69,6 +71,9 @@ verif/nonuvm/letc/core/alu/letc_core_alu_tb.sv
 verif/nonuvm/letc/core/branch_comparator/letc_core_branch_comparator_tb.sv
 verif/nonuvm/letc/core/stage_d/letc_core_stage_d_tb.sv
 verif/nonuvm/letc/core/stage_e1/letc_core_stage_e1_tb.sv
+
+#TODO in testbenches it's okay to have an assign in an initial block
+#verif/nonuvm/letc/core/cache/letc_core_cache_tb.sv
 
 verif/nonuvm/letc/periph/gpio/letc_periph_gpio_tb.sv
 verif/nonuvm/letc/periph/sram/letc_periph_sram_tb.sv
