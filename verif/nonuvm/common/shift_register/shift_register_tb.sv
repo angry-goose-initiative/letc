@@ -12,7 +12,7 @@
  * Module Definition
  * --------------------------------------------------------------------------------------------- */
 
-module shift_register_tb();
+module shift_register_tb;
 
 /* ------------------------------------------------------------------------------------------------
  * Parameters
@@ -30,6 +30,8 @@ logic i_rst_n;
 
 logic i_sdata;
 logic i_shift;
+logic i_load;
+logic [SHIFT_REG_WIDTH-1:0] i_ldata;
 
 logic [SHIFT_REG_WIDTH-1:0] o_data;
 logic o_carryout;
@@ -40,8 +42,7 @@ logic o_carryout;
 
 //We insanciate the device under test (DUT), in this case our example_top module, here!
 shift_register #(
-    .WIDTH(SHIFT_REG_WIDTH),
-    .INIT(8'b1)
+    .WIDTH(SHIFT_REG_WIDTH)
 ) dut (
     .*//Hook up all the inputs and outputs to their corresponding signals in the testbench
 );
@@ -70,6 +71,8 @@ default clocking cb @(posedge i_clk);
 
     output i_sdata;
     output i_shift;
+    output i_load;
+    output i_ldata;
 
     input o_data;
     input o_carryout;
@@ -85,6 +88,10 @@ initial begin
     ##1
     cb.i_rst_n <= 1;
     ##1
+    cb.i_ldata <= 'b1;
+    cb.i_load <= 1;
+    ##1
+    cb.i_load <= 0;
     cb.i_shift <= 1;
     ##(SHIFT_REG_WIDTH+2)
     cb.i_shift <= 0;
