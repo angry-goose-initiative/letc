@@ -70,7 +70,7 @@ end
 always_comb begin
     unique case (i_d_to_e1.alu_op1_src)
         ALU_OP1_SRC_RS1:  alu_operands[0] = rs1;
-        ALU_OP1_SRC_PC:   alu_operands[0] = i_d_to_e1.pc_word;
+        ALU_OP1_SRC_PC:   alu_operands[0] = {i_d_to_e1.pc_word, 2'b00};
         ALU_OP1_SRC_CSR:  alu_operands[0] = i_d_to_e1.csr_rdata;
         ALU_OP1_SRC_ZERO: alu_operands[0] = 32'h0;
     endcase
