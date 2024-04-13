@@ -48,7 +48,7 @@ module letc_core_stage_f1
  * PC Logic
  * --------------------------------------------------------------------------------------------- */
 
-pc_word_t pc_word, next_pc_word, next_seq_pc_word;
+pc_word_t pc_word, next_pc_word, next_seq_pc_word, actual_pc_word;
 
 assign next_seq_pc_word = pc_word + 29'h1;
 
@@ -70,26 +70,53 @@ always_ff @(posedge i_clk) begin
     end
 end
 
+//TODO we may need a bypass mux potentially to reduce latency; will have to
+//eval timing impact thru TLB of branches. Or simply flush or something
+//similar in this case
+always_comb begin
+    actual_pc_word = pc_word;
+end
+
 /* ------------------------------------------------------------------------------------------------
  * Virtual Address Translation
  * --------------------------------------------------------------------------------------------- */
 
 //To mask latency it should be a function of next_pc_word
 
+logic translation_ready;
+
+assign translation_ready = 1'b1;//TODO
+
 paddr_t translated_fetch_addr;
 
 //TODO
-assign translated_fetch_addr = {pc_word, 2'h0};//TEMPORARY
+assign translated_fetch_addr = {actual_pc_word, 2'h0};//TEMPORARY
 
 /* ------------------------------------------------------------------------------------------------
- * Output To F2
+ * Output Flop Stage
  * --------------------------------------------------------------------------------------------- */
 
-//FIXME is this latency correct or should it be delayed by a cycle?
-always_comb begin
-    o_f1_to_f2.valid        = 1'b1;//TODO deassert if tlb not ready
-    o_f1_to_f2.pc_word      = pc_word;
-    o_f1_to_f2.fetch_addr   = translated_fetch_addr;
+assign o_stage_ready = translation_ready;
+
+always_ff @(posedge i_clk) begin
+    if (!i_rst_n) begin
+        o_f1_to_f2.valid <= 1'b0;
+    end else begin
+        if (i_stage_flush) begin
+            o_f1_to_f2.valid <= 1'b0;
+        end else if (!i_stage_stall) begin
+            o_f1_to_f2.valid <= translation_ready;
+        end
+    end
+end
+
+always_ff @(posedge i_clk) begin
+    //Save resources by not resetting the datapath; which is fine since `valid` above is reset
+    //if (o_stage_ready & !i_stage_stall) begin//More power efficient but worse for timing and area
+    if (!i_stage_stall) begin
+        o_f1_to_f2.pc_word      <= actual_pc_word;
+        o_f1_to_f2.fetch_addr   <= translated_fetch_addr;
+    end
 end
 
 /* ------------------------------------------------------------------------------------------------
@@ -99,7 +126,7 @@ end
 `ifdef SIMULATION
 
 word_t pc, next_seq_pc;//Useful for debugging
-assign pc = {pc_word, 2'h0};
+assign pc = {actual_pc_word, 2'h0};
 assign next_seq_pc = {next_seq_pc_word, 2'h0};
 
 //TODO

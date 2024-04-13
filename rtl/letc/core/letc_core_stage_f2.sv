@@ -66,6 +66,8 @@ initial begin//TESTING this is not synthesizable (except on FPGA kinda sorta)
     instr_mem[2] = 32'hfc20e6e3;//bltu x1, x2, offset -0x34
 end
 
+assign o_stage_ready = 1'b1;//TESTING
+
 /* ------------------------------------------------------------------------------------------------
  * Assertions
  * --------------------------------------------------------------------------------------------- */
