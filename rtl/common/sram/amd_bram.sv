@@ -66,7 +66,7 @@ always_ff @(posedge i_rclk) begin
     end
 end
 
-generate if (OUTPUT_FLOPS == 1) begin
+generate if (OUTPUT_FLOPS == 1) begin : g_FLOP_OUTPUT
     always_ff @(posedge i_rclk) begin
         o_rdata <= rdata;
     end
@@ -79,7 +79,7 @@ end endgenerate
  * --------------------------------------------------------------------------------------------- */
 
 //This is the only circumstance in which initial blocks are acceptable: on FPGAs with inferred SRAM
-generate if (INIT == 1) begin
+generate if (INIT == 1) begin : g_READ_MEM
     initial begin
         $readmemh(INIT_FILE, bram);
     end
