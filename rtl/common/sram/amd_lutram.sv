@@ -85,7 +85,7 @@ end
  * --------------------------------------------------------------------------------------------- */
 
 //This is the only circumstance in which initial blocks are acceptable: on FPGAs with inferred SRAM
-generate if (INIT == 1) begin
+generate if (INIT == 1) begin: g_READ_MEM
     initial begin
         $readmemh(INIT_FILE, lutram);
     end
