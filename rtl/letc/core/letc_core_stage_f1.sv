@@ -4,6 +4,7 @@
  *
  * Copyright:
  *  Copyright (C) 2024 John Jekel
+ *  Copyright (C) 2024 Seb Atkinson
  * See the LICENSE file at the root of the project for licensing info.
  *
  * TODO longer description
@@ -52,7 +53,7 @@ pc_word_t pc_word, next_pc_word, next_seq_pc_word;
 assign next_seq_pc_word = pc_word + 29'h1;
 
 always_comb begin
-    if (branch_taken) begin
+    if (i_branch_taken) begin
         next_pc_word = i_branch_target;
     end else begin
         next_pc_word = next_seq_pc_word;
@@ -63,7 +64,9 @@ always_ff @(posedge i_clk) begin
     if (~i_rst_n) begin
         pc_word <= RESET_PC_WORD;
     end else begin
-        pc_word <= next_pc_word;
+        if (!i_stage_stall) begin
+            pc_word <= next_pc_word;
+        end
     end
 end
 
