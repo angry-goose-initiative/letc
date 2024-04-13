@@ -70,7 +70,7 @@ generate if (OUTPUT_FLOPS == 1) begin : g_FLOP_OUTPUT
     always_ff @(posedge i_rclk) begin
         o_rdata <= rdata;
     end
-end else begin
+end else begin : g_NO_FLOP_OUTPUT
     assign o_rdata = rdata;
 end endgenerate
 
