@@ -143,6 +143,7 @@ initial begin
     //Setup
     cb.stage_limp_valid     <= 1'b0;
     cb.axi_fsm_limp_ready   <= 1'b0;
+    cb.i_flush_cache        <= 1'b0;
 
     //Reset things
     cb.i_rst_n <= 1'b0;
