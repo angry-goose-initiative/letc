@@ -87,16 +87,17 @@ end
 //The refilling FSM is the only thing that needs to write to the SRAM, and
 //the stage using the cache only needs to read it! (with tag comparison also being snooped by the
 //refilling FSM)
-index_t              cache_write_index;
+index_t                      cache_write_index;
+logic                        cache_line_wen;
 logic [CACHE_LINE_WORDS-1:0] cache_line_wben;
-cache_line_s         cache_line_to_write, cache_line_to_read;
+cache_line_s                 cache_line_to_write, cache_line_to_read;
 amd_lutram #(
     .DEPTH (CACHE_DEPTH),
     .BWIDTH(WORD_WIDTH),
     .DWIDTH($bits(cache_line_s) - $bits(tag_t)) //just storing the data words now
 ) data_sram (
     .i_wclk(i_clk),
-    .i_wen(axi_fsm_limp.ready),
+    .i_wen(cache_line_wen),
     .i_waddr(cache_write_index),
     .i_wben(cache_line_wben),
     .i_wdata(cache_line_to_write.data),
@@ -122,6 +123,7 @@ amd_lutram #(
 );
 
 //Valid Flops
+logic set_line_valid;
 logic [CACHE_DEPTH-1:0] cache_line_valid;
 always_ff @(posedge i_clk) begin
     if (!i_rst_n) begin
@@ -129,7 +131,7 @@ always_ff @(posedge i_clk) begin
     end else begin
         if (i_flush_cache) begin
             cache_line_valid <= '0;
-        end else if (axi_fsm_limp.ready) begin //data ready from the axi fsm means the cache line is being written
+        end else if (set_line_valid) begin //data ready from the axi fsm means the cache line is being written
             //Since this is a write-through cache, and there is no need to invalidate lines
             //for cache coherency for example, the only time a cache line can
             //become valid is when we write to it; and then it can never become invalid
@@ -147,12 +149,13 @@ logic   hit;
 word_t  hit_word;
 
 always_comb begin
+
     if (stage_limp.valid && !stage_limp.wen_nren && cache_line_valid[stage_index]) begin
         hit = cache_line_to_read.tag == stage_tag_compare_value;
     end else begin
         hit = 1'b0;
     end
-
+    stage_limp.ready = hit;
     hit_word = cache_line_to_read.data[stage_word_offset];
 
     unique case (stage_limp.size)
@@ -223,7 +226,6 @@ typedef enum logic [1:0] {
 
 logic [1:0] cache_state_current;
 logic [1:0] cache_state_next;
-logic [OFFSET_WIDTH:0] cache_write_offset;
 
 //state transitions
 always_ff @(posedge i_clk) begin
@@ -247,7 +249,7 @@ always_comb begin
         CACHE_STATE_FILL: begin
             if (axi_fsm_limp.ready) begin
             //filling is complete when the last byte enable has been set
-                if (cache_line_wben == (1<<CACHE_LINE_WORDS-1)) begin //how to make sure this is a constant?
+                if (cache_line_wben[CACHE_LINE_WORDS-1]) begin //how to make sure this is a constant?
                     cache_state_next = CACHE_STATE_WRITE_TAG;
                 end else begin
                     cache_state_next = CACHE_STATE_FILL;
@@ -255,6 +257,9 @@ always_comb begin
             end
         end
         CACHE_STATE_WRITE_TAG: begin
+            cache_state_next = CACHE_STATE_IDLE;
+        end
+        default: begin
             cache_state_next = CACHE_STATE_IDLE;
         end
     endcase
@@ -276,7 +281,6 @@ always_comb begin
 end
 
 //FIXME
-assign stage_limp.ready = 1'b0;
 assign axi_fsm_limp.wen_nren = 1'b0;
 assign axi_fsm_limp.size = SIZE_WORD;
 
@@ -291,6 +295,8 @@ always_comb begin
             sr_load            = 1'b1;
             tag_wen            = 1'b0;
             axi_fsm_limp.valid = 1'b0;
+            set_line_valid     = 1'b0;
+            cache_line_wen     = 1'b0;
         end
         CACHE_STATE_FILL: begin
             addr_counter_load  = 1'b0;
@@ -298,6 +304,8 @@ always_comb begin
             sr_load            = 1'b0;
             tag_wen            = 1'b0;
             axi_fsm_limp.valid = 1'b1;
+            set_line_valid     = 1'b0;
+            cache_line_wen     = axi_fsm_limp.ready;
         end
         CACHE_STATE_WRITE_TAG: begin
             addr_counter_load  = 1'b0;
@@ -305,6 +313,17 @@ always_comb begin
             sr_load            = 1'b0;
             tag_wen            = 1'b1;
             axi_fsm_limp.valid = 1'b0;
+            set_line_valid     = 1'b1;
+            cache_line_wen     = 1'b0;
+        end
+        default: begin
+            addr_counter_load  = 1'b0;
+            addr_counter_en    = 1'b0;
+            sr_load            = 1'b0;
+            tag_wen            = 1'b0;
+            axi_fsm_limp.valid = 1'b0;
+            set_line_valid     = 1'b0;
+            cache_line_wen     = 1'b0;
         end
     endcase
 end
