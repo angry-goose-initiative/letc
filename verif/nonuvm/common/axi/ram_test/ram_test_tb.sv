@@ -1,0 +1,162 @@
+/**
+ * File    ram_test_tb.sv
+ * Brief   connects the axi fsm to a generic axi4 ram for testing
+ *
+ * Copyright:
+ *  Copyright (C) 2024 Eric Jessee
+ * See the LICENSE file at the root of the project for licensing info.
+ *
+ * TODO longer description
+ *
+*/
+
+`default_nettype none
+
+module ram_test_tb;
+
+import letc_pkg::*;
+import letc_core_pkg::*;
+import axi_pkg::*;
+
+//ram
+//this is the vivado-generated ram IP with an axi4 interface,
+//for testing the axi fsm and eventually the cache
+test_ram ram(.*);
+
+logic        rsta_busy;
+logic        rstb_busy;
+logic        s_aclk;
+logic        s_aresetn;
+logic [3:0]  s_axi_awid;
+logic [31:0] s_axi_awaddr;
+logic [7:0]  s_axi_awlen;
+logic [2:0]  s_axi_awsize;
+logic [1:0]  s_axi_awburst;
+logic        s_axi_awvalid;
+logic        s_axi_awready;
+logic [31:0] s_axi_wdata;
+logic [3:0]  s_axi_wstrb;
+logic        s_axi_wlast;
+logic        s_axi_wvalid;
+logic        s_axi_wready;
+logic [3:0]  s_axi_bid;
+logic [1:0]  s_axi_bresp;
+logic        s_axi_bvalid;
+logic        s_axi_bready;
+logic [3:0]  s_axi_arid;
+logic [31:0] s_axi_araddr;
+logic [7:0]  s_axi_arlen;
+logic [2:0]  s_axi_arsize;
+logic [1:0]  s_axi_arburst;
+logic        s_axi_arvalid;
+logic        s_axi_arready;
+logic [3:0]  s_axi_rid;
+logic [31:0] s_axi_rdata;
+logic [1:0]  s_axi_rresp;
+logic        s_axi_rlast;
+logic        s_axi_rvalid;
+logic        s_axi_rready;
+
+//DUT
+logic i_clk;
+logic i_rst_n;
+axi_if axi(.i_aclk(i_clk), .i_arst_n(i_rst_n), .*);
+letc_core_limp_if limp(.*);
+
+letc_core_axi_fsm #(.NUM_REQUESTORS(1)) dut(.*);
+
+//connections between axi if and ram IP
+always_comb begin
+    s_aclk         = i_clk;
+    s_aresetn      = i_rst_n;
+    s_axi_awid     = axi.awid;
+    s_axi_awaddr   = axi.awaddr;
+    s_axi_awlen    = axi.awlen;
+    s_axi_awsize   = axi.awsize;
+    s_axi_awburst  = axi.awburst;
+    s_axi_awvalid  = axi.awvalid;
+    axi.awready    = s_axi_awready;
+    s_axi_wdata    = axi.wdata;
+    s_axi_wstrb    = axi.wstrb;
+    s_axi_wlast    = axi.wlast;
+    s_axi_wvalid   = axi.wvalid;
+    axi.wready     = s_axi_wready;
+    axi.bid        = s_axi_bid;
+    axi.bresp      = resp_e'(s_axi_bresp);
+    axi.bvalid     = s_axi_bvalid;
+    s_axi_bready   = axi.bready;
+    s_axi_arid     = axi.arid;
+    s_axi_araddr   = axi.araddr;
+    s_axi_arlen    = axi.arlen;
+    s_axi_arsize   = axi.arsize;
+    s_axi_arburst  = axi.arburst;
+    s_axi_arvalid  = axi.arvalid;
+    axi.arready    = s_axi_arready;
+    axi.rid        = s_axi_rid;
+    axi.rdata      = s_axi_rdata;
+    axi.rresp      = resp_e'(s_axi_rresp);
+    axi.rlast      = s_axi_rlast;
+    axi.rvalid     = s_axi_rvalid;
+    s_axi_rready   = axi.rready;
+end
+
+//limp interface signals - we will use these to drive
+//the axi fsm.
+logic   limp_valid;
+logic   limp_ready;
+logic   limp_wen_nren;
+logic   limp_bypass;
+size_e  limp_size;
+paddr_t limp_addr;
+word_t  limp_rdata;
+word_t  limp_wdata;
+
+always_comb begin
+    limp.valid    = limp_valid;
+    limp_ready    = limp.ready;
+    limp.wen_nren = limp_wen_nren;
+    limp_bypass   = limp.bypass;
+    limp.size     = limp_size;
+    limp.addr     = limp_addr;
+    limp_rdata    = limp.rdata;
+    limp.wdata    = limp_wdata;
+end
+
+//clocking
+localparam CLOCK_PERIOD = 10;
+initial begin
+    forever begin
+        i_clk = 1'b0;
+        #(CLOCK_PERIOD / 2);
+        i_clk = 1'b1;
+        #(CLOCK_PERIOD / 2);
+    end
+end
+
+default clocking cb @(posedge i_clk);
+    output i_rst_n;
+    output limp_valid;
+    input  limp_ready;
+    output limp_wen_nren;
+    output limp_bypass;
+    output limp_size;
+    output limp_addr;
+    input  limp_rdata;
+    output limp_wdata;
+endclocking
+
+initial begin
+    cb.i_rst_n <= 1'b0;
+    cb.limp_valid <= 1'b0;
+    cb.limp_wen_nren <= 1'b0;
+    cb.limp_bypass <= 1'b0;
+    cb.limp_size <= SIZE_WORD;
+    ##2
+    cb.i_rst_n <= 1'b1;
+    cb.limp_valid <= 1'b1;
+    cb.limp_addr <= 32'h0;
+    ##10
+    $finish;
+end
+
+endmodule: ram_test_tb
