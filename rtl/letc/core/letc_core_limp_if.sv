@@ -33,12 +33,12 @@ interface letc_core_limp_if
 logic   valid;
 logic   ready;
 logic   wen_nren;//Write enable and not read enable
+logic   bypass;
 size_e  size;
 paddr_t addr;
 word_t  rdata;
 word_t  wdata;
 //TODO fault signal if unaligned, AXI errors, etc
-//TODO bypass signal for direct memory access from stage
 /* ------------------------------------------------------------------------------------------------
  * Modports
  * --------------------------------------------------------------------------------------------- */
@@ -47,6 +47,7 @@ modport requestor (
     output valid,
     input  ready,
     output wen_nren,
+    output bypass,
     output size,
     output addr,
     input  rdata,
@@ -57,6 +58,7 @@ modport servicer (
     input  valid,
     output ready,
     input  wen_nren,
+    input  bypass,
     input  size,
     input  addr,
     output rdata,

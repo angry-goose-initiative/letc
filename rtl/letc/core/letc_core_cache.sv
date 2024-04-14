@@ -4,6 +4,7 @@
  *
  * Copyright:
  *  Copyright (C) 2024 John Jekel
+    Copytight (C) 2024 Eric Jessee
  * See the LICENSE file at the root of the project for licensing info.
  *
  * A simple write-through, direct-mapped cache
@@ -231,6 +232,10 @@ logic [1:0] cache_state_next;
 always_ff @(posedge i_clk) begin
     if (!i_rst_n) begin
         cache_state_current <= CACHE_STATE_IDLE;
+    end else if (stage_limp.wen_nren) begin
+        //is this a good idea? I think the stage should never try to write
+        //while waiting on a cache miss.
+        cache_state_current <= CACHE_STATE_IDLE;
     end else begin
         cache_state_current <= cache_state_next;
     end
@@ -280,53 +285,86 @@ always_comb begin
     //state dependent outputs
 end
 
-//FIXME
-assign axi_fsm_limp.wen_nren = 1'b0;
-assign axi_fsm_limp.size = SIZE_WORD;
+//write through logic
+always_comb begin
+    if (stage_limp.wen_nren || stage_limp.bypass) begin
+        //no buffering for now. Directly connect stage and axi fsm
+        //limp interfaces together.
+        //if we add buffering, we would need to handle the bypass
+        //seperately.
+        axi_fsm_limp.valid    = stage_limp.valid;
+        stage_limp.ready      = axi_fsm_limp.ready;
+        axi_fsm_limp.wen_nren = stage_limp.wen_nren;
+        axi_fsm_limp.size     = stage_limp.size;
+        axi_fsm_limp.addr     = stage_limp.addr;
+        stage_limp.rdata      = axi_fsm_limp.rdata;
+        axi_fsm_limp.wdata    = stage_limp.wdata;
+    end
+end
 
 /* ------------------------------------------------------------------------------------------------
  * Output Logic
  * --------------------------------------------------------------------------------------------- */
+//will never need the bypass signal to the axi fsm.
+assign axi_fsm_limp_bypass = 1'b0;
+
+//refill fsm outputs
 always_comb begin
-    unique case (cache_state_current)
-        CACHE_STATE_IDLE: begin
-            addr_counter_load  = hit ? 1'b0 : 1'b1;
-            addr_counter_en    = 1'b0;
-            sr_load            = 1'b1;
-            tag_wen            = 1'b0;
-            axi_fsm_limp.valid = 1'b0;
-            set_line_valid     = 1'b0;
-            cache_line_wen     = 1'b0;
-        end
-        CACHE_STATE_FILL: begin
+    if (!stage_limp.wen_nren) begin
+        //when read enabled, axi interface will always be read-enabled for
+        //word-sized access
+        axi_fsm_limp.wen_nren = 1'b0;
+        axi_fsm_limp.size = SIZE_WORD;
+        unique case (cache_state_current)
+            CACHE_STATE_IDLE: begin
+                addr_counter_load  = hit ? 1'b0 : 1'b1;
+                addr_counter_en    = 1'b0;
+                sr_load            = 1'b1;
+                tag_wen            = 1'b0;
+                axi_fsm_limp.valid = 1'b0;
+                set_line_valid     = 1'b0;
+                cache_line_wen     = 1'b0;
+            end
+            CACHE_STATE_FILL: begin
+                addr_counter_load  = 1'b0;
+                addr_counter_en    = axi_fsm_limp.ready;
+                sr_load            = 1'b0;
+                tag_wen            = 1'b0;
+                axi_fsm_limp.valid = 1'b1;
+                set_line_valid     = 1'b0;
+                cache_line_wen     = axi_fsm_limp.ready;
+            end
+            CACHE_STATE_WRITE_TAG: begin
+                addr_counter_load  = 1'b0;
+                addr_counter_en    = 1'b0;
+                sr_load            = 1'b0;
+                tag_wen            = 1'b1;
+                axi_fsm_limp.valid = 1'b0;
+                set_line_valid     = 1'b1;
+                cache_line_wen     = 1'b0;
+            end
+            default: begin
+                addr_counter_load  = 1'b0;
+                addr_counter_en    = 1'b0;
+                sr_load            = 1'b0;
+                tag_wen            = 1'b0;
+                axi_fsm_limp.valid = 1'b0;
+                set_line_valid     = 1'b0;
+                cache_line_wen     = 1'b0;
+            end
+        endcase
+    end else begin //write enabled
+            //axi fsm limp signals will be directly connected
+            //to the stage limp signals. state machine should do nothing
             addr_counter_load  = 1'b0;
-            addr_counter_en    = axi_fsm_limp.ready;
+            addr_counter_en    = 1'b0;
             sr_load            = 1'b0;
             tag_wen            = 1'b0;
-            axi_fsm_limp.valid = 1'b1;
-            set_line_valid     = 1'b0;
-            cache_line_wen     = axi_fsm_limp.ready;
-        end
-        CACHE_STATE_WRITE_TAG: begin
-            addr_counter_load  = 1'b0;
-            addr_counter_en    = 1'b0;
-            sr_load            = 1'b0;
-            tag_wen            = 1'b1;
-            axi_fsm_limp.valid = 1'b0;
-            set_line_valid     = 1'b1;
-            cache_line_wen     = 1'b0;
-        end
-        default: begin
-            addr_counter_load  = 1'b0;
-            addr_counter_en    = 1'b0;
-            sr_load            = 1'b0;
-            tag_wen            = 1'b0;
-            axi_fsm_limp.valid = 1'b0;
             set_line_valid     = 1'b0;
             cache_line_wen     = 1'b0;
-        end
-    endcase
+    end
 end
+
 /* ------------------------------------------------------------------------------------------------
  * Assertions
  * --------------------------------------------------------------------------------------------- */
@@ -342,6 +380,11 @@ initial begin
     assert(CACHE_LINE_WORDS > 0);
     assert(CACHE_DEPTH > 0);
 end
+
+//stage shouldn't try to write while waiting on a cache miss
+// initial begin
+//     assert((cache_state_current == CACHE_STATE_IDLE) || !stage_limp.wen_nren);
+// end
 
 //TODO
 
