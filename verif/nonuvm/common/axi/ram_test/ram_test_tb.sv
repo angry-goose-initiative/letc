@@ -61,9 +61,9 @@ logic        s_axi_rready;
 logic i_clk;
 logic i_rst_n;
 axi_if axi(.i_aclk(i_clk), .i_arst_n(i_rst_n), .*);
-letc_core_limp_if limp(.*);
+letc_core_limp_if limp[2:0](.*);
 
-letc_core_axi_fsm #(.NUM_REQUESTORS(1)) dut(.*);
+letc_core_axi_fsm dut(.*);
 
 //connections between axi if and ram IP
 always_comb begin
@@ -112,14 +112,14 @@ word_t  limp_rdata;
 word_t  limp_wdata;
 
 always_comb begin
-    limp.valid    = limp_valid;
-    limp_ready    = limp.ready;
-    limp.wen_nren = limp_wen_nren;
-    limp_bypass   = limp.bypass;
-    limp.size     = limp_size;
-    limp.addr     = limp_addr;
-    limp_rdata    = limp.rdata;
-    limp.wdata    = limp_wdata;
+    limp[0].valid    = limp_valid;
+    limp_ready    = limp[0].ready;
+    limp[0].wen_nren = limp_wen_nren;
+    limp_bypass   = limp[0].bypass;
+    limp[0].size     = limp_size;
+    limp[0].addr     = limp_addr;
+    limp_rdata    = limp[0].rdata;
+    limp[0].wdata    = limp_wdata;
 end
 
 //clocking
@@ -145,7 +145,23 @@ default clocking cb @(posedge i_clk);
     output limp_wdata;
 endclocking
 
+int timeout_counter = 0;
+localparam TIMEOUT = 100;
+localparam[31:0] writeData = 32'hbeefcafe;
+task wait_ready();
+    while (!limp_ready) begin
+        $display("Waiting for limp_ready");
+        ##1;
+        ++timeout_counter;
+        if (timeout_counter > TIMEOUT) begin
+            $display("Timeout waiting for limp_ready");
+            $fatal;
+        end
+    end
+endtask
+
 initial begin
+    //inital values
     cb.i_rst_n <= 1'b0;
     cb.limp_valid <= 1'b0;
     cb.limp_wen_nren <= 1'b0;
@@ -153,9 +169,24 @@ initial begin
     cb.limp_size <= SIZE_WORD;
     ##2
     cb.i_rst_n <= 1'b1;
+    ##2
+    //first write something to address 0xf
+    cb.limp_addr <= 32'hf;
+    cb.limp_wen_nren <= 1'b1;
+    cb.limp_wdata <= writeData;
     cb.limp_valid <= 1'b1;
-    cb.limp_addr <= 32'h0;
-    ##10
+    //wait for the write to finish
+    ##1
+    $display("Waiting for write to complete");
+    wait_ready();
+    //then try to read the data back
+    cb.i_rst_n <= 1'b1;
+    cb.limp_valid <= 1'b1;
+    cb.limp_addr <= 32'hf;
+    $display("Waiting for read to complete");
+    wait_ready();
+    assert(limp_rdata == writeData);
+    ##20
     $finish;
 end
 

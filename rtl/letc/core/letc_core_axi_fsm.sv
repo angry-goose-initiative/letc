@@ -316,6 +316,7 @@ always_comb begin
     axi.awburst = axi_pkg::AXI_BURST_FIXED;
     axi.arlen   = '0;//Each transaction is 1 beat only
     axi.arburst = axi_pkg::AXI_BURST_FIXED;
+    axi.wlast   = '0;//does this need to be tied off?
 
     //Accesses are always 32-bits so we can avoid narrow transfers
     //(we use write strobes to handle 8-bit and 16-bit writes)
