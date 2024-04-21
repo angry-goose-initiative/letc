@@ -58,7 +58,7 @@ letc_core_cache dut (.*);
 logic   stage_limp_valid;
 logic   stage_limp_ready;
 logic   stage_limp_wen_nren;
-logic   stage_limp_bypass;
+logic   stage_limp_uncacheable;
 size_e  stage_limp_size;
 paddr_t stage_limp_addr;
 word_t  stage_limp_rdata;
@@ -67,30 +67,30 @@ word_t  stage_limp_wdata;
 logic   axi_fsm_limp_valid;
 logic   axi_fsm_limp_ready;
 logic   axi_fsm_limp_wen_nren;
-logic   axi_fsm_limp_bypass;
+logic   axi_fsm_limp_uncacheable;
 size_e  axi_fsm_limp_size;
 paddr_t axi_fsm_limp_addr;
 word_t  axi_fsm_limp_rdata;
 word_t  axi_fsm_limp_wdata;
 
 always_comb begin
-    stage_limp.valid    = stage_limp_valid;
-    stage_limp_ready    = stage_limp.ready;
-    stage_limp.wen_nren = stage_limp_wen_nren;
-    stage_limp_bypass   = stage_limp.bypass;
-    stage_limp.size     = stage_limp_size;
-    stage_limp.addr     = stage_limp_addr;
-    stage_limp_rdata    = stage_limp.rdata;
-    stage_limp.wdata    = stage_limp_wdata;
+    stage_limp.valid        = stage_limp_valid;
+    stage_limp_ready        = stage_limp.ready;
+    stage_limp.wen_nren     = stage_limp_wen_nren;
+    stage_limp.uncacheable  = stage_limp_uncacheable;
+    stage_limp.size         = stage_limp_size;
+    stage_limp.addr         = stage_limp_addr;
+    stage_limp_rdata        = stage_limp.rdata;
+    stage_limp.wdata        = stage_limp_wdata;
 
-    axi_fsm_limp_valid    = axi_fsm_limp.valid;
-    axi_fsm_limp.ready    = axi_fsm_limp_ready;
-    axi_fsm_limp_wen_nren = axi_fsm_limp.wen_nren;
-    axi_fsm_limp.bypass   = axi_fsm_limp_bypass;
-    axi_fsm_limp_size     = axi_fsm_limp.size;
-    axi_fsm_limp_addr     = axi_fsm_limp.addr;
-    axi_fsm_limp.rdata    = axi_fsm_limp_rdata;
-    axi_fsm_limp_wdata    = axi_fsm_limp.wdata;
+    axi_fsm_limp_valid          = axi_fsm_limp.valid;
+    axi_fsm_limp.ready          = axi_fsm_limp_ready;
+    axi_fsm_limp_wen_nren       = axi_fsm_limp.wen_nren;
+    axi_fsm_limp_uncacheable    = axi_fsm_limp.uncacheable;
+    axi_fsm_limp_size           = axi_fsm_limp.size;
+    axi_fsm_limp_addr           = axi_fsm_limp.addr;
+    axi_fsm_limp.rdata          = axi_fsm_limp_rdata;
+    axi_fsm_limp_wdata          = axi_fsm_limp.wdata;
 end
 
 /* ------------------------------------------------------------------------------------------------
@@ -120,7 +120,7 @@ default clocking cb @(posedge i_clk);
     output stage_limp_valid;
     input  stage_limp_ready;
     output stage_limp_wen_nren;//Write enable and not read enable
-    output stage_limp_bypass;
+    output stage_limp_uncacheable;
     output stage_limp_size;
     output stage_limp_addr;
     input  stage_limp_rdata;
@@ -130,7 +130,7 @@ default clocking cb @(posedge i_clk);
     input  axi_fsm_limp_valid;
     output axi_fsm_limp_ready;
     input  axi_fsm_limp_wen_nren;//Write enable and not read enable
-    input  axi_fsm_limp_bypass;
+    input  axi_fsm_limp_uncacheable;
     input  axi_fsm_limp_size;
     input  axi_fsm_limp_addr;
     output axi_fsm_limp_rdata;
@@ -147,11 +147,11 @@ initial begin
     int timeout_counter = 0;
 
     //Setup
-    cb.stage_limp_valid     <= 1'b0;
-    cb.axi_fsm_limp_ready   <= 1'b0;
-    cb.i_flush_cache        <= 1'b0;
-    cb.stage_limp_wen_nren  <= 1'b0;
-    cb.stage_limp_bypass    <= 1'b0;
+    cb.stage_limp_valid         <= 1'b0;
+    cb.axi_fsm_limp_ready       <= 1'b0;
+    cb.i_flush_cache            <= 1'b0;
+    cb.stage_limp_wen_nren      <= 1'b0;
+    cb.stage_limp_uncacheable   <= 1'b0;
 
     //Reset things
     cb.i_rst_n <= 1'b0;

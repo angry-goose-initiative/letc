@@ -33,7 +33,7 @@ interface letc_core_limp_if
 logic   valid;
 logic   ready;
 logic   wen_nren;//Write enable and not read enable
-logic   bypass;
+logic   uncacheable;
 size_e  size;
 paddr_t addr;
 word_t  rdata;
@@ -47,7 +47,7 @@ modport requestor (
     output valid,
     input  ready,
     output wen_nren,
-    output bypass,
+    output uncacheable,
     output size,
     output addr,
     input  rdata,
@@ -58,7 +58,7 @@ modport servicer (
     input  valid,
     output ready,
     input  wen_nren,
-    input  bypass,
+    input  uncacheable,
     input  size,
     input  addr,
     output rdata,
