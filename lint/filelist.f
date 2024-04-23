@@ -43,6 +43,9 @@ rtl/letc/matrix/letc_matrix_top.sv
 rtl/letc/matrix/letc_matrix_switch.sv
 rtl/letc/matrix/letc_matrix_default_subordinate.sv
 
+rtl/letc/periph/letc_periph_gpio.sv
+rtl/letc/periph/letc_periph_sram.sv
+
 #We have to break convention here since we interact with AMD IP
 #TODO fine-grained waivers
 #rtl/fpga_wrapper/coraz7_top.sv
@@ -62,3 +65,6 @@ verif/nonuvm/letc/core/alu/letc_core_alu_tb.sv
 verif/nonuvm/letc/core/branch_comparator/letc_core_branch_comparator_tb.sv
 verif/nonuvm/letc/core/stage_d/letc_core_stage_d_tb.sv
 verif/nonuvm/letc/core/stage_e1/letc_core_stage_e1_tb.sv
+
+verif/nonuvm/letc/periph/gpio/letc_periph_gpio_tb.sv
+verif/nonuvm/letc/periph/sram/letc_periph_sram_tb.sv
