@@ -109,14 +109,15 @@ assign o_global_cache_flush = 1'b0;
 //FIXME fundamentally broken, potentially each operand has a hazard from a different stage,
 //but this doesn't allow for that!
 
-logic stage_d_hazard_from_e1;
-logic stage_d_hazard_from_e2;
+logic stage_d_rs1_hazard_from_e1;
+logic stage_d_rs2_hazard_from_e1;
+logic stage_d_rs1_hazard_from_e2;
+logic stage_d_rs2_hazard_from_e2;
 //No hazards from w since the RF is guaranteed to read new data as opposed to old data
 always_comb begin
     if (i_stage_d_valid && i_stage_e1_valid && i_stage_e1_rd_we && (i_stage_e1_rd_idx != 5'b0)) begin
-        stage_d_hazard_from_e1 =
-            (i_stage_d_rs1_idx == i_stage_e1_rd_idx) ||
-            (i_stage_d_rs2_idx == i_stage_e1_rd_idx);
+        stage_d_rs1_hazard_from_e1 = (i_stage_d_rs1_idx == i_stage_e1_rd_idx);
+        stage_d_rs2_hazard_from_e1 = (i_stage_d_rs2_idx == i_stage_e1_rd_idx);
     end else begin
         stage_d_hazard_from_e1 = 1'b0;
     end
