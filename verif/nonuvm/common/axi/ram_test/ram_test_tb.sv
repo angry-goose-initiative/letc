@@ -120,6 +120,12 @@ always_comb begin
     limp[0].addr     = limp_addr;
     limp_rdata    = limp[0].rdata;
     limp[0].wdata    = limp_wdata;
+
+    limp[1].valid    = 1'b0; 
+    limp[1].wen_nren = 1'b0; 
+
+    limp[2].valid    = 1'b0; 
+    limp[2].wen_nren = 1'b0; 
 end
 
 //clocking
