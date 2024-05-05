@@ -174,14 +174,14 @@ always_comb begin
         end
         SEND_WADDR: begin
             if (axi.aw_transfer_complete()) begin
-                next_state = IDLE;
+                next_state = GET_BRESP;
             end else begin
                 next_state = SEND_WADDR;
             end
         end
         SEND_WDATA: begin
             if (axi.w_transfer_complete()) begin
-                next_state = IDLE;
+                next_state = GET_BRESP;
             end else begin
                 next_state = SEND_WDATA;
             end
@@ -316,6 +316,7 @@ always_comb begin
     axi.awburst = axi_pkg::AXI_BURST_FIXED;
     axi.arlen   = '0;//Each transaction is 1 beat only
     axi.arburst = axi_pkg::AXI_BURST_FIXED;
+    axi.wlast   = 1'b1;
 
     //Accesses are always 32-bits so we can avoid narrow transfers
     //(we use write strobes to handle 8-bit and 16-bit writes)
