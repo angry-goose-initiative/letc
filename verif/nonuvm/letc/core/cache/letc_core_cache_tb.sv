@@ -166,9 +166,9 @@ initial begin
     /////////////////////////////
 
     axi_fsm_limp_ready <= 1'b1;
-    assign axi_fsm_limp_rdata = ~axi_fsm_limp_addr[31:0];
+    assign axi_fsm_limp_rdata = 32'hEFEF5678 + axi_fsm_limp_addr[31:0];
 
-    //Fetch a word from 0, pretty simple
+    //Fetch a word from 32'hABCD1234, pretty simple
     stage_limp_valid    <= 1'b1;
     stage_limp_wen_nren <= 1'b0;
     stage_limp_size     <= SIZE_WORD;
@@ -185,15 +185,89 @@ initial begin
         end
     end
     timeout_counter = 0;
-    assert(stage_limp_rdata == ~stage_limp_addr[31:0]);
+    assert(stage_limp_rdata == (32'hEFEF5678 + axi_fsm_limp_addr[31:0]));
 
-    //TODO more
+    //Tiny break to mix things up :)
+    stage_limp_valid <= 1'b0;
+    ##1;
+
+    //Fetch a byte from 32'hABCD1230, which should be on the same cache line
+    stage_limp_valid    <= 1'b1;
+    stage_limp_wen_nren <= 1'b0;
+    stage_limp_size     <= SIZE_BYTE;
+    stage_limp_addr     <= 32'hABCD1230;
+    ##1;//One cycle for inputs to take effect
+    assert(stage_limp_ready);//Should hit
+    assert(stage_limp_rdata == ((32'hEFEF5678 + axi_fsm_limp_addr[31:0]) & 32'hFF));
+
+    //Fetch a halfword from 32'h11111110
+    stage_limp_valid    <= 1'b1;
+    stage_limp_wen_nren <= 1'b0;
+    stage_limp_size     <= SIZE_WORD;
+    stage_limp_addr     <= 32'h11111110;
+    ##1;//One cycle for inputs to take effect
+    assert(!stage_limp_ready);//Upper bits completely different, should miss
+    while (!stage_limp_ready) begin
+        $display("Waiting for stage_limp_ready");
+        ##1;
+        ++timeout_counter;
+        if (timeout_counter > TIMEOUT) begin
+            $display("Timeout waiting for stage_limp_ready");
+            $fatal;
+        end
+    end
+    timeout_counter = 0;
+    assert(stage_limp_rdata == (32'hEFEF5678 + axi_fsm_limp_addr[31:0]));
+
+    //Fetch a halfword from 32'hABCD1200, which should be on the same cache line as the first word
+    stage_limp_valid    <= 1'b1;
+    stage_limp_wen_nren <= 1'b0;
+    stage_limp_size     <= SIZE_HALFWORD;
+    stage_limp_addr     <= 32'hABCD1200;
+    ##1;//One cycle for inputs to take effect
+    assert(stage_limp_ready);//Should hit
+    assert(stage_limp_rdata == ((32'hEFEF5678 + axi_fsm_limp_addr[31:0]) & 32'hFFFF));
+
+    /////////////////////////////
+    //Testing invalidation on writes and uncached reads
+    /////////////////////////////
+
+    //Write a halfword t0 32'hABCD1202, which should invalidate the cache line
+    stage_limp_valid    <= 1'b1;
+    stage_limp_wen_nren <= 1'b1;
+    stage_limp_size     <= SIZE_HALFWORD;
+    stage_limp_addr     <= 32'hABCD1202;
+    stage_limp_wdata    <= 32'h3C3CA5A5;
+    ##1;//One cycle for inputs to take effect
+    assert(stage_limp_ready);//Should write through and work immediately
+    assert(axi_fsm_limp_wdata == 32'h3C3CA5A5);//The write should be passed through
+
+    //Fetch a byte from 32'hABCD1233, which will miss due to the invalidation
+    stage_limp_valid    <= 1'b1;
+    stage_limp_wen_nren <= 1'b0;
+    stage_limp_size     <= SIZE_BYTE;
+    stage_limp_addr     <= 32'hABCD1230;
+    ##1;//One cycle for inputs to take effect
+    assert(!stage_limp_ready);
+    while (!stage_limp_ready) begin
+        $display("Waiting for stage_limp_ready");
+        ##1;
+        ++timeout_counter;
+        if (timeout_counter > TIMEOUT) begin
+            $display("Timeout waiting for stage_limp_ready");
+            $fatal;
+        end
+    end
+    timeout_counter = 0;
+    assert(stage_limp_rdata == ((32'hEFEF5678 + axi_fsm_limp_addr[31:0]) & 32'hFF));
 
     axi_fsm_limp_ready <= 1'b0;
 
     /////////////////////////////
     //Testing write-through
     /////////////////////////////
+
+    //TODO
 
 `ifndef VERILATOR
     //Verilator sometimes doesn't like deassign

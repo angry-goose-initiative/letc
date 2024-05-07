@@ -124,7 +124,9 @@ amd_lutram #(
 );
 
 //Valid Flops
+//TODO optimization: still make a write-through cache but ALSO write to the cache as well to avoid future read misses to the same line
 logic set_line_valid;
+logic invalidate_line;
 logic [CACHE_DEPTH-1:0] cache_line_valid;
 always_ff @(posedge i_clk) begin
     if (!i_rst_n) begin
@@ -133,13 +135,13 @@ always_ff @(posedge i_clk) begin
         if (i_flush_cache) begin
             cache_line_valid <= '0;
         end else if (set_line_valid) begin //data ready from the axi fsm means the cache line is being written
-            //FIXME also need to invalidate the line if it's being written to due to write-through
-
             //Since this is a write-through cache, and there is no need to invalidate lines
             //for cache coherency for example, the only time a cache line can
-            //become valid is when we write to it; and then it can never become invalid
-            //again until the cache is flushed!
+            //become valid is when we refill it; and then it can never become invalid
+            //again until the cache is flushed or the memory the line corresponds to is written.
             cache_line_valid[cache_write_index] <= 1'b1;
+        end else if (invalidate_line) begin
+            cache_line_valid[stage_index] <= 1'b0;
         end
     end
 end
@@ -345,6 +347,7 @@ always_comb begin
                 sr_load            = 1'b1;
                 tag_wen            = 1'b0;
                 set_line_valid     = 1'b0;
+                invalidate_line    = 1'b0;
                 cache_line_wen     = 1'b0;
             end
             CACHE_STATE_FILL: begin
@@ -353,6 +356,8 @@ always_comb begin
                 sr_load            = 1'b0;
                 tag_wen            = 1'b0;
                 set_line_valid     = 1'b0;
+                //Since the tag isn't written until the end, we don't need to invalidate to prevent a hit
+                invalidate_line    = 1'b0;
                 cache_line_wen     = axi_fsm_limp.ready;
             end
             CACHE_STATE_WRITE_TAG: begin
@@ -361,6 +366,7 @@ always_comb begin
                 sr_load            = 1'b0;
                 tag_wen            = 1'b1;
                 set_line_valid     = 1'b1;
+                invalidate_line    = 1'b0;
                 cache_line_wen     = 1'b0;
             end
             default: begin
@@ -381,6 +387,7 @@ always_comb begin
             sr_load            = 1'b0;
             tag_wen            = 1'b0;
             set_line_valid     = 1'b0;
+            invalidate_line    = stage_limp.valid;//Passed-through request is actually valid
             cache_line_wen     = 1'b0;
     end
 end
@@ -400,6 +407,9 @@ initial begin
     assert(CACHE_LINE_WORDS > 0);
     assert(CACHE_DEPTH > 0);
 end
+
+//We should both validate and invalidate a cache line on the same cycle
+assert property (@(posedge i_clk) disable iff (!i_rst_n) !(set_line_valid && invalidate_line));
 
 //stage shouldn't try to write while waiting on a cache miss
 // initial begin
