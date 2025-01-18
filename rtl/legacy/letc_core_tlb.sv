@@ -1,6 +1,6 @@
 /*
- * File:    letc_core_mmu.sv
- * Brief:   LETC Core MMU
+ * File:    letc_core_tlb.sv
+ * Brief:   TLB module used for both LETC Core instruction and data TLBs
  *
  * Copyright:
  *  Copyright (C) 2024 John Jekel
@@ -12,20 +12,20 @@
  * Module Definition
  * --------------------------------------------------------------------------------------------- */
 
-module letc_core_mmu
+module letc_core_tlb
     import letc_pkg::*;
     import letc_core_pkg::*;
-(
+(//TODO perhaps parameters?
     //Clock and reset
-    input logic clk,
-    input logic rst_n,
+    input logic i_clk,
+    input logic i_rst_n,
 
-    //TODO design MMU interfaces
+    //TLB interface
+    letc_core_tlb_if.tlb tlb_if
 
-    //LIMP interface
-    // letc_core_limp_if.requestor limp
+    //TODO design TLB interface to MMU
 );
 
-assign limp.valid = 1'b0;//TODO
+logic todo;
 
-endmodule : letc_core_mmu
+endmodule : letc_core_tlb
