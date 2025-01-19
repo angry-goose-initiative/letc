@@ -1,11 +1,11 @@
 /**
  * File    letc_core_rf_tb.sv
  * Brief   TODO
- * 
+ *
  * Copyright:
  *  Copyright (C) 2024-2025 John Jekel
  * See the LICENSE file at the root of the project for licensing info.
- * 
+ *
  * TODO longer description
  *
 */
