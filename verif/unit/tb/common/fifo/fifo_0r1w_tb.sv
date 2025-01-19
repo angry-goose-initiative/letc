@@ -3,7 +3,7 @@
  * Brief   TODO
  *
  * Copyright:
- *  Copyright (C) 2024 John Jekel
+ *  Copyright (C) 2024-2025 John Jekel
  * See the LICENSE file at the root of the project for licensing info.
  *
  * TODO longer description
@@ -58,35 +58,18 @@ fifo_0r1w #(
  * Clocking
  * --------------------------------------------------------------------------------------------- */
 
-initial begin
-    forever begin
-        i_clk = 1'b0;
-        #(CLOCK_PERIOD / 2);
-        i_clk = 1'b1;
-        #(CLOCK_PERIOD / 2);
-    end
-end
-
-default clocking cb @(posedge i_clk);
-    //Not sure why Verilator complains...
-    /* verilator lint_off UNUSEDSIGNAL */
-
-    //Write port
-    output  i_push;
-    input   o_full;
-    output  i_wdata;
-
-    //Read port
-    output  i_pop;
-    input   o_empty;
-    input   o_rdata;
-
-    /* verilator lint_on UNUSEDSIGNAL */
-endclocking
+clock_generator #(
+    .PERIOD(CLOCK_PERIOD)
+) clock_gen_inst (
+    .clk(i_clk)
+);
 
 /* ------------------------------------------------------------------------------------------------
  * Tasks
  * --------------------------------------------------------------------------------------------- */
+
+//verilator lint_save
+//verilator lint_off INITIALDLY
 
 //Note: due to quirks with Verilator, sadly we should try to avoid waiting for the next posedge in tasks
 
@@ -95,26 +78,29 @@ begin
     $display("Running fifo_0r1w_tb testbench");
 
     //Set initial input states
-    cb.i_push   <= 1'b0;
-    cb.i_wdata  <= '0;
-    cb.i_pop    <= 1'b0;
+    i_push   <= 1'b0;
+    i_wdata  <= '0;
+    i_pop    <= 1'b0;
 end
 endtask
 
 task push(input logic [DWIDTH-1:0] data);
 begin
     $display("Pushing 'h%h", data);
+    assert(!o_full);
 
-    cb.i_push   <= 1'b1;
-    cb.i_wdata  <= data;
+    i_push   <= 1'b1;
+    i_wdata  <= data;
 end
 endtask
 
-task pop();
+task pop_expecting(input logic [DWIDTH-1:0] data);
 begin
-    $display("Popped 'h%h", o_rdata);
+    $display("Popped  'h%h (expected 'h%h)", o_rdata, data);
+    assert(!o_empty);
+    assert(o_rdata == data);
 
-    cb.i_pop <= 1'b1;
+    i_pop <= 1'b1;
 end
 endtask
 
@@ -127,77 +113,75 @@ endtask
 
 task idle();
 begin
-    cb.i_push   <= 1'b0;
-    cb.i_wdata  <= '0;
-    cb.i_pop    <= 1'b0;
+    i_push   <= 1'b0;
+    i_wdata  <= '0;
+    i_pop    <= 1'b0;
 end
 endtask
+
+//verilator lint_restore
 
 /* ------------------------------------------------------------------------------------------------
  * Stimulus
  * --------------------------------------------------------------------------------------------- */
 
 initial begin
+    //verilator lint_save
+    //verilator lint_off INITIALDLY
     setup();
 
     //Reset things
-    i_rst_n = 1'b0;
-    ##2;
-    i_rst_n = 1'b1;
-    ##2;
+    i_rst_n <= 1'b0;
+    @(negedge i_clk);
+    @(negedge i_clk);
+    i_rst_n <= 1'b1;
+    @(negedge i_clk);
+    @(negedge i_clk);
 
     //Initial experiements with avoiding races with $display statements
     push(32'hCAFEBABE);
-    ##1;//One cycle for the signals from push() to take effect
-    idle();
-    ##1;//One cycle for the push to actually occur
+    @(negedge i_clk);//One cycle for the push to actually occur
     push(32'hDEADBEEF);
-    pop();
-    ##1;//One cycle for the signals from push() and pop to take effect
-    idle();
-    ##1;//One cycle for the push and pop to actually occur
-    peak();
-    ##2;
+    pop_expecting(32'hCAFEBABE);
+    @(negedge i_clk);
     push(32'hA5A5A5A5);
-    pop();
-    ##1;//One cycle for the signals from push() and pop to take effect
+    pop_expecting(32'hDEADBEEF);
+    @(negedge i_clk);
     idle();
-    pop();//Note: What is said that is popped here is wrong because it takes a cycle for the first pop to actually occur
-    ##1;//One cycle for the push and pop to actually occur; second pop signals also taking effect
+    pop_expecting(32'hA5A5A5A5);
+    @(negedge i_clk);
     idle();
-    ##1;//One cycle for the second pop to actually occur
-    //FIFO is empty at this point
 
-    ##5;
+    repeat(5) @(negedge i_clk);
 
     //Back-to-back push and pop tests
-    //It's a bit unintuitive but remember that the signals don't actually take
-    //effect until just after the posedge AFTER the signals are set
-    //This delays things by a cycle then what you might exepect with this
-    //stimulus but it doesn't really matter
+    i_push   <= 1'b1;
+    i_wdata  <= 32'h11111111;
+    i_pop    <= 1'b0;
+    @(negedge i_clk);
+    i_push   <= 1'b1;
+    i_wdata  <= 32'h22222222;
+    i_pop    <= 1'b1;
+    assert(o_rdata == 32'h11111111);
+    @(negedge i_clk);
+    i_push   <= 1'b1;
+    i_wdata  <= 32'h33333333;
+    i_pop    <= 1'b1;
+    assert(o_rdata == 32'h22222222);
+    @(negedge i_clk);
+    i_push   <= 1'b0;
+    i_wdata  <= '0;
+    i_pop    <= 1'b1;
+    assert(o_rdata == 32'h33333333);
+    @(negedge i_clk);
+    i_push   <= 1'b0;
+    i_wdata  <= '0;
+    i_pop    <= 1'b0;
 
-    cb.i_push   <= 1'b1;
-    cb.i_wdata  <= 32'h11111111;
-    cb.i_pop    <= 1'b0;
-    ##1;
-    cb.i_push   <= 1'b1;
-    cb.i_wdata  <= 32'h22222222;
-    cb.i_pop    <= 1'b1;
-    ##1;
-    cb.i_push   <= 1'b1;
-    cb.i_wdata  <= 32'h33333333;
-    cb.i_pop    <= 1'b1;
-    ##1;
-    cb.i_push   <= 1'b0;
-    cb.i_wdata  <= '0;
-    cb.i_pop    <= 1'b1;
-    ##1;
-    cb.i_push   <= 1'b0;
-    cb.i_wdata  <= '0;
-    cb.i_pop    <= 1'b0;
-
-    ##5;
+    repeat(5) @(negedge i_clk);
     $finish;
+
+    //verilator lint_restore
 end
 
 endmodule : fifo_0r1w_tb

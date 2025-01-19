@@ -86,7 +86,7 @@ echo "SNAPSHOT_NAME:        $SNAPSHOT_NAME" | tee -a $LOG
 ####################################################################################################
 
 echo "Parsing (System)Verilog sources..." | tee -a $LOG
-xvlog -d REPO_ROOT=$REPO_ROOT -d SIMULATION -d XSIM -sv $FILELIST | tee -a $LOG
+xvlog -d REPO_ROOT=$REPO_ROOT -d SIMULATION -d XSIM -sv $VERIF_DIR/include/verif_macros.h $FILELIST | tee -a $LOG
 
 echo "Elaborating design for simulation..." | tee -a $LOG
 xelab -debug all -top $TB -snapshot $SNAPSHOT_NAME | tee -a $LOG

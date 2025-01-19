@@ -93,8 +93,8 @@ EOF
 
 #TODO set SIMULATION once iverilog supports concurrent assertions
 echo "Doing SV2V conversion..." | tee -a $LOG
-sv2v $FILELIST $IVERILOG_TOP -DIVERILOG -DREPO_ROOT=$REPO_ROOT --exclude=Always --exclude=Assert --exclude=UnbasedUnsized --top=iverilog_top > ${SV2V_OUTPUT} | tee -a $LOG
-#sv2v $FILELIST $IVERILOG_TOP -DIVERILOG -DREPO_ROOT=$REPO_ROOT -DSIMULATION --exclude=Always --exclude=Assert --exclude=UnbasedUnsized --top=iverilog_top > ${SV2V_OUTPUT} | tee -a $LOG
+sv2v $VERIF_DIR/include/verif_macros.h $FILELIST $IVERILOG_TOP -DIVERILOG -DREPO_ROOT=$REPO_ROOT --exclude=Always --exclude=Assert --exclude=UnbasedUnsized --top=iverilog_top > ${SV2V_OUTPUT} | tee -a $LOG
+#sv2v $VERIF_DIR/include/verif_macros.h $FILELIST $IVERILOG_TOP -DIVERILOG -DREPO_ROOT=$REPO_ROOT -DSIMULATION --exclude=Always --exclude=Assert --exclude=UnbasedUnsized --top=iverilog_top > ${SV2V_OUTPUT} | tee -a $LOG
 
 echo "Elaborating $TB..." | tee -a $LOG
 iverilog -g2012 -gsupported-assertions -DREPO_ROOT=$REPO_ROOT -DSIMULATION -o $SIM_BIN ${SV2V_OUTPUT} | tee -a $LOG

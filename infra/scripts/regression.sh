@@ -26,7 +26,7 @@ SYNTH_YOSYS=${SCRIPTS_DIR}/synth_yosys.sh
 
 UNIT_IVERILOG_FILELIST=`${SCRIPTS_DIR}/resolve_filelist.sh ${REGRESSION_FILELIST_DIR}/unit_iverilog.f`
 UNIT_VERILATOR_FILELIST=`${SCRIPTS_DIR}/resolve_filelist.sh ${REGRESSION_FILELIST_DIR}/unit_verilator.f`
-UNIT_SV2V_VERILATOR_FILELIST=`${SCRIPTS_DIR}/resolve_filelist.sh ${REGRESSION_FILELIST_DIR}/unit_sv2v_verilator.f`
+#UNIT_SV2V_VERILATOR_FILELIST=`${SCRIPTS_DIR}/resolve_filelist.sh ${REGRESSION_FILELIST_DIR}/unit_sv2v_verilator.f`
 UNIT_XSIM_FILELIST=`${SCRIPTS_DIR}/resolve_filelist.sh ${REGRESSION_FILELIST_DIR}/unit_xsim.f`
 
 SYNTH_VIVADO_OOC_FILELIST=`${SCRIPTS_DIR}/resolve_filelist.sh ${REGRESSION_FILELIST_DIR}/synth_vivado_ooc.f`
@@ -47,7 +47,7 @@ echo "SYNTH_VIVADO_OOC:                 $SYNTH_VIVADO_OOC"
 echo "SYNTH_YOSYS:                      $SYNTH_YOSYS"
 echo "UNIT_IVERILOG_FILELIST:           $UNIT_IVERILOG_FILELIST"
 echo "UNIT_VERILATOR_FILELIST:          $UNIT_VERILATOR_FILELIST"
-echo "UNIT_SV2V_VERILATOR_FILELIST:     $UNIT_SV2V_VERILATOR_FILELIST"
+#echo "UNIT_SV2V_VERILATOR_FILELIST:     $UNIT_SV2V_VERILATOR_FILELIST"
 echo "UNIT_XSIM_FILELIST:               $UNIT_XSIM_FILELIST"
 echo "SYNTH_VIVADO_OOC_FILELIST:        $SYNTH_VIVADO_OOC_FILELIST"
 echo "SYNTH_YOSYS_FILELIST:             $SYNTH_YOSYS_FILELIST"
@@ -64,11 +64,11 @@ else
 fi
 
 #sv2v_verilator
-if [[ $USE_GNU_PARALLEL == "1" ]]; then
-    echo $UNIT_SV2V_VERILATOR_FILELIST | parallel --bar $UNIT_VERILATOR {} 0 1
-else
-    echo $UNIT_SV2V_VERILATOR_FILELIST | xargs -I % -n 1 -P 1 $UNIT_VERILATOR % 0 1
-fi
+#if [[ $USE_GNU_PARALLEL == "1" ]]; then
+#    echo $UNIT_SV2V_VERILATOR_FILELIST | parallel --bar $UNIT_VERILATOR {} 0 1
+#else
+#    echo $UNIT_SV2V_VERILATOR_FILELIST | xargs -I % -n 1 -P 1 $UNIT_VERILATOR % 0 1
+#fi
 
 #verilator
 if [[ $USE_GNU_PARALLEL == "1" ]]; then

@@ -96,7 +96,7 @@ echo "SV2V_OUTPUT:          $SV2V_OUTPUT" | tee -a $LOG
 
 if [[ $SV2V_VERILATOR == "1" ]]; then
     echo "SV2V_VERILATOR set: Doing SV2V conversion..." | tee -a $LOG
-    sv2v $FILELIST -DVERILATOR -DREPO_ROOT=$REPO_ROOT -DSIMULATION --exclude=Always --exclude=Assert --exclude=UnbasedUnsized --top=$TB > ${SV2V_OUTPUT}
+    sv2v $VERIF_DIR/include/verif_macros.h $FILELIST -DVERILATOR -DREPO_ROOT=$REPO_ROOT -DSIMULATION --exclude=Always --exclude=Assert --exclude=UnbasedUnsized --top=$TB > ${SV2V_OUTPUT}
     FILELIST=${SV2V_OUTPUT}
     echo "Filelist is now $FILELIST" | tee -a $LOG
 fi
@@ -112,7 +112,7 @@ verilator \
     -CFLAGS -fcoroutines \
     -CFLAGS -DSV_TBENCH_NAME=$TB -CFLAGS -DVERILATED_CLASS=V$TB -CFLAGS -DVERILATED_HEADER=\"V$TB.h\" -CFLAGS -DWAVES_OUTPUT_PATH=$OUTPUT_WAVES \
     --Mdir $INTERMEDIATE_DIR \
-    $FILELIST $VERILATOR_WRAPPER \
+    $VERIF_DIR/include/verif_macros.h $FILELIST $VERILATOR_WRAPPER \
     -o $SIM_BIN 2>&1 | tee -a $LOG
 
 if [[ $SV2V_VERILATOR != "1" ]]; then
