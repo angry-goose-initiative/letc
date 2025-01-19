@@ -122,7 +122,7 @@ begin
     to_subordinate.rdata        <= '0;
     to_subordinate.rresp        <= AXI_RESP_OKAY;
     to_subordinate.rlast        <= 1'b0;
-    
+
     //Now come out of reset (after holding it for a couple of cycles)
     @(negedge i_clk);
     @(negedge i_clk);

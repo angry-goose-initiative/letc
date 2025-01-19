@@ -10,9 +10,12 @@
 set -e
 
 REPO_ROOT=`git rev-parse --show-toplevel`
-ALL_SV_FILES=$(find $REPO_ROOT -path "build/*" -prune -o -path "*legacy*" -prune -o -name "*.sv" | xargs)
+FILELIST_DIR=${REPO_ROOT}/filelists
+ALL_FILELISTS=$(find $FILELIST_DIR -name "*.f" -not -path "$FILELIST_DIR/regression/*")
+ALL_SV_FILES=$(echo $ALL_FILELISTS | xargs -n 1 ${REPO_ROOT}/infra/scripts/resolve_filelist.sh | tr ' ' '\n' | sort -u | xargs)
 
+echo "ALL_FILELISTS: $ALL_FILELISTS"
 echo "Linting: $ALL_SV_FILES"
 
-cd ..
-#svlint -D SIMULATION $ALL_SV_FILES
+cd $REPO_ROOT
+svlint -D SIMULATION $ALL_SV_FILES
