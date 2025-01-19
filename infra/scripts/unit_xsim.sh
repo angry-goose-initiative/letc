@@ -26,11 +26,13 @@ VERIF_DIR=${REPO_ROOT}/verif
 SCRIPTS_DIR=${REPO_ROOT}/infra/scripts
 FILELIST=`${SCRIPTS_DIR}/resolve_filelist.sh $TB_FILELIST_PATH`
 
-ALL_TB_FILELIST_DIR=${REPO_ROOT}/filelists/verif/unit/tb
+THIS_TB_FILELIST_DIR=`dirname ${TB_FILELIST_PATH}`
+ALL_TB_FILELIST_DIR=filelists/verif/unit/tb/
+REL_TB_FILELIST_DIR=${THIS_TB_FILELIST_DIR#${ALL_TB_FILELIST_DIR}}
 
 UNIT_OUT_DIR=${REPO_ROOT}/build/unit
 XSIM_OUT_DIR=${UNIT_OUT_DIR}/xsim
-OUT_DIR=${XSIM_OUT_DIR}/`dirname ${TB_FILELIST_PATH} | xargs realpath --relative-to=${ALL_TB_FILELIST_DIR}`/${TB}
+OUT_DIR=${XSIM_OUT_DIR}/${REL_TB_FILELIST_DIR}/${TB}
 
 OUTPUT_WAVES=${OUT_DIR}/waves.wdb
 #OUTPUT_WAVES_VCD=${OUT_DIR}/waves.vcd
@@ -69,6 +71,9 @@ echo "REPO_ROOT:            $REPO_ROOT" | tee -a $LOG
 echo "VERIF_DIR:            $VERIF_DIR" | tee -a $LOG
 echo "SCRIPTS_DIR:          $SCRIPTS_DIR" | tee -a $LOG
 echo "FILELIST:             $FILELIST" | tee -a $LOG
+echo "THIS_TB_FILELIST_DIR: $THIS_TB_FILELIST_DIR" | tee -a $LOG
+echo "ALL_TB_FILELIST_DIR:  $ALL_TB_FILELIST_DIR" | tee -a $LOG
+echo "REL_TB_FILELIST_DIR:  $REL_TB_FILELIST_DIR" | tee -a $LOG
 echo "UNIT_OUT_DIR:         $UNIT_OUT_DIR" | tee -a $LOG
 echo "XSIM_OUT_DIR:         $XSIM_OUT_DIR" | tee -a $LOG
 echo "OUT_DIR:              $OUT_DIR" | tee -a $LOG

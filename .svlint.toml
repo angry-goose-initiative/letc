@@ -1,0 +1,50 @@
+# .svlint.toml
+# Copyright (C) 2024 John Jekel
+# See the LICENSE file at the root of the project for licensing info.
+#
+# svlint configuration file for LETC
+
+[option]
+prefix_input    = "i_"
+prefix_output   = "o_"
+
+[textrules]
+style_directives    = true
+style_semicolon     = true
+#style_indent = true
+
+[syntaxrules]
+action_block_with_side_effect               = true
+blocking_assignment_in_always_at_edge       = true
+blocking_assignment_in_always_ff            = true
+blocking_assignment_in_always_latch         = true
+#default_nettype_none                        = true#Vivado is incompatible with this
+enum_with_type                              = true
+function_same_as_system_function            = true
+general_always_level_sensitive              = true
+general_always_no_edge                      = true
+genvar_declaration_in_loop                  = true
+interface_port_with_modport                 = true
+keyword_forbidden_always                    = true
+keyword_forbidden_always_latch              = true
+keyword_forbidden_wire_reg                  = true
+keyword_required_generate                   = true
+#localparam_explicit_type                    = true#Honestly not that important
+loop_variable_declaration                   = true
+module_nonansi_forbidden                    = true
+multiline_for_begin                         = true
+multiline_if_begin                          = true
+non_blocking_assignment_in_always_comb      = true
+non_blocking_assignment_in_always_no_edge   = true
+operator_case_equality                      = true
+package_item_not_in_package                 = true
+#parameter_explicit_type                     = true#Honestly not that important
+procedural_continuous_assignment            = true
+#Not requiring particular input/output prefixes anymore (makes it harder to use .* syntax)
+#prefix_input                                = true
+#prefix_output                               = true
+prefix_input                                = false
+prefix_output                               = false
+#The space ones are too aggressive
+style_trailingwhitespace                    = true
+tab_character                               = true

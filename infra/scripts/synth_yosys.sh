@@ -25,7 +25,9 @@ SYNTH_DIR=${REPO_ROOT}/synth
 SCRIPTS_DIR=${REPO_ROOT}/infra/scripts
 FILELIST=`${SCRIPTS_DIR}/resolve_filelist.sh $FILELIST_PATH`
 
-ALL_RTL_FILELIST_DIR=${REPO_ROOT}/filelists/rtl
+THIS_RTL_FILELIST_DIR=`dirname ${FILELIST_PATH}`
+ALL_RTL_FILELIST_DIR=filelists/rtl/
+REL_RTL_FILELIST_DIR=${THIS_RTL_FILELIST_DIR#${ALL_RTL_FILELIST_DIR}}
 
 SYNTH_OUT_DIR=${REPO_ROOT}/build/synth
 YOSYS_OUT_DIR=${SYNTH_OUT_DIR}/yosys
@@ -63,6 +65,9 @@ echo "REPO_ROOT:                    $REPO_ROOT" | tee -a $LOG
 echo "SYNTH_DIR:                    $SYNTH_DIR" | tee -a $LOG
 echo "SCRIPTS_DIR:                  $SCRIPTS_DIR" | tee -a $LOG
 echo "FILELIST:                     $FILELIST" | tee -a $LOG
+echo "THIS_RTL_FILELIST_DIR:        $THIS_RTL_FILELIST_DIR" | tee -a $LOG
+echo "ALL_RTL_FILELIST_DIR:         $ALL_RTL_FILELIST_DIR" | tee -a $LOG
+echo "REL_RTL_FILELIST_DIR:         $REL_RTL_FILELIST_DIR" | tee -a $LOG
 echo "SYNTH_OUT_DIR:                $SYNTH_OUT_DIR" | tee -a $LOG
 echo "YOSYS_OUT_DIR:                $YOSYS_OUT_DIR" | tee -a $LOG
 echo "OUT_DIR:                      $OUT_DIR" | tee -a $LOG
