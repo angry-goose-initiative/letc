@@ -370,13 +370,16 @@ end
  * Branch Logic
  * --------------------------------------------------------------------------------------------- */
 
+//TODO in the refactor I don't htink we're deciding branches in decode!
 logic branch_cmp_result;
+/*
 letc_core_branch_comparator branch_comparator (
     .i_rs1(rs1_rdata),
     .i_rs2(rs2_rdata),
     .i_cmp_operation(ctrl.cond_branch_cmp_op),
     .o_cmp_result(branch_cmp_result)
 );
+*/
 
 word_t jalr_branch_target;
 always_comb begin

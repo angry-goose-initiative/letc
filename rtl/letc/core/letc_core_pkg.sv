@@ -4,7 +4,8 @@
  * Brief:   Common LETC Core stuffs
  *
  * Copyright:
- *  Copyright (C) 2023-2024 John Jekel
+ *  Copyright (C) 2023-2025 John Jekel
+ *  Copyright (C) 2025 Nick Chan
  * See the LICENSE file at the root of the project for licensing info.
  *
  * TODO longer description
@@ -34,7 +35,12 @@ typedef logic [31:2]    instr_t;
  * Parameters
  * --------------------------------------------------------------------------------------------- */
 
+//verilator lint_save
+//verilator lint_off UNUSEDPARAM
+
 parameter pc_word_t RESET_PC_WORD = 30'h00000000;
+
+//verilator lint_restore
 
 /* ------------------------------------------------------------------------------------------------
  * Enums
