@@ -30,6 +30,8 @@ help:
 	@echo "    unit_xsim              Run a unit simulation with XSIM (requires TARGET option, optionally WAVES option)"
 	@echo "    synth_vivado_ooc       Synthesize a module with Vivado in out-of-context mode (requires TARGET option)"
 	@echo "    synth_yosys            Synthesize a module with Yosys (requires TARGET option)"
+	@echo "    regression             Run a regression (single-threaded)"
+	@echo "    regression_parallel    Multi-threaded using GNU Parallel"
 	@echo "Options:"
 	@echo "    TARGET                 Path to the filelist to simulate or synthesize"
 	@echo "    WAVES                  Set equal to 1 to open waves after a simulation completes"
@@ -42,5 +44,6 @@ help:
 	@echo "    BASH:                  ${BASH}"
 	@echo "    TARGET:                ${TARGET}"
 	@echo "    FILELIST:              ${FILELIST}"
+	@echo "    WAVES:                 ${WAVES}"
 
 include ${INFRA_DIR}/make/*.mk

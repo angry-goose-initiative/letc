@@ -1,3 +1,3 @@
 /* vi: set filetype=c: */
 #pragma once
-verif/common/clock_generator.sv
+rtl/example/example_pkg.sv

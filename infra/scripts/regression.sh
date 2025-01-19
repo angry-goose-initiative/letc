@@ -52,52 +52,64 @@ echo "UNIT_XSIM_FILELIST:               $UNIT_XSIM_FILELIST"
 echo "SYNTH_VIVADO_OOC_FILELIST:        $SYNTH_VIVADO_OOC_FILELIST"
 echo "SYNTH_YOSYS_FILELIST:             $SYNTH_YOSYS_FILELIST"
 
-####################################################################################################
-# Unit
-####################################################################################################
-
-#iverilog
 if [[ $USE_GNU_PARALLEL == "1" ]]; then
-    echo $UNIT_IVERILOG_FILELIST | parallel --bar $UNIT_IVERILOG
+    mkdir -p ${REPO_ROOT}/build
+    GNU_PARALLEL_COMMANDS_FILE=${REPO_ROOT}/build/gnu_parallel_commands.txt
+    rm -f $GNU_PARALLEL_COMMANDS_FILE
+    touch $GNU_PARALLEL_COMMANDS_FILE
+
+    ####################################################################################################
+    # Unit
+    ####################################################################################################
+
+    #iverilog
+    echo $UNIT_IVERILOG_FILELIST | xargs -n 1 -P 1 echo $UNIT_IVERILOG >> $GNU_PARALLEL_COMMANDS_FILE
+
+    #sv2v_verilator
+    echo $UNIT_SV2V_VERILATOR_FILELIST | xargs -I % -n 1 -P 1 echo $UNIT_VERILATOR % 0 1 >> $GNU_PARALLEL_COMMANDS_FILE
+
+    #verilator
+    echo $UNIT_VERILATOR_FILELIST | xargs -n 1 -P 1 echo $UNIT_VERILATOR >> $GNU_PARALLEL_COMMANDS_FILE
+
+    #xsim
+    echo $UNIT_XSIM_FILELIST | xargs -n 1 -P 1 echo $UNIT_XSIM >> $GNU_PARALLEL_COMMANDS_FILE
+
+    ####################################################################################################
+    # Synth
+    ####################################################################################################
+
+    #yosys
+    echo $SYNTH_YOSYS_FILELIST | xargs -n 1 -P 1 echo $SYNTH_YOSYS >> $GNU_PARALLEL_COMMANDS_FILE
+
+    #vivado_ooc
+    echo $SYNTH_VIVADO_OOC_FILELIST | xargs -n 1 -P 1 echo $SYNTH_VIVADO_OOC >> $GNU_PARALLEL_COMMANDS_FILE
+
+    #Now run all the things!
+    parallel --slf .. --bar < $GNU_PARALLEL_COMMANDS_FILE
 else
+    ####################################################################################################
+    # Unit
+    ####################################################################################################
+
+    #iverilog
     echo $UNIT_IVERILOG_FILELIST | xargs -n 1 -P 1 $UNIT_IVERILOG
-fi
 
-#sv2v_verilator
-#if [[ $USE_GNU_PARALLEL == "1" ]]; then
-#    echo $UNIT_SV2V_VERILATOR_FILELIST | parallel --bar $UNIT_VERILATOR {} 0 1
-#else
-#    echo $UNIT_SV2V_VERILATOR_FILELIST | xargs -I % -n 1 -P 1 $UNIT_VERILATOR % 0 1
-#fi
+    #sv2v_verilator
+    echo $UNIT_SV2V_VERILATOR_FILELIST | xargs -I % -n 1 -P 1 $UNIT_VERILATOR % 0 1
 
-#verilator
-if [[ $USE_GNU_PARALLEL == "1" ]]; then
-    echo $UNIT_VERILATOR_FILELIST | parallel --bar $UNIT_VERILATOR
-else
+    #verilator
     echo $UNIT_VERILATOR_FILELIST | xargs -n 1 -P 1 $UNIT_VERILATOR
-fi
 
-#xsim
-if [[ $USE_GNU_PARALLEL == "1" ]]; then
-    echo $UNIT_XSIM_FILELIST | parallel --bar $UNIT_XSIM
-else
+    #xsim
     echo $UNIT_XSIM_FILELIST | xargs -n 1 -P 1 $UNIT_XSIM
-fi
 
-####################################################################################################
-# Synth
-####################################################################################################
+    ####################################################################################################
+    # Synth
+    ####################################################################################################
 
-#yosys
-if [[ $USE_GNU_PARALLEL == "1" ]]; then
-    echo $SYNTH_YOSYS_FILELIST | parallel --bar $SYNTH_YOSYS
-else
+    #yosys
     echo $SYNTH_YOSYS_FILELIST | xargs -n 1 -P 1 $SYNTH_YOSYS
-fi
 
-#vivado_ooc
-if [[ $USE_GNU_PARALLEL == "1" ]]; then
-    echo $SYNTH_VIVADO_OOC_FILELIST | parallel --bar $SYNTH_VIVADO_OOC
-else
+    #vivado_ooc
     echo $SYNTH_VIVADO_OOC_FILELIST | xargs -n 1 -P 1 $SYNTH_VIVADO_OOC
 fi

@@ -110,8 +110,8 @@ assert property (@(posedge i_clk) disable iff (!i_rst_n) !(i_push & o_full));
 assert property (@(posedge i_clk) disable iff (!i_rst_n) !(i_pop & o_empty));
 
 //Ensure pointers never go out of bounds
-assert property (@(posedge i_clk) disable iff (!i_rst_n) !(push_idx >= (AWIDTH)'(DEPTH)));
-assert property (@(posedge i_clk) disable iff (!i_rst_n) !(pop_idx  >= (AWIDTH)'(DEPTH)));
+assert property (@(posedge i_clk) disable iff (!i_rst_n) (AWIDTH + 1)'(push_idx) < (AWIDTH + 1)'(DEPTH));
+assert property (@(posedge i_clk) disable iff (!i_rst_n) (AWIDTH + 1)'(pop_idx)  < (AWIDTH + 1)'(DEPTH));
 
 `endif //SIMULATION
 
