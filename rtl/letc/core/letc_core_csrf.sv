@@ -40,7 +40,7 @@ module letc_core_csrf
     // CSR explicit software interface with writeback stage
     input  logic        csr_explicit_wen,
     input  csr_idx_t    csr_explicit_widx,
-    input  word_t       csr_explicit_wdata,
+    input  word_t       csr_explicit_wdata
 );
 
 assign csr_explicit_rdata = 32'hDEADBEEF;//TESTING
