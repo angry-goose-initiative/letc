@@ -24,6 +24,7 @@
 module letc_core_cache
     import letc_pkg::*;
     import letc_core_pkg::*;
+    import riscv_pkg::*;
 #(
     parameter INDEX_WIDTH   = 6,//AKA $clog2(CACHE_DEPTH)
     parameter OFFSET_WIDTH  = 4//AKA $clog2(CACHE_LINE_WORDS)

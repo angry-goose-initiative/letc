@@ -17,6 +17,7 @@
 module letc_core_branch_comparator
     import letc_pkg::*;
     import letc_core_pkg::*;
+    import riscv_pkg::*;
 (
     input   word_t      rs1_val,
     input   word_t      rs2_val,

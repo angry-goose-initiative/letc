@@ -47,12 +47,6 @@ parameter pc_word_t RESET_PC_WORD = 30'h00000000;
  * --------------------------------------------------------------------------------------------- */
 
 typedef enum logic [1:0] {
-    U_MODE = 2'b00,
-    S_MODE = 2'b01,
-    M_MODE = 2'b11
-} priv_mode_e;
-
-typedef enum logic [1:0] {
     //Values correspond to RISC-V instruction encoding for potential efficiency gains
     SIZE_BYTE       = 2'b00,
     SIZE_HALFWORD   = 2'b01,
@@ -152,14 +146,14 @@ typedef struct packed {
 
     csr_op_e            csr_op;
     csr_idx_t           csr_idx;
-    letc_pkg::word_t    csr_rdata;
+    riscv_pkg::word_t   csr_rdata;
 
     reg_idx_t           rs1_idx;//Not used by e1 directly, rather used by TGHM to detect hazards
     reg_idx_t           rs2_idx;//Same here
-    letc_pkg::word_t    rs1_rdata;
-    letc_pkg::word_t    rs2_rdata;
+    riscv_pkg::word_t   rs1_rdata;
+    riscv_pkg::word_t   rs2_rdata;
 
-    letc_pkg::word_t    immediate;
+    riscv_pkg::word_t   immediate;
 
     alu_op1_src_e       alu_op1_src;
     alu_op2_src_e       alu_op2_src;
@@ -179,14 +173,14 @@ typedef struct packed {
 
     csr_op_e            csr_op;
     csr_idx_t           csr_idx;
-    letc_pkg::word_t    old_csr_value;//To be written to rd
+    riscv_pkg::word_t   old_csr_value;//To be written to rd
 
-    letc_pkg::word_t    alu_result;//Can also pass through registers, new CSR value to writeback, mem address, etc
+    riscv_pkg::word_t   alu_result;//Can also pass through registers, new CSR value to writeback, mem address, etc
 
     mem_op_e            memory_op;
     logic               memory_signed;
     size_e              memory_size;
-    letc_pkg::word_t    rs2_rdata;//rs2 is what is written to memory
+    riscv_pkg::word_t   rs2_rdata;//rs2 is what is written to memory
 } e1_to_e2_s;
 
 typedef struct packed {
@@ -199,9 +193,9 @@ typedef struct packed {
     csr_op_e            csr_op;
     csr_idx_t           csr_idx;
 
-    letc_pkg::word_t    old_csr_value;//Written to rd, sometimes
-    letc_pkg::word_t    alu_result;//Sometimes written to rd, or to a CSR
-    letc_pkg::word_t    memory_rdata;//Written to rd, sometimes
+    riscv_pkg::word_t   old_csr_value;//Written to rd, sometimes
+    riscv_pkg::word_t   alu_result;//Sometimes written to rd, or to a CSR
+    riscv_pkg::word_t   memory_rdata;//Written to rd, sometimes
 } e2_to_w_s;
 
 /* ------------------------------------------------------------------------------------------------
@@ -213,19 +207,19 @@ typedef struct packed {
     //TODO structs for each CSR that holds the fields
     //TODO add more CSRs here if they need to be implicitly read
 
-    letc_pkg::word_t mstatus;
-    letc_pkg::word_t mcause;
-    letc_pkg::word_t mip;
-    letc_pkg::word_t mie;
-    letc_pkg::word_t mideleg;
-    letc_pkg::word_t medeleg;
-    letc_pkg::word_t mtvec;
+    riscv_pkg::word_t mstatus;
+    riscv_pkg::word_t mcause;
+    riscv_pkg::word_t mip;
+    riscv_pkg::word_t mie;
+    riscv_pkg::word_t mideleg;
+    riscv_pkg::word_t medeleg;
+    riscv_pkg::word_t mtvec;
 
-    letc_pkg::word_t scause;
-    letc_pkg::word_t stvec;
-    letc_pkg::word_t satp;
+    riscv_pkg::word_t scause;
+    riscv_pkg::word_t stvec;
+    riscv_pkg::word_t satp;
 
-    priv_mode_e current_priv;//Not really a standard RISC-V CSR but useful to many things
+    riscv_pkg::priv_mode_e current_priv;//Not really a standard RISC-V CSR but useful to many things
 } csr_implicit_rdata_s;
 
 endpackage : letc_core_pkg

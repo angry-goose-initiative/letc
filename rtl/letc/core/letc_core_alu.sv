@@ -15,6 +15,7 @@
 module letc_core_alu
     import letc_pkg::*;
     import letc_core_pkg::*;
+    import riscv_pkg::*;
 (
     input   word_t [1:0]    alu_operands,//alu_operands[0] OP alu_operands[1]
     input   alu_op_e        alu_operation,

@@ -18,6 +18,7 @@ module letc_core_branch_comparator_tb;
 
 import letc_pkg::*;
 import letc_core_pkg::*;
+import riscv_pkg::*;
 
 /* ------------------------------------------------------------------------------------------------
  * DUT Connections

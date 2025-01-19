@@ -17,6 +17,7 @@
 module letc_core_axi_fsm
     import letc_pkg::*;
     import letc_core_pkg::*;
+    import riscv_pkg::*;
 #(
     parameter NUM_REQUESTORS    = 3,//MMU, caches, and uncached access
     parameter AXI_ID            = 0

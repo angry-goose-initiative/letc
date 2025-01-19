@@ -22,6 +22,7 @@
 module letc_core_multiplier
     import letc_pkg::*;
     import letc_core_pkg::*;
+    import riscv_pkg::*;
 (
     //Clock
     input logic i_clk,
