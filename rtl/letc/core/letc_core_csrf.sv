@@ -29,25 +29,22 @@ module letc_core_csrf
     //Interface for CSRs whose state (at least partially) exists outside of this module
     //TODO
 
-    // CSR explicit software read interface
+    // CSR explicit software interface with decode stage
     input  logic        csr_explicit_ren,
-    input  csr_idx_t    csr_explicit_ridx,
+    input  csr_idx_t    csr_explicit_idx,
     output word_t       csr_explicit_rdata,
-    output logic        csr_explicit_rill,
+    input  logic        csr_explicit_wcheck,
+    output logic        csr_explicit_illegal,
 
-    // CSR explicit software write interface
+    // CSR explicit software interface with writeback stage
     input  logic        csr_explicit_wen,
     input  csr_idx_t    csr_explicit_widx,
     input  word_t       csr_explicit_wdata,
-    // NOTE(Nick): When writing back to CSR's (in WB), the instruction is
-    // already assumed valid, need this to be checked earlier (in ID)
-    output logic        csr_explicit_will
 );
 
-assign o_csr_explicit_rdata = 32'hDEADBEEF;//TESTING
+assign csr_explicit_rdata = 32'hDEADBEEF;//TESTING
 
 //Detecting illegal CSR accesses for security/to catch SW bugs is a low priority
-assign csr_explicit_rill = 1'b0;
-assign csr_explicit_will = 1'b0;
+assign csr_explicit_illegal = 1'b0;
 
 endmodule : letc_core_csrf
