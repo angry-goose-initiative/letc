@@ -22,7 +22,6 @@ package letc_core_pkg;
  * Typedefs
  * --------------------------------------------------------------------------------------------- */
 
-typedef logic [4:0]     reg_idx_t;
 typedef logic [11:0]    csr_idx_t;
 
 //We don't support misaligned instructions or the C extension so we can ignore the lower 2 bits of the PC
@@ -137,65 +136,65 @@ typedef struct packed {
 } f2_to_d_s;
 
 typedef struct packed {
-    logic               valid;
-    pc_word_t           pc_word;
+    logic                   valid;
+    pc_word_t               pc_word;
 
-    rd_src_e            rd_src;//The final rd source, for writeback
-    reg_idx_t           rd_idx;
-    logic               rd_we;
+    rd_src_e                rd_src;//The final rd source, for writeback
+    riscv_pkg::reg_idx_t    rd_idx;
+    logic                   rd_we;
 
-    csr_op_e            csr_op;
-    csr_idx_t           csr_idx;
-    riscv_pkg::word_t   csr_rdata;
+    csr_op_e                csr_op;
+    csr_idx_t               csr_idx;
+    riscv_pkg::word_t       csr_rdata;
 
-    reg_idx_t           rs1_idx;//Not used by e1 directly, rather used by TGHM to detect hazards
-    reg_idx_t           rs2_idx;//Same here
-    riscv_pkg::word_t   rs1_rdata;
-    riscv_pkg::word_t   rs2_rdata;
+    riscv_pkg::reg_idx_t    rs1_idx;//Not used by e1 directly, rather used by TGHM to detect hazards
+    riscv_pkg::reg_idx_t    rs2_idx;//Same here
+    riscv_pkg::word_t       rs1_rdata;
+    riscv_pkg::word_t       rs2_rdata;
 
-    riscv_pkg::word_t   immediate;
+    riscv_pkg::word_t       immediate;
 
-    alu_op1_src_e       alu_op1_src;
-    alu_op2_src_e       alu_op2_src;
-    alu_op_e            alu_op;
+    alu_op1_src_e           alu_op1_src;
+    alu_op2_src_e           alu_op2_src;
+    alu_op_e                alu_op;
 
-    mem_op_e            memory_op;
-    logic               memory_signed;
-    size_e              memory_size;
+    mem_op_e                memory_op;
+    logic                   memory_signed;
+    size_e                  memory_size;
 } d_to_e1_s;
 
 typedef struct packed {
-    logic               valid;
+    logic                   valid;
 
-    rd_src_e            rd_src;
-    reg_idx_t           rd_idx;
-    logic               rd_we;
+    rd_src_e                rd_src;
+    riscv_pkg::reg_idx_t    rd_idx;
+    logic                   rd_we;
 
-    csr_op_e            csr_op;
-    csr_idx_t           csr_idx;
-    riscv_pkg::word_t   old_csr_value;//To be written to rd
+    csr_op_e                csr_op;
+    csr_idx_t               csr_idx;
+    riscv_pkg::word_t       old_csr_value;//To be written to rd
 
-    riscv_pkg::word_t   alu_result;//Can also pass through registers, new CSR value to writeback, mem address, etc
+    riscv_pkg::word_t       alu_result;//Can also pass through registers, new CSR value to writeback, mem address, etc
 
-    mem_op_e            memory_op;
-    logic               memory_signed;
-    size_e              memory_size;
-    riscv_pkg::word_t   rs2_rdata;//rs2 is what is written to memory
+    mem_op_e                memory_op;
+    logic                   memory_signed;
+    size_e                  memory_size;
+    riscv_pkg::word_t       rs2_rdata;//rs2 is what is written to memory
 } e1_to_e2_s;
 
 typedef struct packed {
-    logic               valid;
+    logic                   valid;
 
-    rd_src_e            rd_src;
-    reg_idx_t           rd_idx;
-    logic               rd_we;
+    rd_src_e                rd_src;
+    riscv_pkg::reg_idx_t    rd_idx;
+    logic                   rd_we;
 
-    csr_op_e            csr_op;
-    csr_idx_t           csr_idx;
+    csr_op_e                csr_op;
+    csr_idx_t               csr_idx;
 
-    riscv_pkg::word_t   old_csr_value;//Written to rd, sometimes
-    riscv_pkg::word_t   alu_result;//Sometimes written to rd, or to a CSR
-    riscv_pkg::word_t   memory_rdata;//Written to rd, sometimes
+    riscv_pkg::word_t       old_csr_value;//Written to rd, sometimes
+    riscv_pkg::word_t       alu_result;//Sometimes written to rd, or to a CSR
+    riscv_pkg::word_t       memory_rdata;//Written to rd, sometimes
 } e2_to_w_s;
 
 /* ------------------------------------------------------------------------------------------------

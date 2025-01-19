@@ -23,6 +23,8 @@ typedef logic [WORD_WIDTH-1:0]      word_t;
 typedef logic [HALFWORD_WIDTH-1:0]  halfword_t;
 typedef logic [BYTE_WIDTH-1:0]      byte_t;
 
+typedef logic [4:0] reg_idx_t;
+
 /* ------------------------------------------------------------------------------------------------
  * Instruction Decoding
  * --------------------------------------------------------------------------------------------- */
@@ -40,6 +42,29 @@ typedef enum logic [4:0] {
     OPCODE_JAL          = 5'b11011, OPCODE_SYSTEM   = 5'b11100, OPCODE_RESERVED_3   = 5'b11101,
     OPCODE_CUSTOM_3     = 5'b11110, OPCODE_BGE80    = 5'b11111
 } opcode_e;
+
+// verilator lint_save
+// verilator lint_off UNUSEDSIGNAL
+function reg_idx_t rd_idx_from_instr(input word_t instr);
+    return instr[11:7];
+endfunction
+
+function reg_idx_t rs1_idx_from_instr(input word_t instr);
+    return instr[19:15];
+endfunction
+
+function reg_idx_t rs2_idx_from_instr(input word_t instr);
+    return instr[24:20];
+endfunction
+
+function logic [2:0] funct3_from_instr(input word_t instr);
+    return instr[14:12];
+endfunction
+
+function logic [6:0] funct7_from_instr(input word_t instr);
+    return instr[31:25];
+endfunction
+// verilator lint_restore
 
 /* ------------------------------------------------------------------------------------------------
  * CSR

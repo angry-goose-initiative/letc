@@ -154,9 +154,9 @@ end
 reg_idx_t rd_idx, rs1_idx, rs2_idx;
 csr_idx_t csr_idx;
 always_comb begin
-    rd_idx  = instr[11:7];
-    rs1_idx = instr[19:15];
-    rs2_idx = instr[24:20];
+    rd_idx  = rd_idx_from_instr({instr, 2'b00});
+    rs1_idx = rs1_idx_from_instr({instr, 2'b00});
+    rs2_idx = rs2_idx_from_instr({instr, 2'b00});
     csr_idx = instr[31:20];
 end
 
@@ -164,8 +164,8 @@ end
 funct3_t funct3;
 funct7_t funct7;
 always_comb begin
-    funct3 = instr[14:12];
-    funct7 = instr[31:25];
+    funct3 = funct3_from_instr({instr, 2'b00});
+    funct7 = funct7_from_instr({instr, 2'b00});
 end
 
 //Immediates
