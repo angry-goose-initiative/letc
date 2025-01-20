@@ -115,13 +115,6 @@ initial begin
     #1;
     assert(alu_result == 32'hAA005500);
 
-    //ALU_OP_MCLR
-    alu_operands[0] = 32'hAAAA5555;
-    alu_operands[1] = 32'hFF00FF00;
-    alu_operation = ALU_OP_MCLR;
-    #1;
-    assert(alu_result == 32'h00AA0055);
-
     /*
     //ALU_OP_PASS1
     alu_operands[0] = 32'hAAAA5555;

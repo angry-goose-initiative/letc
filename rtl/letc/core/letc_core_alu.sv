@@ -34,7 +34,6 @@ always_comb begin
         ALU_OP_XOR:     alu_result =          alu_operands[0]  ^          alu_operands[1];
         ALU_OP_OR:      alu_result =          alu_operands[0]  |          alu_operands[1];
         ALU_OP_AND:     alu_result =          alu_operands[0]  &          alu_operands[1];
-        ALU_OP_MCLR:    alu_result =          alu_operands[0]  &         ~alu_operands[1];
         // FIXME: Need case for JALR
         //ALU_OP_PASS1:   alu_result = alu_operands[0];//Not really needed for any instruction
         //ALU_OP_PASS2:   alu_result = alu_operands[1];//Using ADD and making the first operand 0 instead

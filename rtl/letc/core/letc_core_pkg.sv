@@ -1,4 +1,3 @@
-//TODO add structs for between the various stages
 /*
  * File:    letc_core_pkg.sv
  * Brief:   Common LETC Core stuffs
@@ -23,6 +22,7 @@ package letc_core_pkg;
  * --------------------------------------------------------------------------------------------- */
 
 typedef logic [11:0]    csr_idx_t;
+typedef logic [4:0]     csr_uimm_t;
 
 //We don't support misaligned instructions or the C extension so we can ignore the lower 2 bits of the PC
 typedef logic [31:2]    pc_word_t;
@@ -93,11 +93,17 @@ typedef enum logic [1:0] {
     //TODO perhaps something for atomics in the future?
 } mem_op_e;
 
-typedef enum logic {
-    //Either nothing or read-modify-write
-    CSR_OP_NOP = 1'b0,
-    CSR_OP_ACCESS
+typedef enum logic [1:0] {
+    CSR_OP_NOP = 2'b00,
+    CSR_OP_RW,
+    CSR_OP_RS,
+    CSR_OP_RC
 } csr_op_e;
+
+typedef enum logic {
+    CSR_OP_SRC_RS1,
+    CSR_OP_SRC_UIMM
+} csr_op_src_e;
 
 typedef enum logic [1:0] {
     RD_SRC_ALU,
@@ -129,6 +135,8 @@ typedef struct packed {
     logic       valid;
     pc_word_t   pc_word;
     instr_t     instr;
+
+    //TODO add exception status signal
 } f_to_d_s;
 
 typedef struct packed {
@@ -140,10 +148,12 @@ typedef struct packed {
     logic                   rd_we;
 
     csr_op_e                csr_op;
+    csr_op_src_e            csr_op_src;
     csr_idx_t               csr_idx;
+    csr_uimm_t              csr_uimm;
     riscv_pkg::word_t       csr_rdata;
 
-    riscv_pkg::reg_idx_t    rs1_idx;//Not used by e1 directly, rather used by adhesive to detect hazards
+    riscv_pkg::reg_idx_t    rs1_idx;//Not used by execute directly, rather used by adhesive to detect hazards
     riscv_pkg::reg_idx_t    rs2_idx;//Same here
     riscv_pkg::word_t       rs1_rdata;
     riscv_pkg::word_t       rs2_rdata;
@@ -157,6 +167,10 @@ typedef struct packed {
     mem_op_e                memory_op;
     logic                   memory_signed;
     size_e                  memory_size;
+
+    cmp_op_e                cmp_op;
+
+    //TODO add exception status signal
 } d_to_e_s;
 
 typedef struct packed {
@@ -169,6 +183,10 @@ typedef struct packed {
     csr_op_e                csr_op;
     csr_idx_t               csr_idx;
     riscv_pkg::word_t       old_csr_value;//To be written to rd
+    riscv_pkg::word_t       new_csr_value;//To be written back to the CSR
+
+    riscv_pkg::reg_idx_t    rs1_idx;//Not used by memory directly, rather used by adhesive to detect hazards
+    riscv_pkg::reg_idx_t    rs2_idx;//Same here
 
     riscv_pkg::word_t       alu_result;//Can also pass through registers, new CSR value to writeback, mem address, etc
 
@@ -176,6 +194,8 @@ typedef struct packed {
     logic                   memory_signed;
     size_e                  memory_size;
     riscv_pkg::word_t       rs2_rdata;//rs2 is what is written to memory
+
+    logic                   branch_taken;
 } e_to_m_s;
 
 typedef struct packed {
@@ -189,8 +209,11 @@ typedef struct packed {
     csr_idx_t               csr_idx;
 
     riscv_pkg::word_t       old_csr_value;//Written to rd, sometimes
-    riscv_pkg::word_t       alu_result;//Sometimes written to rd, or to a CSR
+    riscv_pkg::word_t       alu_result;//Written to rd, sometimes
     riscv_pkg::word_t       memory_rdata;//Written to rd, sometimes
+    riscv_pkg::word_t       new_csr_value;//Written to a CSR
+
+    //TODO add exception status signal
 } m_to_w_s;
 
 //OLD structs

@@ -25,8 +25,8 @@ fi
 TB=`basename $TB_FILELIST_PATH .f`
 
 #Get parallelism by running multiple sims at once instead
-#BUILD_THREADS=`nproc`
-BUILD_THREADS=1
+BUILD_THREADS=`nproc`
+#BUILD_THREADS=1
 SIM_THREADS=1
 TRACE_THREADS=1
 

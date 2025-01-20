@@ -10,4 +10,5 @@ filelists/rtl/letc/core/letc_core_csrf.f
 filelists/rtl/letc/core/letc_core_multiplier.f
 filelists/rtl/letc/core/letc_core_rf.f
 //filelists/rtl/letc/core/letc_core_stage_decode.f
+filelists/rtl/letc/core/letc_core_stage_execute.f
 filelists/rtl/letc/core/letc_core_stage_writeback.f
