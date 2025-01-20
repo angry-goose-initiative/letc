@@ -24,7 +24,9 @@ module letc_core_top
     import riscv_pkg::*;
     import letc_pkg::*;
     import letc_core_pkg::*;
-(
+# (
+    parameter STUB_MSS = 0//TODO use this parameter to decide to stub out the MSS blocks for verif
+) (
     //Clock and reset
     input logic clk,
     input logic rst_n,
