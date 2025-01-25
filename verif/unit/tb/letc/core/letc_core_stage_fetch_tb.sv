@@ -1,0 +1,151 @@
+/**
+ * File    letc_core_stage_fetch_tb.sv
+ * Brief   Testbench for LETC Core Fetch stage
+ *
+ * Copyright:
+ *  Copyright (C) 2025 John Jekel
+ * See the LICENSE file at the root of the project for licensing info.
+ *
+*/
+
+/* ------------------------------------------------------------------------------------------------
+ * Module Definition
+ * --------------------------------------------------------------------------------------------- */
+
+module letc_core_stage_fetch_tb;
+
+import riscv_pkg::*;
+import letc_pkg::*;
+import letc_core_pkg::*;
+
+/* ------------------------------------------------------------------------------------------------
+ * Parameters:
+ *
+ * --------------------------------------------------------------------------------------------- */
+
+localparam CLOCK_PERIOD = 10;
+
+/* ------------------------------------------------------------------------------------------------
+ * DUT Connections
+ * --------------------------------------------------------------------------------------------- */
+
+//verilator lint_save
+//verilator lint_off UNUSEDSIGNAL
+
+//Clock and reset
+logic clk;
+logic rst_n;
+
+letc_core_imss_if imss_if (.*);
+
+//IO
+f_to_d_s f_to_d;
+
+/*
+//Bypass signals
+logic     bypass_rs1;
+logic     bypass_rs2;
+word_t    bypassed_rs1_data;
+word_t    bypassed_rs2_data;
+
+
+//Hazards
+logic o_stage_ready;
+logic stage_flush;
+logic stage_stall;
+*/
+
+//verilator lint_restore
+
+/* ------------------------------------------------------------------------------------------------
+ * DUT
+ * --------------------------------------------------------------------------------------------- */
+
+letc_core_stage_fetch dut (.*);
+
+/* ------------------------------------------------------------------------------------------------
+ * Fake IMSS
+ * --------------------------------------------------------------------------------------------- */
+
+//Make it smaller else SV2V complains and xsim won't show it in the gui
+letc_core_imss #(.SIZE_BYTES(1024)) verif_imss (.*);
+
+/* ------------------------------------------------------------------------------------------------
+ * Clocking
+ * --------------------------------------------------------------------------------------------- */
+
+clock_generator #(
+    .PERIOD(CLOCK_PERIOD)
+) clock_gen_inst (
+    .clk(clk)
+);
+
+/* ------------------------------------------------------------------------------------------------
+ * Tasks
+ * --------------------------------------------------------------------------------------------- */
+
+//verilator lint_save
+//verilator lint_off INITIALDLY
+
+task reset();
+    //TODO
+    rst_n <= 1'b0;
+    repeat(2) @(negedge clk);
+    rst_n <= 1'b1;
+    repeat(2) @(negedge clk);
+endtask
+
+task write_imem(word_t addr, word_t data);
+    verif_imss.imem[addr    ] <= data[7:0];
+    verif_imss.imem[addr + 1] <= data[15:8];
+    verif_imss.imem[addr + 2] <= data[23:16];
+    verif_imss.imem[addr + 3] <= data[31:24];
+endtask
+
+task init_imem();
+    write_imem(0, 32'hAAAAAAA << 2);
+    write_imem(4, 32'hBBBBBBB << 2);
+    write_imem(8, 32'hCCCCCCC << 2);
+    write_imem(12, 32'hDDDDDDD << 2);
+    write_imem(16, 32'hEEEEEEE << 2);
+    write_imem(20, 32'hFFFFFFF << 2);
+endtask
+
+//verilator lint_restore
+
+/* ------------------------------------------------------------------------------------------------
+ * Stimulus
+ * --------------------------------------------------------------------------------------------- */
+
+initial begin
+    //verilator lint_save
+    //verilator lint_off INITIALDLY
+
+    //Reset things
+    init_imem();
+    reset();
+
+    //See if it's fetching things sequentially!
+    assert(f_to_d.instr == 32'hAAAAAAA);
+    @(negedge clk);
+    assert(f_to_d.instr == 32'hBBBBBBB);
+    @(negedge clk);
+    assert(f_to_d.instr == 32'hCCCCCCC);
+    @(negedge clk);
+    assert(f_to_d.instr == 32'hDDDDDDD);
+    @(negedge clk);
+    assert(f_to_d.instr == 32'hEEEEEEE);
+    @(negedge clk);
+    assert(f_to_d.instr == 32'hFFFFFFF);
+    @(negedge clk);
+
+    //TODO
+
+    //Et fini!
+    repeat(10) @(negedge clk);
+    $finish;
+
+    //verilator lint_restore
+end
+
+endmodule : letc_core_stage_fetch_tb

@@ -6,11 +6,19 @@
 #include "rtl/letc/core/letc_core_pkg.f"
 #include "rtl/letc/core/letc_core_adhesive.f"
 #include "rtl/letc/core/letc_core_csrf.f"
+#ifndef STUB_MSS
 #include "rtl/letc/core/letc_core_dmss.f"
+#else
+#include "verif/stubmss/letc_core_dmss.f"
+#endif
 #include "rtl/letc/core/letc_core_dmss_if.f"
 #include "rtl/letc/core/letc_core_forwardee_if.f"
 #include "rtl/letc/core/letc_core_forwarder_if.f"
+#ifndef STUB_MSS
 #include "rtl/letc/core/letc_core_imss.f"
+#else
+#include "verif/stubmss/letc_core_imss.f"
+#endif
 #include "rtl/letc/core/letc_core_imss_if.f"
 #include "rtl/letc/core/letc_core_rf.f"
 #include "rtl/letc/core/letc_core_stage_fetch.f"
