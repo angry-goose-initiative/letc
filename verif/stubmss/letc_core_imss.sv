@@ -29,6 +29,9 @@ module letc_core_imss
     //TODO others (CSR accesses, etc)
 );
 
+//TODO support virtual memory with this stubbed variant in the future
+//For now, just treat virtual and physical addresses the same
+
 //It is expected the testbench will reach in and initialize this
 //verilator lint_save
 //verilator lint_off UNDRIVEN
@@ -46,7 +49,7 @@ assign rsp_illegal      = 1'b0;
 assign rsp_virtual_addr = imss_if.req_virtual_addr;
 assign rsp_data         = {imem[rsp_virtual_addr + 3], imem[rsp_virtual_addr + 2], imem[rsp_virtual_addr + 1], imem[rsp_virtual_addr]};
 
-//Delay by one cycle to match hardware
+//Delay by two cycles to match hardware
 logic  rsp_valid_ff;
 logic  rsp_illegal_ff;
 word_t rsp_virtual_addr_ff;
@@ -68,7 +71,6 @@ always_ff @(posedge clk) begin
     end
 end
 
-//TODO support virtual memory with this stubbed variant in the future
-//For now, just treat virtual and physical addresses the same
+assign imss_if.req_ready = 1'b1;
 
 endmodule : letc_core_imss

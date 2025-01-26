@@ -30,6 +30,8 @@ typedef logic [31:2]    pc_word_t;
 //C extension is not supported so we can save some bits
 typedef logic [31:2]    instr_t;
 
+typedef logic [31:0]    vaddr_t;
+
 /* ------------------------------------------------------------------------------------------------
  * Parameters
  * --------------------------------------------------------------------------------------------- */
@@ -132,12 +134,17 @@ typedef enum logic [1:0] {
 //New structs
 
 typedef struct packed {
-    logic       valid;
+    pc_word_t           pc_word;
+
+    //TODO add exception status signal
+} f1_to_f2_s;
+
+typedef struct packed {
     pc_word_t   pc_word;
     instr_t     instr;
 
     //TODO add exception status signal
-} f_to_d_s;
+} f2_to_d_s;
 
 typedef struct packed {
     logic                   valid;
@@ -196,6 +203,8 @@ typedef struct packed {
     riscv_pkg::word_t       rs2_rdata;//rs2 is what is written to memory
 
     logic                   branch_taken;
+
+    //TODO add exception status signal
 } e_to_m_s;
 
 typedef struct packed {
@@ -215,82 +224,6 @@ typedef struct packed {
 
     //TODO add exception status signal
 } m_to_w_s;
-
-//OLD structs
-
-typedef struct packed {
-    logic               valid;
-    pc_word_t           pc_word;
-    letc_pkg::paddr_t   fetch_addr;//Virtual PC translated to physical address
-} f1_to_f2_s;
-
-typedef struct packed {
-    logic       valid;
-    pc_word_t   pc_word;
-    instr_t     instr;
-} f2_to_d_s;
-
-typedef struct packed {
-    logic                   valid;
-    pc_word_t               pc_word;
-
-    rd_src_e                rd_src;//The final rd source, for writeback
-    riscv_pkg::reg_idx_t    rd_idx;
-    logic                   rd_we;
-
-    csr_op_e                csr_op;
-    csr_idx_t               csr_idx;
-    riscv_pkg::word_t       csr_rdata;
-
-    riscv_pkg::reg_idx_t    rs1_idx;//Not used by e1 directly, rather used by TGHM to detect hazards
-    riscv_pkg::reg_idx_t    rs2_idx;//Same here
-    riscv_pkg::word_t       rs1_rdata;
-    riscv_pkg::word_t       rs2_rdata;
-
-    riscv_pkg::word_t       immediate;
-
-    alu_op1_src_e           alu_op1_src;
-    alu_op2_src_e           alu_op2_src;
-    alu_op_e                alu_op;
-
-    mem_op_e                memory_op;
-    logic                   memory_signed;
-    size_e                  memory_size;
-} d_to_e1_s;
-
-typedef struct packed {
-    logic                   valid;
-
-    rd_src_e                rd_src;
-    riscv_pkg::reg_idx_t    rd_idx;
-    logic                   rd_we;
-
-    csr_op_e                csr_op;
-    csr_idx_t               csr_idx;
-    riscv_pkg::word_t       old_csr_value;//To be written to rd
-
-    riscv_pkg::word_t       alu_result;//Can also pass through registers, new CSR value to writeback, mem address, etc
-
-    mem_op_e                memory_op;
-    logic                   memory_signed;
-    size_e                  memory_size;
-    riscv_pkg::word_t       rs2_rdata;//rs2 is what is written to memory
-} e1_to_e2_s;
-
-typedef struct packed {
-    logic                   valid;
-
-    rd_src_e                rd_src;
-    riscv_pkg::reg_idx_t    rd_idx;
-    logic                   rd_we;
-
-    csr_op_e                csr_op;
-    csr_idx_t               csr_idx;
-
-    riscv_pkg::word_t       old_csr_value;//Written to rd, sometimes
-    riscv_pkg::word_t       alu_result;//Sometimes written to rd, or to a CSR
-    riscv_pkg::word_t       memory_rdata;//Written to rd, sometimes
-} e2_to_w_s;
 
 /* ------------------------------------------------------------------------------------------------
  * CSR Structs

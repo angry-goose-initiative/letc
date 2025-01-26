@@ -4,7 +4,8 @@
 #include "rtl/letc/letc_pkg.f"
 #include "rtl/letc/core/letc_core_pkg.f"
 #include "rtl/letc/core/letc_core_imss_if.f"
-#include "rtl/letc/core/letc_core_stage_fetch.f"
+#include "rtl/letc/core/letc_core_stage_fetch1.f"
+#include "rtl/letc/core/letc_core_stage_fetch2.f"
 #include "verif/stubmss/letc_core_imss.f"
 #include "verif/common/clock_generator.f"
 verif/unit/tb/letc/core/letc_core_stage_fetch_tb.sv

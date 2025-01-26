@@ -31,11 +31,13 @@ interface letc_core_imss_if
 //verilator lint_save
 //verilator lint_off UNUSEDSIGNAL
 
-//Stage -> Memory Subsystem
+//Fetc 1 <-> Memory Subsystem
 logic  req_valid;
 word_t req_virtual_addr;
+logic  req_ready;//Reverse
+//TODO also req_illegal in reverse
 
-//Memory Subsystem -> Stage
+//Fetch 2 <-> Memory Subsystem
 logic  rsp_valid;
 logic  rsp_illegal;
 word_t rsp_virtual_addr;
@@ -49,10 +51,13 @@ word_t rsp_data;
  * Modports
  * --------------------------------------------------------------------------------------------- */
 
-modport stage (
+modport fetch1 (
     output req_valid,
     output req_virtual_addr,
+    input  req_ready
+);
 
+modport fetch2 (
     input  rsp_valid,
     input  rsp_illegal,
     input  rsp_virtual_addr,
@@ -62,6 +67,7 @@ modport stage (
 modport subsystem (
     input  req_valid,
     input  req_virtual_addr,
+    output req_ready,
 
     output rsp_valid,
     output rsp_illegal,
