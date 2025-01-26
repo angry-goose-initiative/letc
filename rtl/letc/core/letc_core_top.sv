@@ -59,7 +59,13 @@ reg_idx_t   rs2_idx;
 word_t      rs2_val;
 
 //Inter-stage connections
-f_to_d_s    f_to_d;
+logic f1_to_f2_valid;
+logic f2_to_d_valid;
+logic d_to_e_valid;
+logic e_to_m_valid;
+logic m_to_w_valid;
+f1_to_f2_s  f1_to_f2;
+f2_to_d_s   f2_to_d;
 d_to_e_s    d_to_e;
 e_to_m_s    e_to_m;
 m_to_w_s    m_to_w;
@@ -67,16 +73,24 @@ m_to_w_s    m_to_w;
 //Implicitly read CSRs by LETC Core logic, always valid
 csr_implicit_rdata_s csr_implicit_rdata;
 
+//Hazard/backpressure signals
+logic [6:0] stage_ready;
+logic [6:0] stage_flush;
+logic [6:0] stage_stall;
+
+//MSS Interfaces
+letc_core_imss_if imss_if (.*);
+//TODO dmss
+
+//Change the PC (useful for branches, exceptions, etc)
+logic       pc_load_en;
+pc_word_t   pc_load_val;
+
 /*
 
 //Branch signals
 logic       branch_taken;
 pc_word_t   branch_target;
-
-//Hazard/backpressure signals
-logic [5:0] stage_ready;
-logic [5:0] stage_flush;
-logic [5:0] stage_stall;
 
 //Bypass signals
 //d1
@@ -123,7 +137,7 @@ logic global_cache_flush;
 
 */
 
-assign o_debug = d_to_e1[7:0];//TESTING
+//assign o_debug = d_to_e1[7:0];//TESTING
 
 /* ------------------------------------------------------------------------------------------------
  * Module Instantiations
@@ -131,45 +145,28 @@ assign o_debug = d_to_e1[7:0];//TESTING
 
 letc_core_rf rf (.*);
 
+letc_core_imss imss (.*);
+
+letc_core_stage_fetch1 stage_fetch1 (
+    .*,
+
+    //Hazard/backpressure signals
+    .f1_ready(stage_ready[0]),
+    .f1_flush(stage_flush[0]),
+    .f1_stall(stage_stall[0])
+);
+
+letc_core_stage_fetch2 stage_fetch2 (
+    .*,
+
+    //Hazard/backpressure signals
+    .f2_ready(stage_ready[1]),
+    .f2_flush(stage_flush[1]),
+    .f2_stall(stage_stall[1])
+);
+
 /*
 
-letc_core_stage_f1 stage_f1 (
-    .*,
-
-    //TODO
-
-    //Branch signals
-    .i_branch_taken(branch_taken),
-    .i_branch_target(branch_target),
-
-    //TLB interface
-    .itlb_if(itlb_if),
-
-    //Hazard/backpressure signals
-    .o_stage_ready(stage_ready[0]),
-    .i_stage_flush(stage_flush[0]),
-    .i_stage_stall(stage_stall[0]),
-
-    //To F2
-    .o_f1_to_f2(f1_to_f2)
-);
-
-letc_core_stage_f2 stage_f2 (
-    .*,
-
-    //TODO
-
-    //Hazard/backpressure signals
-    .o_stage_ready(stage_ready[1]),
-    .i_stage_flush(stage_flush[1]),
-    .i_stage_stall(stage_stall[1]),
-
-    //From F1
-    .i_f1_to_f2(f1_to_f2),
-
-    //To D
-    .o_f2_to_d(f2_to_d)
-);
 
 //FIXME why does XSIM act like stage_ready has multiple drivers
 //unless we do this indirect assignment instead?

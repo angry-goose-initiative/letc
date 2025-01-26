@@ -34,12 +34,16 @@ help:
 	@echo "    regression_parallel    Multi-threaded using GNU Parallel"
 	@echo "    svlint                 Run the svlint linting tool"
 	@echo "    software               Build software to run on the core"
+	@echo "    stubmss_build          Build the stubmss testbench to run test programs on the core"
+	@echo "    stubmss_run            Run a test program in stubmss mode (requires PROGRAM option, optionally WAVES option)"
 	@echo "Options:"
 	@echo "    TARGET                 Path to the filelist to simulate or synthesize"
 	@echo "    WAVES                  Set equal to 1 to open waves after a simulation completes"
+	@echo "    PROGRAM                Path to the program to run on the core"
 	@echo "Examples:"
 	@echo "    make unit_verilator TARGET=filelists/verif/unit/tb/common/fifo/fifo_0r1w_tb.f"
 	@echo "    make synth_vivado_ooc TARGET=filelists/rtl/common/fifo/fifo_0r1w.f"
+	@echo "    make software stubmss_build stubmss_run PROGRAM=build/software/rvsw/src/single_file/asm/jzjcoresoftware/nop.vhex8 WAVES=1"
 	@echo "Information:"
 	@echo "    REPO_ROOT:             ${REPO_ROOT}"
 	@echo "    INFRA_DIR:             ${INFRA_DIR}"
@@ -47,5 +51,6 @@ help:
 	@echo "    TARGET:                ${TARGET}"
 	@echo "    FILELIST:              ${FILELIST}"
 	@echo "    WAVES:                 ${WAVES}"
+	@echo "    PROGRAM:               ${PROGRAM}"
 
 include ${INFRA_DIR}/make/*.mk
