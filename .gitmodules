@@ -1,0 +1,3 @@
+[submodule "filelists/verif/software/rvsw"]
+	path = verif/software/rvsw
+	url = git@github.com:angry-goose-initiative/rvsw.git

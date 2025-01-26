@@ -33,6 +33,7 @@ help:
 	@echo "    regression             Run a regression (single-threaded)"
 	@echo "    regression_parallel    Multi-threaded using GNU Parallel"
 	@echo "    svlint                 Run the svlint linting tool"
+	@echo "    software               Build software to run on the core"
 	@echo "Options:"
 	@echo "    TARGET                 Path to the filelist to simulate or synthesize"
 	@echo "    WAVES                  Set equal to 1 to open waves after a simulation completes"
