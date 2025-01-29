@@ -22,13 +22,11 @@ package letc_core_pkg;
  * --------------------------------------------------------------------------------------------- */
 
 typedef logic [11:0]    csr_idx_t;
-typedef logic [4:0]     csr_uimm_t;
+typedef logic [4:0]     csr_zimm_t;
 
-//We don't support misaligned instructions or the C extension so we can ignore the lower 2 bits of the PC
-typedef logic [31:2]    pc_word_t;
+typedef logic [31:0]    pc_word_t;
 
-//C extension is not supported so we can save some bits
-typedef logic [31:2]    instr_t;
+typedef logic [31:0]    instr_t;
 
 typedef logic [31:0]    vaddr_t;
 
@@ -39,7 +37,7 @@ typedef logic [31:0]    vaddr_t;
 //verilator lint_save
 //verilator lint_off UNUSEDPARAM
 
-parameter pc_word_t RESET_PC_WORD = 30'h00000000;
+parameter pc_word_t RESET_PC_WORD = 32'h00000000;
 
 //verilator lint_restore
 
@@ -96,11 +94,10 @@ typedef enum logic [1:0] {
 } mem_op_e;
 
 typedef enum logic [1:0] {
-    CSR_OP_NOP = 2'b00,
-    CSR_OP_RW,
-    CSR_OP_RS,
-    CSR_OP_RC
-} csr_op_e;
+    CSR_ALU_OP_PASSTHRU = 2'b00,
+    CSR_ALU_OP_BITSET,
+    CSR_ALU_OP_BITCLEAR
+} csr_alu_op_e;
 
 typedef enum logic {
     CSR_OP_SRC_RS1,
@@ -147,23 +144,23 @@ typedef struct packed {
 } f2_to_d_s;
 
 typedef struct packed {
-    logic                   valid;
     pc_word_t               pc_word;
 
-    rd_src_e                rd_src;//The final rd source, for writeback
+    rd_src_e                rd_src;
     riscv_pkg::reg_idx_t    rd_idx;
     logic                   rd_we;
 
-    csr_op_e                csr_op;
+    csr_alu_op_e            csr_alu_op;
+    logic                   csr_expl_wen;
     csr_op_src_e            csr_op_src;
     csr_idx_t               csr_idx;
-    csr_uimm_t              csr_uimm;
+    csr_zimm_t              csr_zimm;
     riscv_pkg::word_t       csr_rdata;
 
-    riscv_pkg::reg_idx_t    rs1_idx;//Not used by execute directly, rather used by adhesive to detect hazards
-    riscv_pkg::reg_idx_t    rs2_idx;//Same here
-    riscv_pkg::word_t       rs1_rdata;
-    riscv_pkg::word_t       rs2_rdata;
+    riscv_pkg::reg_idx_t    rs1_idx;
+    riscv_pkg::reg_idx_t    rs2_idx;
+    riscv_pkg::word_t       rs1_val;
+    riscv_pkg::word_t       rs2_val;
 
     riscv_pkg::word_t       immediate;
 
@@ -187,7 +184,7 @@ typedef struct packed {
     riscv_pkg::reg_idx_t    rd_idx;
     logic                   rd_we;
 
-    csr_op_e                csr_op;
+    csr_alu_op_e            csr_alu_op;
     csr_idx_t               csr_idx;
     riscv_pkg::word_t       old_csr_value;//To be written to rd
     riscv_pkg::word_t       new_csr_value;//To be written back to the CSR
@@ -214,7 +211,7 @@ typedef struct packed {
     riscv_pkg::reg_idx_t    rd_idx;
     logic                   rd_we;
 
-    csr_op_e                csr_op;
+    csr_alu_op_e            csr_alu_op;
     csr_idx_t               csr_idx;
 
     riscv_pkg::word_t       old_csr_value;//Written to rd, sometimes

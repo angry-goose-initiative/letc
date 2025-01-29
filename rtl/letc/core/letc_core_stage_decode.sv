@@ -7,8 +7,6 @@
  *  Copyright (C) 2025 Nick Chan
  * See the LICENSE file at the root of the project for licensing info.
  *
- * TODO longer description
- *
 */
 
 /* ------------------------------------------------------------------------------------------------
@@ -20,50 +18,65 @@ module letc_core_stage_decode
     import letc_core_pkg::*;
     import riscv_pkg::*;
 (
-    //Clock and reset
-    input logic i_clk,
-    input logic i_rst_n,
+    // Clock and reset
+    input logic         clk,
+    input logic         rst_n,
 
-    //Hazard/backpressure signals
-    output logic o_stage_ready,
-    input  logic i_stage_flush,
-    input  logic i_stage_stall,
+    // Hazard/backpressure signals
+    output logic        stage_ready,
+    input  logic        stage_flush,
+    input  logic        stage_stall,
 
-    //rs1 Read Port
-    output reg_idx_t    o_rs1_idx,//Also goes to TGHM
-    input  word_t       i_rs1_rdata,
+    // Register file read ports
+    output reg_idx_t    rf_rs1_idx,
+    input  word_t       rf_rs1_val,
+    output reg_idx_t    rf_rs2_idx,
+    input  word_t       rf_rs2_val,
 
-    //rs2 Read Port
-    output reg_idx_t    o_rs2_idx,//Also goes to TGHM
-    input  word_t       i_rs2_rdata,
+    // CSR port
+    output csr_idx_t    csr_de_expl_idx,
+    input  word_t       csr_de_expl_rdata,
+    input  logic        csr_de_expl_rill,
+    input  logic        csr_de_expl_will,
 
-    //Bypass signals
-    input logic     i_bypass_rs1,
-    input logic     i_bypass_rs2,
-    input word_t    i_bypass_rs1_rdata,
-    input word_t    i_bypass_rs2_rdata,
+    // TODO signals for exceptions/cache flushing/etc
+    // TODO any needed implicitly read CSRs
 
-    //CSR Read Port
-    output logic        o_csr_explicit_ren,
-    output csr_idx_t    o_csr_explicit_ridx,
-    input  word_t       i_csr_explicit_rdata,
-    input  logic        i_csr_explicit_rill,
+    // Datapath
+    input   logic       f2_to_d_valid,
+    input   f2_to_d_s   f2_to_d,
 
-    //Branch signals
-    output logic        o_branch_taken,
-    output pc_word_t    o_branch_target,
-
-    //TODO signals for exceptions/cache flushing/etc
-    //TODO any needed implicitly read CSRs
-
-    //From F2
-    input f2_to_d_s i_f2_to_d,
-
-    //To E1
-    output d_to_e1_s o_d_to_e1
+    output  logic       d_to_e_valid,
+    output  d_to_e_s    d_to_e
 );
 
-//TODO in the future detect illegal instructions; not a priority to start with
+/* ------------------------------------------------------------------------------------------------
+ * Input Flops
+ * --------------------------------------------------------------------------------------------- */
+
+logic ff_in_valid;
+always_ff @(posedge clk) begin
+    if (!rst_n) begin
+        ff_in_valid <= 1'b0;
+    end else if (!stage_stall) begin
+        ff_in_valid <= f2_to_d_valid;
+    end
+end
+
+// verilator lint_save
+// verilator lint_off UNUSEDSIGNAL
+f2_to_d_s ff_in;
+// verilator lint_restore
+always_ff @(posedge clk) begin
+    if (!stage_stall) begin
+        ff_in <= f2_to_d;
+    end
+end
+
+assign stage_ready = 1'b1; // The decode stage always takes only a single cycle; no caches here!
+
+logic out_valid;
+assign out_valid = ff_in_valid && !stage_flush && !stage_stall;
 
 /* ------------------------------------------------------------------------------------------------
  * Internal Types
@@ -83,6 +96,7 @@ typedef enum logic [2:0] {
     INSTR_FORMAT_SYS
 } instr_format_e;
 
+// Enum for non-CSR SYSTEM instructions
 typedef enum logic [2:0] {
     SPECIAL_INSTR_NOP = 3'b000,
     SPECIAL_INSTR_ECALL,
@@ -91,7 +105,7 @@ typedef enum logic [2:0] {
     SPECIAL_INSTR_MRET,
     SPECIAL_INSTR_WFI,
     SPECIAL_INSTR_SFENCE_VMA
-} special_instr_e;//AKA non CSR SYSTEM instructions
+} special_instr_e;
 
 typedef enum logic [1:0] {
     BRANCH_NOP = 2'b00,//Not a branch
@@ -105,7 +119,10 @@ typedef struct packed {
     special_instr_e special_instr;
     rd_src_e        rd_src;
     logic           rd_we;
-    csr_op_e        csr_op;
+    csr_alu_op_e    csr_alu_op;
+    logic           csr_expl_ren;
+    logic           csr_expl_wen;
+    csr_op_src_e    csr_op_src;
     alu_op1_src_e   alu_op1_src;
     alu_op2_src_e   alu_op2_src;
     alu_op_e        alu_op;
@@ -126,86 +143,90 @@ opcode_e        opcode;
 instr_format_e  instr_format;
 
 always_comb begin
-    instr = i_f2_to_d.instr;//For convenience
+    instr = ff_in.instr; // For convenience
 
     opcode = opcode_e'(instr[6:2]);
 
+    // OPCODE_SYSTEM is special: sometimes it acts like R, sometimes like I
     unique case (opcode)
-        //OPCODE_SYSTEM is special: sometimes it acts like R, sometimes like I
-        //TODO will we actually support AMOs in hardware?
-        OPCODE_OP/*, OPCODE_AMO*/:                                  instr_format = INSTR_FORMAT_R;
-        OPCODE_LOAD, OPCODE_OP_IMM, OPCODE_JALR, OPCODE_MISC_MEM:   instr_format = INSTR_FORMAT_I;
-        OPCODE_STORE:                                               instr_format = INSTR_FORMAT_S;
-        OPCODE_BRANCH:                                              instr_format = INSTR_FORMAT_B;
-        OPCODE_AUIPC, OPCODE_LUI:                                   instr_format = INSTR_FORMAT_U;
-        OPCODE_JAL:                                                 instr_format = INSTR_FORMAT_J;
-        OPCODE_SYSTEM:                                              instr_format = INSTR_FORMAT_SYS;
-        default:                                                    instr_format = INSTR_FORMAT_BAD;
+        OPCODE_OP, OPCODE_AMO:          instr_format = INSTR_FORMAT_R;
+        OPCODE_LOAD, OPCODE_OP_IMM,
+        OPCODE_JALR, OPCODE_MISC_MEM:   instr_format = INSTR_FORMAT_I;
+        OPCODE_STORE:                   instr_format = INSTR_FORMAT_S;
+        OPCODE_BRANCH:                  instr_format = INSTR_FORMAT_B;
+        OPCODE_AUIPC, OPCODE_LUI:       instr_format = INSTR_FORMAT_U;
+        OPCODE_JAL:                     instr_format = INSTR_FORMAT_J;
+        OPCODE_SYSTEM:                  instr_format = INSTR_FORMAT_SYS;
+default:                        instr_format = INSTR_FORMAT_BAD;
     endcase
 end
-
-//TODO check for illegal 16-bit insts, '0, '1, etc (low priority)
 
 /* ------------------------------------------------------------------------------------------------
  * Instruction Field Extraction
  * --------------------------------------------------------------------------------------------- */
 
-//Register indexes
+// Funct fields
+funct3_t funct3;
+// verilator lint_save
+// verilator lint_off UNUSEDSIGNAL
+funct7_t funct7;
+// verilator lint_restore
+always_comb begin
+    funct3 = funct3_from_instr(instr);
+    funct7 = funct7_from_instr(instr);
+end
+
+// Register indexes
 reg_idx_t rd_idx, rs1_idx, rs2_idx;
 csr_idx_t csr_idx;
 always_comb begin
-    rd_idx  = rd_idx_from_instr({instr, 2'b00});
-    rs1_idx = rs1_idx_from_instr({instr, 2'b00});
-    rs2_idx = rs2_idx_from_instr({instr, 2'b00});
+    rd_idx  = rd_idx_from_instr(instr);
+    rs1_idx = rs1_idx_from_instr(instr);
+    rs2_idx = rs2_idx_from_instr(instr);
     csr_idx = instr[31:20];
 end
 
-//Funct fields
-funct3_t funct3;
-funct7_t funct7;
+// Immediates
+word_t imm;
 always_comb begin
-    funct3 = funct3_from_instr({instr, 2'b00});
-    funct7 = funct7_from_instr({instr, 2'b00});
-end
-
-//Immediates
-word_t imm_i, imm_s, imm_b, imm_u, imm_j;
-word_t csr_uimm;
-word_t muxed_imm_to_e1;
-always_comb begin
-    imm_i = {{20{instr[31]}}, instr[31:20]};
-    imm_s = {{20{instr[31]}}, instr[31:25], instr[11:7]};
-    imm_b = {{19{instr[31]}}, instr[31],    instr[7],  instr[30:25], instr[11:8], 1'b0};
-    imm_u = {instr[31:12], 12'h000};
-    imm_j = {{12{instr[31]}}, instr[19:12], instr[20], instr[30:21], 1'b0};
-
-    csr_uimm = {27'd0, instr[19:15]};//NOT sign extended
-
-    //Immediate mux based on instruction format for E1
-    //Synthesis tool should detect the minimum muxes needed for each bit of the immediate
-    //Only the CSR SYSTEM instructions use an immediate, so simply provide it for all SYSTEM instructions
+    // Synthesis tool should detect the minimum muxes needed for each bit of
+    // the immediate.
     unique case (instr_format)
-        INSTR_FORMAT_I:     muxed_imm_to_e1 = imm_i;
-        INSTR_FORMAT_S:     muxed_imm_to_e1 = imm_s;
-        //INSTR_FORMAT_B:     muxed_imm_to_e1 = imm_b;//Branch logic in decode uses imm_b directly
-        INSTR_FORMAT_U:     muxed_imm_to_e1 = imm_u;
-        //INSTR_FORMAT_J:     muxed_imm_to_e1 = imm_j;//Branch logic in decode uses imm_j directly
-        INSTR_FORMAT_SYS:   muxed_imm_to_e1 = csr_uimm;
-        default:            muxed_imm_to_e1 = 32'hDEADBEEF;
+        INSTR_FORMAT_I:     imm = imm_i_from_instr(instr);
+        INSTR_FORMAT_S:     imm = imm_s_from_instr(instr);
+        INSTR_FORMAT_B:     imm = imm_b_from_instr(instr);
+        INSTR_FORMAT_U:     imm = imm_u_from_instr(instr);
+        INSTR_FORMAT_J:     imm = imm_j_from_instr(instr);
+        default:            imm = 32'hDEADBEEF;
     endcase
 end
+
+// verilator lint_save
+// verilator lint_off UNUSEDSIGNAL
+word_t imm_z;
+// verilator lint_restore
+assign imm_z = imm_z_from_instr(instr);
 
 /* ------------------------------------------------------------------------------------------------
  * Control Signal Generation
  * --------------------------------------------------------------------------------------------- */
 
+// For instructions that have rd, only set rd_we if rd index is not x0. This
+// simplifies forwarding logic and can prevent certain unneeded stalls.
+logic rd_is_x0, rs1_is_x0;
+assign rd_is_x0 = (rd_idx == 5'h0);
+assign rs1_is_x0 = (rs1_idx == 5'h0);
+
+// verilator lint_save
+// verilator lint_off UNUSEDSIGNAL
 ctrl_s ctrl;
+// verilator lint_restore
 always_comb begin
     ctrl = '0;
     unique case (opcode)
         OPCODE_OP: begin
             ctrl.rd_src         = RD_SRC_ALU;
-            ctrl.rd_we          = 1'b1;
+            ctrl.rd_we          = !rd_is_x0;
             ctrl.alu_op1_src    = ALU_OP1_SRC_RS1;
             ctrl.alu_op2_src    = ALU_OP2_SRC_RS2;
 
@@ -220,10 +241,12 @@ always_comb begin
                 3'b111: ctrl.alu_op = ALU_OP_AND;
             endcase
         end
-        //OPCODE_AMO://TODO will we actually support this in hardware?
+        OPCODE_AMO: begin
+            // TODO: Control signals for AMO
+        end
         OPCODE_LOAD: begin
             ctrl.rd_src         = RD_SRC_MEM;
-            ctrl.rd_we          = 1'b1;
+            ctrl.rd_we          = !rd_is_x0;
             ctrl.alu_op1_src    = ALU_OP1_SRC_RS1;
             ctrl.alu_op2_src    = ALU_OP2_SRC_IMM;
             ctrl.alu_op         = ALU_OP_ADD;
@@ -233,7 +256,7 @@ always_comb begin
         end
         OPCODE_OP_IMM: begin
             ctrl.rd_src         = RD_SRC_ALU;
-            ctrl.rd_we          = 1'b1;
+            ctrl.rd_we          = !rd_is_x0;
             ctrl.alu_op1_src    = ALU_OP1_SRC_RS1;
             ctrl.alu_op2_src    = ALU_OP2_SRC_IMM;
 
@@ -250,13 +273,14 @@ always_comb begin
         end
         OPCODE_JALR: begin
             ctrl.rd_src         = RD_SRC_ALU;
-            ctrl.rd_we          = 1'b1;
+            ctrl.rd_we          = !rd_is_x0;
             ctrl.alu_op1_src    = ALU_OP1_SRC_PC;
             ctrl.alu_op2_src    = ALU_OP2_SRC_FOUR;
             ctrl.alu_op         = ALU_OP_ADD;
             ctrl.branch         = BRANCH_JALR;
         end
-        OPCODE_MISC_MEM: ctrl.fence = 1'b1;//Flush everything to be safe
+        OPCODE_MISC_MEM:
+            ctrl.fence = 1'b1; // Flush everything to be safe
         OPCODE_STORE: begin
             ctrl.alu_op1_src    = ALU_OP1_SRC_RS1;
             ctrl.alu_op2_src    = ALU_OP2_SRC_IMM;
@@ -270,21 +294,21 @@ always_comb begin
         end
         OPCODE_AUIPC: begin
             ctrl.rd_src         = RD_SRC_ALU;
-            ctrl.rd_we          = 1'b1;
+            ctrl.rd_we          = !rd_is_x0;
             ctrl.alu_op1_src    = ALU_OP1_SRC_PC;
             ctrl.alu_op2_src    = ALU_OP2_SRC_IMM;
             ctrl.alu_op         = ALU_OP_ADD;
         end
         OPCODE_LUI: begin
             ctrl.rd_src         = RD_SRC_ALU;
-            ctrl.rd_we          = 1'b1;
+            ctrl.rd_we          = !rd_is_x0;
             ctrl.alu_op1_src    = ALU_OP1_SRC_ZERO;
             ctrl.alu_op2_src    = ALU_OP2_SRC_IMM;
             ctrl.alu_op         = ALU_OP_ADD;
         end
         OPCODE_JAL: begin
             ctrl.rd_src         = RD_SRC_ALU;
-            ctrl.rd_we          = 1'b1;
+            ctrl.rd_we          = !rd_is_x0;
             ctrl.alu_op1_src    = ALU_OP1_SRC_PC;
             ctrl.alu_op2_src    = ALU_OP2_SRC_FOUR;
             ctrl.alu_op         = ALU_OP_ADD;
@@ -292,8 +316,8 @@ always_comb begin
         end
         OPCODE_SYSTEM: begin
             unique case (funct3) inside
-                3'b000: begin //ECALL, EBREAK, WFI, MRET, SRET, or SFENCE.VMA
-                    //TODO also make sure rd is 0 and rs1 is (sometimes) 0
+                3'b000: begin // ECALL, EBREAK, WFI, MRET, SRET, or SFENCE.VMA
+                    // TODO also make sure rd is 0 and rs1 is (sometimes) 0
                     unique case(instr[31:20]) inside
                         12'b0000000_00000: ctrl.special_instr = SPECIAL_INSTR_ECALL;
                         12'b0000000_00001: ctrl.special_instr = SPECIAL_INSTR_EBREAK;
@@ -304,29 +328,29 @@ always_comb begin
                         default: ctrl.illegal_instr = 1'b1;
                     endcase
                 end
-                3'b?01: begin//CSRRW(I)
-                    ctrl.rd_src         = RD_SRC_CSR;//Old CSR value
-                    ctrl.rd_we          = 1'b1;
-                    ctrl.alu_op1_src    = ALU_OP1_SRC_ZERO;//So we just pass op2 through
-                    ctrl.alu_op2_src    = funct3[2] ? ALU_OP2_SRC_IMM : ALU_OP2_SRC_RS1;
-                    ctrl.alu_op         = ALU_OP_ADD;//Just pass op2 through
-                    ctrl.csr_op         = CSR_OP_ACCESS;
+                3'b?01: begin // CSRRW(I)
+                    ctrl.rd_src         = RD_SRC_CSR;
+                    ctrl.rd_we          = !rd_is_x0;
+                    ctrl.csr_alu_op     = CSR_ALU_OP_PASSTHRU;
+                    ctrl.csr_expl_ren   = !rd_is_x0;
+                    ctrl.csr_expl_wen   = 1'b1;
+                    ctrl.csr_op_src     = funct3[2] ? CSR_OP_SRC_UIMM : CSR_OP_SRC_RS1;
                 end
-                3'b?10: begin//CSRRS(I)
-                    ctrl.rd_src         = RD_SRC_CSR;//Old CSR value
-                    ctrl.rd_we          = 1'b1;
-                    ctrl.alu_op1_src    = ALU_OP1_SRC_CSR;
-                    ctrl.alu_op2_src    = funct3[2] ? ALU_OP2_SRC_IMM : ALU_OP2_SRC_RS1;
-                    ctrl.alu_op         = ALU_OP_OR;//Set bits
-                    ctrl.csr_op         = CSR_OP_ACCESS;
+                3'b?10: begin // CSRRS(I)
+                    ctrl.rd_src         = RD_SRC_CSR;
+                    ctrl.rd_we          = !rd_is_x0;
+                    ctrl.csr_alu_op     = CSR_ALU_OP_BITSET;
+                    ctrl.csr_expl_ren   = 1'b1;
+                    ctrl.csr_expl_wen   = !rs1_is_x0;
+                    ctrl.csr_op_src     = funct3[2] ? CSR_OP_SRC_UIMM : CSR_OP_SRC_RS1;
                 end
-                3'b?11: begin//CSRRC(I)
-                    ctrl.rd_src         = RD_SRC_CSR;//Old CSR value
-                    ctrl.rd_we          = 1'b1;
-                    ctrl.alu_op1_src    = ALU_OP1_SRC_CSR;
-                    ctrl.alu_op2_src    = funct3[2] ? ALU_OP2_SRC_IMM : ALU_OP2_SRC_RS1;
-                    ctrl.alu_op         = ALU_OP_MCLR;//Clear bits
-                    ctrl.csr_op         = CSR_OP_ACCESS;
+                3'b?11: begin // CSRRC(I)
+                    ctrl.rd_src         = RD_SRC_CSR;
+                    ctrl.rd_we          = !rd_is_x0;
+                    ctrl.csr_alu_op     = CSR_ALU_OP_BITCLEAR;
+                    ctrl.csr_expl_ren   = 1'b1;
+                    ctrl.csr_expl_wen   = !rs1_is_x0;
+                    ctrl.csr_op_src     = funct3[2] ? CSR_OP_SRC_UIMM : CSR_OP_SRC_RS1;
                 end
                 default: ctrl.illegal_instr = 1'b1;
             endcase
@@ -336,134 +360,72 @@ always_comb begin
 end
 
 /* ------------------------------------------------------------------------------------------------
- * RF Access/CSR Reads
+ * RF/CSRF Port
  * --------------------------------------------------------------------------------------------- */
 
-word_t rs1_rdata, rs2_rdata;
 always_comb begin
-    o_rs1_idx = rs1_idx;
-    o_rs2_idx = rs2_idx;
-
-    rs1_rdata = i_bypass_rs1 ? i_bypass_rs1_rdata : i_rs1_rdata;
-    rs2_rdata = i_bypass_rs2 ? i_bypass_rs2_rdata : i_rs2_rdata;
+    rf_rs1_idx = rs1_idx;
+    rf_rs2_idx = rs2_idx;
 end
 
 word_t csr_rdata;
 always_comb begin
-    //Assumes no read side effects since we don't handle flushing...
-    o_csr_explicit_ren  = i_f2_to_d.valid & !i_stage_flush & (ctrl.csr_op == CSR_OP_ACCESS);
-    o_csr_explicit_ridx = csr_idx;
-    csr_rdata           = i_csr_explicit_rdata;
-    //i_csr_explicit_rill//TODO actually cause exception on illegal CSR read (very low priority)
-end
-
-/* ------------------------------------------------------------------------------------------------
- * Branch Logic
- * --------------------------------------------------------------------------------------------- */
-
-//TODO in the refactor I don't htink we're deciding branches in decode!
-logic branch_cmp_result;
-/*
-letc_core_branch_comparator branch_comparator (
-    .i_rs1(rs1_rdata),
-    .i_rs2(rs2_rdata),
-    .i_cmp_operation(ctrl.cond_branch_cmp_op),
-    .o_cmp_result(branch_cmp_result)
-);
-*/
-
-word_t jalr_branch_target;
-always_comb begin
-    //Per the spec we must do the add, then throw out the lsbs. This handles the case
-    //where, for example, the lsbs in both rs1_rdata and imm_i are set, which would overflow
-    //and affect the upper bits of the result!
-    //Also we must use an intermediate for this since (rs1_rdata + imm_i)[31:2] isn't legal
-    jalr_branch_target = rs1_rdata + imm_i;
-end
-
-always_comb begin
-    //TODO catch misaligned branches
-    o_branch_taken  = 1'b0;
-    o_branch_target = 30'hDEADBEE;
-
-    if (i_f2_to_d.valid & !i_stage_flush) begin
-        unique0 case (ctrl.branch)
-            BRANCH_COND: begin
-                o_branch_taken  = i_f2_to_d.valid & branch_cmp_result;
-                o_branch_target = i_f2_to_d.pc_word + imm_b[31:2];
-            end
-            BRANCH_JALR: begin
-                o_branch_taken  = i_f2_to_d.valid;
-                o_branch_target = jalr_branch_target[31:2];
-            end
-            BRANCH_JAL: begin
-                o_branch_taken  = i_f2_to_d.valid;
-                o_branch_target = i_f2_to_d.pc_word + imm_j[31:2];
-            end
-        endcase
-    end
+    csr_de_expl_idx = csr_idx;
+    csr_rdata       = csr_de_expl_rdata;
 end
 
 /* ------------------------------------------------------------------------------------------------
  * Handle Special SYSTEM Instructions
  * --------------------------------------------------------------------------------------------- */
 
-//TODO
+// TODO
 
 /* ------------------------------------------------------------------------------------------------
  * Exception Handling Logic
  * --------------------------------------------------------------------------------------------- */
 
-//TODO
+// TODO: Actually trigger exceptions
+
+// verilator lint_save
+// verilator lint_off UNUSEDSIGNAL
+logic illegal_instr_exception = (
+    ctrl.illegal_instr
+    || (csr_de_expl_rill && ctrl.csr_expl_ren)
+    || (csr_de_expl_will && ctrl.csr_expl_wen)
+    || instr[1:0] != 2'b11
+);
+// verilator lint_restore
 
 /* ------------------------------------------------------------------------------------------------
- * Output Flop Stage
+ * Output to next stage
  * --------------------------------------------------------------------------------------------- */
 
-assign o_stage_ready = 1'b1;//The decode stage always takes only a single cycle; no caches here!
+assign d_to_e = '{
+    pc_word:        ff_in.pc_word,
+    rd_src:         ctrl.rd_src,
+    rd_idx:         rd_idx,
+    rd_we:          ctrl.rd_we,
+    csr_alu_op:     ctrl.csr_alu_op,
+    csr_expl_wen:   ctrl.csr_expl_wen,
+    csr_op_src:     ctrl.csr_op_src,
+    csr_idx:        csr_idx,
+    csr_zimm:       imm_z[4:0],
+    csr_rdata:      csr_rdata,
+    rs1_idx:        rs1_idx,
+    rs2_idx:        rs2_idx,
+    rs1_val:        rf_rs1_val,
+    rs2_val:        rf_rs2_val,
+    immediate:      imm,
+    alu_op1_src:    ctrl.alu_op1_src,
+    alu_op2_src:    ctrl.alu_op2_src,
+    alu_op:         ctrl.alu_op,
+    memory_op:      ctrl.memory_op,
+    memory_signed:  ctrl.memory_signed,
+    memory_size:    ctrl.memory_size,
+    cmp_op:         ctrl.cond_branch_cmp_op
+};
 
-always_ff @(posedge i_clk) begin
-    if (!i_rst_n) begin
-        o_d_to_e1.valid <= 1'b0;
-    end else begin
-        if (i_stage_flush) begin
-            o_d_to_e1.valid <= 1'b0;
-        end else if (!i_stage_stall) begin
-            o_d_to_e1.valid <= i_f2_to_d.valid;//Again, the decode stage always takes one cycle
-        end
-    end
-end
-
-always_ff @(posedge i_clk) begin
-    //Save resources by not resetting the datapath; which is fine since `valid` above is reset
-    //if (i_f2_to_d.valid & !i_stage_stall) begin//More power efficient but worse for timing and area
-    if (!i_stage_stall) begin
-        o_d_to_e1.pc_word <= i_f2_to_d.pc_word;
-
-        o_d_to_e1.rd_src <= ctrl.rd_src;
-        o_d_to_e1.rd_idx <= rd_idx;
-        o_d_to_e1.rd_we  <= ctrl.rd_we;
-
-        o_d_to_e1.csr_op    <= ctrl.csr_op;
-        o_d_to_e1.csr_idx   <= csr_idx;
-        o_d_to_e1.csr_rdata <= csr_rdata;
-
-        o_d_to_e1.rs1_idx   <= rs1_idx;
-        o_d_to_e1.rs2_idx   <= rs2_idx;
-        o_d_to_e1.rs1_rdata <= rs1_rdata;
-        o_d_to_e1.rs2_rdata <= rs2_rdata;
-
-        o_d_to_e1.immediate <= muxed_imm_to_e1;
-
-        o_d_to_e1.alu_op1_src <= ctrl.alu_op1_src;
-        o_d_to_e1.alu_op2_src <= ctrl.alu_op2_src;
-        o_d_to_e1.alu_op      <= ctrl.alu_op;
-
-        o_d_to_e1.memory_op     <= ctrl.memory_op;
-        o_d_to_e1.memory_signed <= ctrl.memory_signed;
-        o_d_to_e1.memory_size   <= ctrl.memory_size;
-    end
-end
+assign d_to_e_valid = out_valid;
 
 /* ------------------------------------------------------------------------------------------------
  * Assertions
@@ -471,42 +433,47 @@ end
 
 `ifdef SIMULATION
 
-//Note: We don't assume (most) data inputs will be known, but we do have assumptions about input control signals
+// Note: We don't assume (most) data inputs will be known, but we do have
+// assumptions about input control signals
 
-//Assumptions of inputs to the stage
-assert property (@(posedge i_clk) disable iff (!i_rst_n) !$isunknown(i_f2_to_d.valid));
-assert property (@(posedge i_clk) disable iff (!i_rst_n) !$isunknown(i_stage_flush));
-assert property (@(posedge i_clk) disable iff (!i_rst_n) !$isunknown(i_stage_stall));
-assert property (@(posedge i_clk) disable iff (!i_rst_n) !(i_stage_flush && i_stage_stall));
-assert property (@(posedge i_clk) disable iff (!i_rst_n) i_f2_to_d.valid |-> !$isunknown(i_f2_to_d.instr));
-assert property (@(posedge i_clk) disable iff (!i_rst_n) o_csr_explicit_ren |-> !$isunknown(i_csr_explicit_rill));
+// Assumptions of inputs to the stage
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(f2_to_d_valid));
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(stage_flush));
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(stage_stall));
+assert property (@(posedge clk) disable iff (!rst_n) !(stage_flush && stage_stall));
+assert property (@(posedge clk) disable iff (!rst_n) f2_to_d_valid |-> !$isunknown(f2_to_d.instr));
 
-//Make sure output control signals unguarded by valids (or valids themselves) are never unknown
-assert property (@(posedge i_clk) disable iff (!i_rst_n)
-    !i_rst_n |=> !$isunknown(o_d_to_e1.valid)//Extra |=> needed to deal with the reset
+// Make sure output control signals unguarded by valids (or valids themselves)
+// are never unknown
+assert property (@(posedge clk) disable iff (!rst_n)
+    !rst_n |=> !$isunknown(d_to_e_valid) // Extra |=> needed to deal with the reset
 );
-assert property (@(posedge i_clk) disable iff (!i_rst_n) !$isunknown(o_stage_ready));
-assert property (@(posedge i_clk) disable iff (!i_rst_n) !$isunknown(o_csr_explicit_ren));
-assert property (@(posedge i_clk) disable iff (!i_rst_n)
-    (!$isunknown(rs1_rdata) && !$isunknown(rs2_rdata)) |-> !$isunknown(o_branch_taken)
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(stage_ready));
+
+// Valid means not unknown and, well, valid for control signals
+assert property (@(posedge clk) disable iff (!rst_n) d_to_e_valid |-> !$isunknown(d_to_e));
+assert property (@(posedge clk) disable iff (!rst_n)
+    d_to_e_valid |-> !$isunknown(d_to_e.memory_op)
+);
+assert property (@(posedge clk) disable iff (!rst_n)
+    d_to_e_valid |-> (d_to_e.memory_op != mem_op_e'(2'b11))
 );
 
-//Valid means not unknown and, well, valid for control signals
-assert property (@(posedge i_clk) disable iff (!i_rst_n) o_d_to_e1.valid |-> !$isunknown(o_d_to_e1.rd_we));
-assert property (@(posedge i_clk) disable iff (!i_rst_n) o_d_to_e1.valid |-> !$isunknown(o_d_to_e1.csr_op));
-assert property (@(posedge i_clk) disable iff (!i_rst_n) o_d_to_e1.valid |-> !$isunknown(o_d_to_e1.memory_op));
-assert property (@(posedge i_clk) disable iff (!i_rst_n) o_d_to_e1.valid |-> (o_d_to_e1.memory_op != mem_op_e'(2'b11)));
+assert property (@(posedge clk) disable iff (!rst_n) d_to_e.rd_we |-> !rd_is_x0);
 
-//Outputs should remain constant if the stage is stalled (assumed stage before this also gets stalled)
-assert property (@(posedge i_clk) disable iff (!i_rst_n) i_stage_stall |-> $stable(o_d_to_e1));
-assert property (@(posedge i_clk) disable iff (!i_rst_n) i_stage_stall |-> $stable(o_stage_ready));
-assert property (@(posedge i_clk) disable iff (!i_rst_n) i_stage_stall |-> $stable(o_csr_explicit_ren));
-assert property (@(posedge i_clk) disable iff (!i_rst_n) i_stage_stall |-> $stable(o_csr_explicit_ridx));
-assert property (@(posedge i_clk) disable iff (!i_rst_n) i_stage_stall |-> $stable(o_branch_taken));
-assert property (@(posedge i_clk) disable iff (!i_rst_n) i_stage_stall |-> $stable(o_branch_target));
-assert property (@(posedge i_clk) disable iff (!i_rst_n) i_stage_stall |-> $stable(o_rs1_idx));
-assert property (@(posedge i_clk) disable iff (!i_rst_n) i_stage_stall |-> $stable(o_rs2_idx));
+// If stalled then the input should be invalid
+assert property (@(posedge clk) disable iff (!rst_n) stage_stall |-> !f2_to_d_valid);
 
-`endif //SIMULATION
+// If flushed then the input should be invalid
+assert property (@(posedge clk) disable iff (!rst_n) stage_flush |-> !f2_to_d_valid);
+
+// Outputs should remain constant if the stage is stalled
+assert property (@(posedge clk) disable iff (!rst_n) stage_stall |-> $stable(stage_ready));
+assert property (@(posedge clk) disable iff (!rst_n) stage_stall |-> $stable(rf_rs1_idx));
+assert property (@(posedge clk) disable iff (!rst_n) stage_stall |-> $stable(rf_rs2_idx));
+assert property (@(posedge clk) disable iff (!rst_n) stage_stall |-> $stable(csr_de_expl_idx));
+assert property (@(posedge clk) disable iff (!rst_n) stage_stall |-> $stable(d_to_e));
+
+`endif // ifdef SIMULATION
 
 endmodule : letc_core_stage_decode

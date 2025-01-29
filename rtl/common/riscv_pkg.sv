@@ -64,6 +64,30 @@ endfunction
 function logic [6:0] funct7_from_instr(input word_t instr);
     return instr[31:25];
 endfunction
+
+function word_t imm_i_from_instr(input word_t instr);
+    return {{20{instr[31]}}, instr[31:20]};
+endfunction
+
+function word_t imm_s_from_instr(input word_t instr);
+    return {{20{instr[31]}}, instr[31:25], instr[11:7]};
+endfunction
+
+function word_t imm_b_from_instr(input word_t instr);
+    return {{19{instr[31]}}, instr[31], instr[7], instr[30:25], instr[11:8], 1'b0};
+endfunction
+
+function word_t imm_u_from_instr(input word_t instr);
+    return {instr[31:12], 12'h000};
+endfunction
+
+function word_t imm_j_from_instr(input word_t instr);
+    return {{12{instr[31]}}, instr[19:12], instr[20], instr[30:21], 1'b0};
+endfunction
+
+function word_t imm_z_from_instr(input word_t instr);
+    return {27'd0, instr[19:15]};
+endfunction
 // verilator lint_restore
 
 /* ------------------------------------------------------------------------------------------------
