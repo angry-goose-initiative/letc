@@ -168,6 +168,7 @@ initial begin
     // Setup
     stage_flush         = 1'b0;
     stage_stall         = 1'b0;
+    csr_de_expl_rdata   = 32'h0;
     csr_de_expl_rill    = 1'b0;
     csr_de_expl_will    = 1'b0;
     f2_to_d             = '0;
@@ -374,7 +375,7 @@ initial begin
         .expected_rd_we(1'b1),
         .expected_csr_alu_op(CSR_ALU_OP_BITSET),
         .expected_csr_expl_wen(1'b1),
-        .expected_csr_op_src(CSR_OP_SRC_RS1)
+        .expected_csr_op_src(CSR_OP_SRC_ZIMM)
     );
 
     test_instr_csr(
@@ -383,7 +384,7 @@ initial begin
         .expected_rd_we(1'b0),
         .expected_csr_alu_op(CSR_ALU_OP_BITCLEAR),
         .expected_csr_expl_wen(1'b1),
-        .expected_csr_op_src(CSR_OP_SRC_UIMM)
+        .expected_csr_op_src(CSR_OP_SRC_ZIMM)
     );
 
     f2_to_d.instr = 32'h301fba73; // csrrc x20, misa, x31

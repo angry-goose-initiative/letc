@@ -334,7 +334,7 @@ always_comb begin
                     ctrl.csr_alu_op     = CSR_ALU_OP_PASSTHRU;
                     ctrl.csr_expl_ren   = !rd_is_x0;
                     ctrl.csr_expl_wen   = 1'b1;
-                    ctrl.csr_op_src     = funct3[2] ? CSR_OP_SRC_UIMM : CSR_OP_SRC_RS1;
+                    ctrl.csr_op_src     = funct3[2] ? CSR_OP_SRC_ZIMM : CSR_OP_SRC_RS1;
                 end
                 3'b?10: begin // CSRRS(I)
                     ctrl.rd_src         = RD_SRC_CSR;
@@ -342,7 +342,7 @@ always_comb begin
                     ctrl.csr_alu_op     = CSR_ALU_OP_BITSET;
                     ctrl.csr_expl_ren   = 1'b1;
                     ctrl.csr_expl_wen   = !rs1_is_x0;
-                    ctrl.csr_op_src     = funct3[2] ? CSR_OP_SRC_UIMM : CSR_OP_SRC_RS1;
+                    ctrl.csr_op_src     = funct3[2] ? CSR_OP_SRC_ZIMM : CSR_OP_SRC_RS1;
                 end
                 3'b?11: begin // CSRRC(I)
                     ctrl.rd_src         = RD_SRC_CSR;
@@ -350,7 +350,7 @@ always_comb begin
                     ctrl.csr_alu_op     = CSR_ALU_OP_BITCLEAR;
                     ctrl.csr_expl_ren   = 1'b1;
                     ctrl.csr_expl_wen   = !rs1_is_x0;
-                    ctrl.csr_op_src     = funct3[2] ? CSR_OP_SRC_UIMM : CSR_OP_SRC_RS1;
+                    ctrl.csr_op_src     = funct3[2] ? CSR_OP_SRC_ZIMM : CSR_OP_SRC_RS1;
                 end
                 default: ctrl.illegal_instr = 1'b1;
             endcase
@@ -368,10 +368,10 @@ always_comb begin
     rf_rs2_idx = rs2_idx;
 end
 
-word_t csr_rdata;
+word_t csr_old_val;
 always_comb begin
     csr_de_expl_idx = csr_idx;
-    csr_rdata       = csr_de_expl_rdata;
+    csr_old_val     = csr_de_expl_rdata;
 end
 
 /* ------------------------------------------------------------------------------------------------
@@ -410,7 +410,7 @@ assign d_to_e = '{
     csr_op_src:     ctrl.csr_op_src,
     csr_idx:        csr_idx,
     csr_zimm:       imm_z[4:0],
-    csr_rdata:      csr_rdata,
+    csr_old_val:    csr_old_val,
     rs1_idx:        rs1_idx,
     rs2_idx:        rs2_idx,
     rs1_val:        rf_rs1_val,

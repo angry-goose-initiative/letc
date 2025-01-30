@@ -46,8 +46,8 @@ module letc_core_stage_execute
     input   d_to_e_s    d_to_e,
 
     //To E2
-    output  logic       e_to_m_valid,
-    output  e_to_m_s    e_to_m
+    output  logic       e_to_m1_valid,
+    output  e_to_m1_s   e_to_m1
 );
 
 /* ------------------------------------------------------------------------------------------------
@@ -146,7 +146,7 @@ word_t csr_operand;
 always_comb begin
     unique case (ff_in.csr_op_src)
         CSR_OP_SRC_RS1:     csr_operand = rs1_val;
-        CSR_OP_SRC_UIMM:    csr_operand = {27'h0, ff_in.csr_zimm};
+        CSR_OP_SRC_ZIMM:    csr_operand = {27'h0, ff_in.csr_zimm};
         default:        csr_operand = 32'hDEADBEEF;
     endcase
 end
@@ -167,9 +167,9 @@ end
  * --------------------------------------------------------------------------------------------- */
 
 always_comb begin
-    e_to_m_valid = out_valid;
+    e_to_m1_valid = out_valid;
 
-    e_to_m = '{
+    e_to_m1 = '{
         pc_word:        ff_in.pc_word,
         rd_src:         ff_in.rd_src,
         rd_idx:         ff_in.rd_idx,

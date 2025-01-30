@@ -7,8 +7,6 @@
  *  Copyright (C) 2025 Nick Chan
  * See the LICENSE file at the root of the project for licensing info.
  *
- * TODO longer description
- *
 */
 
 /* ------------------------------------------------------------------------------------------------
@@ -72,15 +70,7 @@ typedef enum logic [3:0] {
     ALU_OP_SRA,
     ALU_OP_XOR,
     ALU_OP_OR,
-    ALU_OP_AND,
-    //May be needed for atomics in the future if we do them in HW
-    /*
-    ALU_OP_MIN,
-    ALU_OP_MAX,
-    ALU_OP_MINU,
-    ALU_OP_MAXU,
-    */
-    ALU_OP_MCLR//Mask clear (for CSR instructions); use OR for "MSET"
+    ALU_OP_AND
     //ALU_OP_PASS1//No instructions really need this
     //ALU_OP_PASS2//Using ADD and making the first operand 0 instead
     //FIXME we need a special ALU op that clears the lsb after the addition for JALR
@@ -101,7 +91,7 @@ typedef enum logic [1:0] {
 
 typedef enum logic {
     CSR_OP_SRC_RS1,
-    CSR_OP_SRC_UIMM
+    CSR_OP_SRC_ZIMM
 } csr_op_src_e;
 
 typedef enum logic [1:0] {
@@ -127,8 +117,6 @@ typedef enum logic [1:0] {
 /* ------------------------------------------------------------------------------------------------
  * Pipeline Datapath Structs
  * --------------------------------------------------------------------------------------------- */
-
-//New structs
 
 typedef struct packed {
     pc_word_t           pc_word;
@@ -187,10 +175,10 @@ typedef struct packed {
     riscv_pkg::word_t       csr_old_val;//To be written to rd
     riscv_pkg::word_t       csr_new_val;//To be written back to the CSR
 
-    riscv_pkg::reg_idx_t    rs1_idx;//Not used by memory directly, rather used by adhesive to detect hazards
-    riscv_pkg::reg_idx_t    rs2_idx;//Same here
+    riscv_pkg::reg_idx_t    rs1_idx;
+    riscv_pkg::reg_idx_t    rs2_idx;
 
-    riscv_pkg::word_t       alu_result;//Can also pass through registers, new CSR value to writeback, mem address, etc
+    riscv_pkg::word_t       alu_result;
 
     mem_op_e                memory_op;
     logic                   memory_signed;
@@ -200,33 +188,40 @@ typedef struct packed {
     logic                   branch_taken;
 
     //TODO add exception status signal
-} e_to_m_s;
+} e_to_m1_s;
 
 typedef struct packed {
-    logic                   valid;
+    pc_word_t               pc_word;
+    rd_src_e                rd_src;
+    riscv_pkg::reg_idx_t    rd_idx;
+    logic                   rd_we;
+} m1_to_m2_s;
 
+typedef struct packed {
+    pc_word_t               pc_word;
     rd_src_e                rd_src;
     riscv_pkg::reg_idx_t    rd_idx;
     logic                   rd_we;
 
-    csr_alu_op_e            csr_alu_op;
     csr_idx_t               csr_idx;
 
-    riscv_pkg::word_t       old_csr_value;//Written to rd, sometimes
+    riscv_pkg::word_t       csr_old_val;//Written to rd, sometimes
     riscv_pkg::word_t       alu_result;//Written to rd, sometimes
     riscv_pkg::word_t       memory_rdata;//Written to rd, sometimes
-    riscv_pkg::word_t       new_csr_value;//Written to a CSR
+    riscv_pkg::word_t       csr_new_val;//Written to a CSR
 
     //TODO add exception status signal
-} m_to_w_s;
+} m2_to_w_s;
 
 /* ------------------------------------------------------------------------------------------------
  * CSR Structs
  * --------------------------------------------------------------------------------------------- */
 
+// TODO: Create structs for each CSR that holds the fields
+
+// TODO: Should this be an interface?
 //Note: Only provides CSRs that actually need to be implicitly read by LETC Core logic
 typedef struct packed {
-    //TODO structs for each CSR that holds the fields
     //TODO add more CSRs here if they need to be implicitly read
 
     riscv_pkg::word_t mstatus;

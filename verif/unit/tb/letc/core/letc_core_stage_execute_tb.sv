@@ -41,8 +41,8 @@ logic rst_n;
 //letc_core_tlb_if dtlb_if(.clk(clk), .rst_n(rst_n));
 logic d_to_e_valid;
 d_to_e_s d_to_e;
-logic e_to_m_valid;
-e_to_m_s e_to_m;
+logic e_to_m1_valid;
+e_to_m1_s e_to_m1;
 
 logic stage_ready;
 logic stage_flush;
@@ -108,8 +108,8 @@ task original_test_sequence();
     //data valid will trigger the alu operation
     d_to_e_valid <= 1'b1;
     @(negedge clk);
-    assert(e_to_m_valid         == 1'b1);
-    assert(e_to_m.alu_result    == 32'hA);
+    assert(e_to_m1_valid        == 1'b1);
+    assert(e_to_m1.alu_result   == 32'hA);
     d_to_e_valid <= 1'b0;
 
     //now let's try to subtract an immediate from rs1
@@ -120,8 +120,8 @@ task original_test_sequence();
     repeat(2) @(negedge clk);
     d_to_e_valid <= 1'b1;
     @(negedge clk);
-    assert(e_to_m_valid         == 1'b1);
-    assert(e_to_m.alu_result    == 32'h9);
+    assert(e_to_m1_valid        == 1'b1);
+    assert(e_to_m1.alu_result   == 32'h9);
     d_to_e_valid <= 1'b0;
 
     //next let's try to increment the program counter
@@ -132,8 +132,8 @@ task original_test_sequence();
     repeat(2) @(negedge clk);
     d_to_e_valid <= 1'b1;
     repeat(1) @(negedge clk);
-    assert(e_to_m_valid         == 1'b1);
-    assert(e_to_m.alu_result    == (32'h100000 + 32'h4));
+    assert(e_to_m1_valid        == 1'b1);
+    assert(e_to_m1.alu_result   == (32'h100000 + 32'h4));
 
     //wait another 5 clock cycles and exit
     repeat(5) @(negedge clk);
@@ -158,12 +158,12 @@ task test_branching();
     d_to_e.cmp_op   <= CMP_OP_EQ;
     @(negedge clk);
     assert(d_to_e_valid == 1'b1);
-    assert(e_to_m.branch_taken == 1'b1);
+    assert(e_to_m1.branch_taken == 1'b1);
 
     d_to_e.cmp_op       <= CMP_OP_NE;
     @(negedge clk);
-    assert(e_to_m_valid == 1'b1);
-    assert(e_to_m.branch_taken == 1'b0);
+    assert(e_to_m1_valid == 1'b1);
+    assert(e_to_m1.branch_taken == 1'b0);
 
     d_to_e <= '0;
     @(negedge clk);
@@ -177,43 +177,43 @@ task test_csr_manip();
     d_to_e.csr_old_val  <= 32'hA5A5A5A5;
     d_to_e.rs1_val      <= 32'hB4B4B4B4;
     @(negedge clk);
-    assert(e_to_m_valid == 1'b1);
-    assert(e_to_m.csr_idx == 12'hABC);
-    assert(e_to_m.csr_old_val == 32'hA5A5A5A5);
-    assert(e_to_m.csr_new_val == 32'hB4B4B4B4);
+    assert(e_to_m1_valid == 1'b1);
+    assert(e_to_m1.csr_idx == 12'hABC);
+    assert(e_to_m1.csr_old_val == 32'hA5A5A5A5);
+    assert(e_to_m1.csr_new_val == 32'hB4B4B4B4);
     d_to_e.csr_alu_op       <= CSR_ALU_OP_BITSET;
     @(negedge clk);
-    assert(e_to_m_valid == 1'b1);
-    assert(e_to_m.csr_idx == 12'hABC);
-    assert(e_to_m.csr_old_val == 32'hA5A5A5A5);
-    assert(e_to_m.csr_new_val == (32'hA5A5A5A5 | 32'hB4B4B4B4));
+    assert(e_to_m1_valid == 1'b1);
+    assert(e_to_m1.csr_idx == 12'hABC);
+    assert(e_to_m1.csr_old_val == 32'hA5A5A5A5);
+    assert(e_to_m1.csr_new_val == (32'hA5A5A5A5 | 32'hB4B4B4B4));
     d_to_e.csr_alu_op       <= CSR_ALU_OP_BITCLEAR;
     @(negedge clk);
-    assert(e_to_m_valid == 1'b1);
-    assert(e_to_m.csr_idx == 12'hABC);
-    assert(e_to_m.csr_old_val == 32'hA5A5A5A5);
-    assert(e_to_m.csr_new_val == (32'hA5A5A5A5 & ~32'hB4B4B4B4));
+    assert(e_to_m1_valid == 1'b1);
+    assert(e_to_m1.csr_idx == 12'hABC);
+    assert(e_to_m1.csr_old_val == 32'hA5A5A5A5);
+    assert(e_to_m1.csr_new_val == (32'hA5A5A5A5 & ~32'hB4B4B4B4));
 
     d_to_e.csr_alu_op   <= CSR_ALU_OP_PASSTHRU;
-    d_to_e.csr_op_src   <= CSR_OP_SRC_UIMM;
+    d_to_e.csr_op_src   <= CSR_OP_SRC_ZIMM;
     d_to_e.csr_zimm     <= 5'h1C;
     @(negedge clk);
-    assert(e_to_m_valid == 1'b1);
-    assert(e_to_m.csr_idx == 12'hABC);
-    assert(e_to_m.csr_old_val == 32'hA5A5A5A5);
-    assert(e_to_m.csr_new_val == 32'h1C);
+    assert(e_to_m1_valid == 1'b1);
+    assert(e_to_m1.csr_idx == 12'hABC);
+    assert(e_to_m1.csr_old_val == 32'hA5A5A5A5);
+    assert(e_to_m1.csr_new_val == 32'h1C);
     d_to_e.csr_alu_op   <= CSR_ALU_OP_BITCLEAR;
     @(negedge clk);
-    assert(e_to_m_valid == 1'b1);
-    assert(e_to_m.csr_idx == 12'hABC);
-    assert(e_to_m.csr_old_val == 32'hA5A5A5A5);
-    assert(e_to_m.csr_new_val == (32'hA5A5A5A5 & ~32'h1C));
+    assert(e_to_m1_valid == 1'b1);
+    assert(e_to_m1.csr_idx == 12'hABC);
+    assert(e_to_m1.csr_old_val == 32'hA5A5A5A5);
+    assert(e_to_m1.csr_new_val == (32'hA5A5A5A5 & ~32'h1C));
     d_to_e.csr_alu_op   <= CSR_ALU_OP_BITSET;
     @(negedge clk);
-    assert(e_to_m_valid == 1'b1);
-    assert(e_to_m.csr_idx == 12'hABC);
-    assert(e_to_m.csr_old_val == 32'hA5A5A5A5);
-    assert(e_to_m.csr_new_val == (32'hA5A5A5A5 | 32'h1C));
+    assert(e_to_m1_valid == 1'b1);
+    assert(e_to_m1.csr_idx == 12'hABC);
+    assert(e_to_m1.csr_old_val == 32'hA5A5A5A5);
+    assert(e_to_m1.csr_new_val == (32'hA5A5A5A5 | 32'h1C));
 
 
     //TODO
