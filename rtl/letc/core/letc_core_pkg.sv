@@ -155,7 +155,7 @@ typedef struct packed {
     csr_op_src_e            csr_op_src;
     csr_idx_t               csr_idx;
     csr_zimm_t              csr_zimm;
-    riscv_pkg::word_t       csr_rdata;
+    riscv_pkg::word_t       csr_old_val;
 
     riscv_pkg::reg_idx_t    rs1_idx;
     riscv_pkg::reg_idx_t    rs2_idx;
@@ -178,16 +178,14 @@ typedef struct packed {
 } d_to_e_s;
 
 typedef struct packed {
-    logic                   valid;
-
+    pc_word_t               pc_word;
     rd_src_e                rd_src;
     riscv_pkg::reg_idx_t    rd_idx;
     logic                   rd_we;
 
-    csr_alu_op_e            csr_alu_op;
     csr_idx_t               csr_idx;
-    riscv_pkg::word_t       old_csr_value;//To be written to rd
-    riscv_pkg::word_t       new_csr_value;//To be written back to the CSR
+    riscv_pkg::word_t       csr_old_val;//To be written to rd
+    riscv_pkg::word_t       csr_new_val;//To be written back to the CSR
 
     riscv_pkg::reg_idx_t    rs1_idx;//Not used by memory directly, rather used by adhesive to detect hazards
     riscv_pkg::reg_idx_t    rs2_idx;//Same here
@@ -197,7 +195,7 @@ typedef struct packed {
     mem_op_e                memory_op;
     logic                   memory_signed;
     size_e                  memory_size;
-    riscv_pkg::word_t       rs2_rdata;//rs2 is what is written to memory
+    riscv_pkg::word_t       rs2_val;//rs2 is what is written to memory
 
     logic                   branch_taken;
 
