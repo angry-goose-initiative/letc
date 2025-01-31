@@ -157,7 +157,7 @@ always_comb begin
         OPCODE_AUIPC, OPCODE_LUI:       instr_format = INSTR_FORMAT_U;
         OPCODE_JAL:                     instr_format = INSTR_FORMAT_J;
         OPCODE_SYSTEM:                  instr_format = INSTR_FORMAT_SYS;
-default:                        instr_format = INSTR_FORMAT_BAD;
+        default:                        instr_format = INSTR_FORMAT_BAD;
     endcase
 end
 

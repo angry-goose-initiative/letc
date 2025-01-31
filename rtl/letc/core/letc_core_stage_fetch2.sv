@@ -71,8 +71,7 @@ end
 assign f2_to_d_valid    = f1_to_f2_valid_ff & f2_ready & !f2_flush & !f2_stall;
 assign f2_ready         = imss_if.rsp_valid;
 assign f2_to_d.pc_word  = f1_to_f2_ff.pc_word;
-assign f2_to_d.instr    = imss_if.rsp_data[31:2];
-
+assign f2_to_d.instr    = imss_if.rsp_data[31:0];
 
 /* ------------------------------------------------------------------------------------------------
  * Assertions
@@ -84,7 +83,7 @@ assign f2_to_d.instr    = imss_if.rsp_data[31:2];
 //verilator lint_off UNUSED
 
 //Useful for debugging
-word_t nice_instr = {f2_to_d.instr, 2'b11};
+//word_t nice_instr = {f2_to_d.instr, 2'b11};
 
 //TODO
 

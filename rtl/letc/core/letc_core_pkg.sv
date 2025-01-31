@@ -22,8 +22,9 @@ package letc_core_pkg;
 typedef logic [11:0]    csr_idx_t;
 typedef logic [4:0]     csr_zimm_t;
 
-typedef logic [31:0]    pc_word_t;
+typedef logic [31:2]    pc_word_t;
 
+//TODO decide if we should save hardware by leaving off the two lsbs off instr_t
 typedef logic [31:0]    instr_t;
 
 typedef logic [31:0]    vaddr_t;
@@ -35,7 +36,7 @@ typedef logic [31:0]    vaddr_t;
 //verilator lint_save
 //verilator lint_off UNUSEDPARAM
 
-parameter pc_word_t RESET_PC_WORD = 32'h00000000;
+parameter pc_word_t RESET_PC_WORD = 30'h00000000;
 
 //verilator lint_restore
 

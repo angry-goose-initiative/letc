@@ -58,17 +58,25 @@ word_t      rs1_val;
 reg_idx_t   rs2_idx;
 word_t      rs2_val;
 
+//Explicit CSR access
+csr_idx_t    csr_de_expl_idx;
+word_t       csr_de_expl_rdata;
+logic        csr_de_expl_rill;
+logic        csr_de_expl_will;
+
 //Inter-stage connections
 logic f1_to_f2_valid;
 logic f2_to_d_valid;
 logic d_to_e_valid;
-logic e_to_m_valid;
-logic m_to_w_valid;
+logic e_to_m1_valid;
+logic m1_to_m2_valid;
+logic m2_to_w_valid;
 f1_to_f2_s  f1_to_f2;
 f2_to_d_s   f2_to_d;
 d_to_e_s    d_to_e;
-e_to_m_s    e_to_m;
-m_to_w_s    m_to_w;
+e_to_m1_s   e_to_m1;
+m1_to_m2_s  m2_to_m2;
+m2_to_w_s   m2_to_w;
 
 //Implicitly read CSRs by LETC Core logic, always valid
 csr_implicit_rdata_s csr_implicit_rdata;
@@ -165,83 +173,36 @@ letc_core_stage_fetch2 stage_fetch2 (
     .f2_stall(stage_stall[1])
 );
 
-/*
-
-
 //FIXME why does XSIM act like stage_ready has multiple drivers
 //unless we do this indirect assignment instead?
-logic xsim_workaround_stage_d_ready;
-assign stage_ready[2] = xsim_workaround_stage_d_ready;
+//logic xsim_workaround_stage_d_ready;
+//assign stage_ready[2] = xsim_workaround_stage_d_ready;
 
-letc_core_stage_d stage_d (
+letc_core_stage_decode stage_decode (
     .*,
 
     //Hazard/backpressure signals
-    //.o_stage_ready(stage_ready[2]),
-    .o_stage_ready(xsim_workaround_stage_d_ready),
-    .i_stage_flush(stage_flush[2]),
-    .i_stage_stall(stage_stall[2]),
+    //TODO make the naming of these ports consistent with the other stages
+    .stage_ready(stage_ready[2]),
+    .stage_flush(stage_flush[2]),
+    .stage_stall(stage_stall[2]),
 
-    //rs1 Read Port
-    .o_rs1_idx(rs1_idx),
-    .i_rs1_rdata(rs1_rdata),
-
-    //rs2 Read Port
-    .o_rs2_idx(rs2_idx),
-    .i_rs2_rdata(rs2_rdata),
-
-    //Bypass signals
-    .i_bypass_rs1(stage_d_bypass_rs1),
-    .i_bypass_rs2(stage_d_bypass_rs2),
-    .i_bypass_rs1_rdata(stage_d_bypass_rs1_rdata),
-    .i_bypass_rs2_rdata(stage_d_bypass_rs2_rdata),
-
-    //CSR Read Port
-    .o_csr_explicit_ren(csr_explicit_ren),
-    .o_csr_explicit_ridx(csr_explicit_ridx),
-    .i_csr_explicit_rdata(csr_explicit_rdata),
-    .i_csr_explicit_rill(csr_explicit_rill),
-
-    //Branch signals
-    .o_branch_taken(branch_taken),
-    .o_branch_target(branch_target),
-
-    //TODO signals for exceptions/cache flushing/etc
-    //TODO any needed implicitly read CSRs
-
-    //From F2
-    .i_f2_to_d(f2_to_d),
-
-    //To E1
-    .o_d_to_e1(d_to_e1)
+    // Register file read ports
+    //TODO change letc_core_rf to match these names so we can just use .* for this too
+    .rf_rs1_idx(rs1_idx),
+    .rf_rs1_val(rs1_val),
+    .rf_rs2_idx(rs2_idx),
+    .rf_rs2_val(rs2_val)
 );
-*/
 
-/*
-letc_core_stage_e1 stage_e1 (
+letc_core_stage_execute stage_execute (
     .*,
 
-    //TLB interface (TODO)
-    .dtlb_if(dtlb_if),
-
-    //Bypass signals
-    .i_bypass_rs1(stage_e1_bypass_rs1),
-    .i_bypass_rs2(stage_e1_bypass_rs2),
-    .i_bypassed_rs1_data(stage_e1_bypass_rs1_rdata),
-    .i_bypassed_rs2_data(stage_e1_bypass_rs2_rdata),
-
     //Hazard/backpressure signals
-    .o_stage_ready(stage_ready[3]),
-    .i_stage_flush(stage_flush[3]),
-    .i_stage_stall(stage_stall[3]),
-
-    //From D
-    .i_d_to_e1(d_to_e1),
-
-    //To E2
-    .o_e1_to_e2(e1_to_e2)
+    .e_ready(stage_ready[3]),
+    .e_flush(stage_flush[3]),
+    .e_stall(stage_stall[3])
 );
-*/
 
 /*
 letc_core_stage_e2 stage_e2 (

@@ -1,0 +1,131 @@
+[*]
+[*] GTKWave Analyzer v3.3.118 (w)1999-2023 BSI
+[*] Fri Jan 31 02:35:05 2025
+[*]
+[dumpfile] "/home/jzj/wd/tech/ece/2023/agi/letc/jzj/primary/build/stubmss/nop/waves.fst"
+[dumpfile_mtime] "Fri Jan 31 02:33:30 2025"
+[dumpfile_size] 3008979
+[savefile] "/home/jzj/wd/tech/ece/2023/agi/letc/jzj/primary/verif/gtkwave_sessions/stubmss_main_datapath.gtkw"
+[timestart] 0
+[size] 2560 1348
+[pos] -46 -46
+*-4.200000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] TOP.
+[treeopen] TOP.letc_core_stubmss_tb.
+[treeopen] TOP.letc_core_stubmss_tb.dut.
+[sst_width] 209
+[signals_width] 174
+[sst_expanded] 1
+[sst_vpaned_height] 415
+@28
+TOP.letc_core_stubmss_tb.dut.clk
+TOP.letc_core_stubmss_tb.dut.rst_n
+@200
+-f1_to_f2
+@28
+TOP.letc_core_stubmss_tb.dut.f1_to_f2_valid
+@22
+TOP.letc_core_stubmss_tb.dut.f1_to_f2.pc_word[31:2]
+@200
+-f2_to_d
+@28
+TOP.letc_core_stubmss_tb.dut.f2_to_d_valid
+@22
+TOP.letc_core_stubmss_tb.dut.f2_to_d.pc_word[31:2]
+TOP.letc_core_stubmss_tb.dut.f2_to_d.instr[31:0]
+@200
+-d_to_e
+@28
+TOP.letc_core_stubmss_tb.dut.d_to_e_valid
+@100000028
+TOP.letc_core_stubmss_tb.dut.d_to_e.alu_op1_src[1:0]
+TOP.letc_core_stubmss_tb.dut.d_to_e.alu_op2_src[1:0]
+TOP.letc_core_stubmss_tb.dut.d_to_e.alu_op[3:0]
+TOP.letc_core_stubmss_tb.dut.d_to_e.cmp_op[2:0]
+TOP.letc_core_stubmss_tb.dut.d_to_e.csr_alu_op[1:0]
+@28
+TOP.letc_core_stubmss_tb.dut.d_to_e.csr_expl_wen
+@22
+TOP.letc_core_stubmss_tb.dut.d_to_e.csr_idx[11:0]
+TOP.letc_core_stubmss_tb.dut.d_to_e.csr_old_val[31:0]
+@100000028
+TOP.letc_core_stubmss_tb.dut.d_to_e.csr_op_src
+@22
+TOP.letc_core_stubmss_tb.dut.d_to_e.csr_zimm[4:0]
+TOP.letc_core_stubmss_tb.dut.d_to_e.immediate[31:0]
+@100000028
+TOP.letc_core_stubmss_tb.dut.d_to_e.memory_op[1:0]
+@28
+TOP.letc_core_stubmss_tb.dut.d_to_e.memory_signed
+@100000028
+TOP.letc_core_stubmss_tb.dut.d_to_e.memory_size[1:0]
+@22
+TOP.letc_core_stubmss_tb.dut.d_to_e.pc_word[31:2]
+TOP.letc_core_stubmss_tb.dut.d_to_e.rd_idx[4:0]
+@100000028
+TOP.letc_core_stubmss_tb.dut.d_to_e.rd_src[1:0]
+@28
+TOP.letc_core_stubmss_tb.dut.d_to_e.rd_we
+@22
+TOP.letc_core_stubmss_tb.dut.d_to_e.rs1_idx[4:0]
+TOP.letc_core_stubmss_tb.dut.d_to_e.rs1_val[31:0]
+TOP.letc_core_stubmss_tb.dut.d_to_e.rs2_idx[4:0]
+TOP.letc_core_stubmss_tb.dut.d_to_e.rs2_val[31:0]
+@200
+-e_to_m1
+@28
+TOP.letc_core_stubmss_tb.dut.e_to_m1_valid
+@22
+TOP.letc_core_stubmss_tb.dut.e_to_m1.alu_result[31:0]
+@28
+TOP.letc_core_stubmss_tb.dut.e_to_m1.branch_taken
+@22
+TOP.letc_core_stubmss_tb.dut.e_to_m1.csr_idx[11:0]
+TOP.letc_core_stubmss_tb.dut.e_to_m1.csr_new_val[31:0]
+TOP.letc_core_stubmss_tb.dut.e_to_m1.csr_old_val[31:0]
+@100000028
+TOP.letc_core_stubmss_tb.dut.e_to_m1.memory_op[1:0]
+@28
+TOP.letc_core_stubmss_tb.dut.e_to_m1.memory_signed
+@100000028
+TOP.letc_core_stubmss_tb.dut.e_to_m1.memory_size[1:0]
+@22
+TOP.letc_core_stubmss_tb.dut.e_to_m1.pc_word[31:2]
+TOP.letc_core_stubmss_tb.dut.e_to_m1.rd_idx[4:0]
+@100000028
+TOP.letc_core_stubmss_tb.dut.e_to_m1.rd_src[1:0]
+@28
+TOP.letc_core_stubmss_tb.dut.e_to_m1.rd_we
+@22
+TOP.letc_core_stubmss_tb.dut.e_to_m1.rs1_idx[4:0]
+TOP.letc_core_stubmss_tb.dut.e_to_m1.rs2_idx[4:0]
+TOP.letc_core_stubmss_tb.dut.e_to_m1.rs2_val[31:0]
+@200
+-m1_to_m2
+@28
+TOP.letc_core_stubmss_tb.dut.m1_to_m2_valid
+@22
+TOP.letc_core_stubmss_tb.dut.m2_to_m2.pc_word[31:2]
+TOP.letc_core_stubmss_tb.dut.m2_to_m2.rd_idx[4:0]
+@100000028
+TOP.letc_core_stubmss_tb.dut.m2_to_m2.rd_src[1:0]
+@28
+TOP.letc_core_stubmss_tb.dut.m2_to_m2.rd_we
+@200
+-m2_to_w
+@29
+TOP.letc_core_stubmss_tb.dut.m2_to_w_valid
+@22
+TOP.letc_core_stubmss_tb.dut.m2_to_w.alu_result[31:0]
+TOP.letc_core_stubmss_tb.dut.m2_to_w.csr_idx[11:0]
+TOP.letc_core_stubmss_tb.dut.m2_to_w.csr_new_val[31:0]
+TOP.letc_core_stubmss_tb.dut.m2_to_w.csr_old_val[31:0]
+TOP.letc_core_stubmss_tb.dut.m2_to_w.memory_rdata[31:0]
+TOP.letc_core_stubmss_tb.dut.m2_to_w.pc_word[31:2]
+TOP.letc_core_stubmss_tb.dut.m2_to_w.rd_idx[4:0]
+@100000028
+TOP.letc_core_stubmss_tb.dut.m2_to_w.rd_src[1:0]
+@28
+TOP.letc_core_stubmss_tb.dut.m2_to_w.rd_we
+[pattern_trace] 1
+[pattern_trace] 0
