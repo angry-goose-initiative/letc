@@ -215,7 +215,9 @@ letc_core_stage_d stage_d (
     //To E1
     .o_d_to_e1(d_to_e1)
 );
+*/
 
+/*
 letc_core_stage_e1 stage_e1 (
     .*,
 
@@ -239,7 +241,9 @@ letc_core_stage_e1 stage_e1 (
     //To E2
     .o_e1_to_e2(e1_to_e2)
 );
+*/
 
+/*
 letc_core_stage_e2 stage_e2 (
     .*,
 

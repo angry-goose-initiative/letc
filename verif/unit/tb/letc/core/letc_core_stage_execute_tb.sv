@@ -44,16 +44,9 @@ d_to_e_s d_to_e;
 logic e_to_m1_valid;
 e_to_m1_s e_to_m1;
 
-logic stage_ready;
-logic stage_flush;
-logic stage_stall;
-/*
-//Bypass signals
-logic     bypass_rs1;
-logic     bypass_rs2;
-word_t    bypassed_rs1_data;
-word_t    bypassed_rs2_data;
-*/
+logic e_ready;
+logic e_flush;
+logic e_stall;
 
 //verilator lint_restore
 
@@ -228,9 +221,8 @@ endtask
 initial begin
     //verilator lint_save
     //verilator lint_off INITIALDLY
-
-    stage_flush = 1'b0;
-    stage_stall = 1'b0;
+    e_flush <= 1'b0;
+    e_stall <= 1'b0;
 
     //Run the original test sequence
     original_test_sequence();

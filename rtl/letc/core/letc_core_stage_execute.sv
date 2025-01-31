@@ -23,20 +23,12 @@ module letc_core_stage_execute
     input logic clk,
     input logic rst_n,
 
-    //TODO
+    //TODO forwarding IF
 
     //Hazard/backpressure signals
-    output logic  stage_ready,
-    input  logic  stage_flush,
-    input  logic  stage_stall,
-
-    /*
-    //bypass signals
-    input  logic  bypass_rs1,
-    input  logic  bypass_rs2,
-    input  word_t bypassed_rs1_data,
-    input  word_t bypassed_rs2_data,
-    */
+    output logic e_ready,
+    input  logic e_flush,
+    input  logic e_stall,
 
     //From D
     // verilator lint_save
@@ -54,32 +46,32 @@ module letc_core_stage_execute
  * Input Flop Stage
  * --------------------------------------------------------------------------------------------- */
 
-// verilator lint_save
-// verilator lint_off UNUSEDSIGNAL
-logic ff_in_valid;
-// verilator lint_restore
+//TODO remove this waiver once we decide what to do about csr_expl_wen (see `letc_core_pkg.sv`)
+//verilator lint_save
+//verilator lint_off UNUSEDSIGNAL
+
+logic    d_to_e_valid_ff;
+d_to_e_s d_to_e_ff;
+
 always_ff @(posedge clk) begin
     if (!rst_n) begin
-        ff_in_valid <= 1'b0;
-    end else if (!stage_stall) begin
-        ff_in_valid <= d_to_e_valid;
+        d_to_e_valid_ff <= 1'b0;
+    end else begin
+        if (!e_stall) begin
+            d_to_e_valid_ff <= d_to_e_valid;
+        end
     end
 end
 
-// verilator lint_save
-// verilator lint_off UNUSEDSIGNAL
-d_to_e_s ff_in;
-// verilator lint_restore
 always_ff @(posedge clk) begin
-    if (!stage_stall) begin
-       ff_in <= d_to_e;
+    if (!e_stall) begin
+        d_to_e_ff <= d_to_e;
     end
 end
 
-assign stage_ready = 1'b1; // TODO: Will not be ready during multicycle multiply
+assign e_ready = 1'b1; // TODO: Will not be ready during multicycle multiply
 
-logic out_valid;
-assign out_valid = ff_in_valid && !stage_flush && !stage_stall;
+//verilator lint_restore
 
 /* ------------------------------------------------------------------------------------------------
  * Arithmetic
@@ -97,32 +89,32 @@ word_t rs1_val;
 word_t rs2_val;
 always_comb begin
     //TODO bypass logic
-    rs1_val = /* bypass_rs1 ? bypassed_rs1_data : */ ff_in.rs1_val;
-    rs2_val = /* bypass_rs1 ? bypassed_rs2_data : */ ff_in.rs2_val;
+    rs1_val = /* bypass_rs1 ? bypassed_rs1_data : */ d_to_e_ff.rs1_val;
+    rs2_val = /* bypass_rs1 ? bypassed_rs2_data : */ d_to_e_ff.rs2_val;
 end
 
 //ALU connections
 //op1
 always_comb begin
-    unique case (ff_in.alu_op1_src)
+    unique case (d_to_e_ff.alu_op1_src)
         ALU_OP1_SRC_RS1:  alu_operands[0] = rs1_val;
-        ALU_OP1_SRC_PC:   alu_operands[0] = ff_in.pc_word;
-        ALU_OP1_SRC_CSR:  alu_operands[0] = ff_in.csr_old_val;
+        ALU_OP1_SRC_PC:   alu_operands[0] = d_to_e_ff.pc_word;
+        ALU_OP1_SRC_CSR:  alu_operands[0] = d_to_e_ff.csr_old_val;
         ALU_OP1_SRC_ZERO: alu_operands[0] = 32'h0;
     endcase
 end
 //op2
 always_comb begin
-    unique case (ff_in.alu_op2_src)
+    unique case (d_to_e_ff.alu_op2_src)
         ALU_OP2_SRC_RS1:  alu_operands[1] = rs1_val;
         ALU_OP2_SRC_RS2:  alu_operands[1] = rs2_val;
-        ALU_OP2_SRC_IMM:  alu_operands[1] = ff_in.immediate;
+        ALU_OP2_SRC_IMM:  alu_operands[1] = d_to_e_ff.immediate;
         ALU_OP2_SRC_FOUR: alu_operands[1] = 32'h4;
     endcase
 end
 //operation
 always_comb begin
-    alu_operation = ff_in.alu_op;
+    alu_operation = d_to_e_ff.alu_op;
 end
 
 /* ------------------------------------------------------------------------------------------------
@@ -133,7 +125,7 @@ end
 logic cmp_result;
 
 letc_core_branch_comparator branch_comparator (
-    .cmp_operation(ff_in.cmp_op),
+    .cmp_operation(d_to_e_ff.cmp_op),
     .*
 );
 
@@ -144,20 +136,20 @@ letc_core_branch_comparator branch_comparator (
 //CSR Operand Mux
 word_t csr_operand;
 always_comb begin
-    unique case (ff_in.csr_op_src)
+    unique case (d_to_e_ff.csr_op_src)
         CSR_OP_SRC_RS1:     csr_operand = rs1_val;
-        CSR_OP_SRC_ZIMM:    csr_operand = {27'h0, ff_in.csr_zimm};
-        default:        csr_operand = 32'hDEADBEEF;
+        CSR_OP_SRC_ZIMM:    csr_operand = {27'h0, d_to_e_ff.csr_zimm};
+        default:            csr_operand = 32'hDEADBEEF;
     endcase
 end
 
 //Modify the CSR value
 word_t new_csr_value;
 always_comb begin
-    unique case (ff_in.csr_alu_op)
+    unique case (d_to_e_ff.csr_alu_op)
         CSR_ALU_OP_PASSTHRU:    new_csr_value = csr_operand;
-        CSR_ALU_OP_BITSET:      new_csr_value = ff_in.csr_old_val |  csr_operand;
-        CSR_ALU_OP_BITCLEAR:    new_csr_value = ff_in.csr_old_val & ~csr_operand;
+        CSR_ALU_OP_BITSET:      new_csr_value = d_to_e_ff.csr_old_val |  csr_operand;
+        CSR_ALU_OP_BITCLEAR:    new_csr_value = d_to_e_ff.csr_old_val & ~csr_operand;
         default:                new_csr_value = 32'hDEADBEEF;
     endcase
 end
@@ -167,22 +159,22 @@ end
  * --------------------------------------------------------------------------------------------- */
 
 always_comb begin
-    e_to_m1_valid = out_valid;
+    e_to_m1_valid = d_to_e_valid_ff && !e_flush && !e_stall;
 
     e_to_m1 = '{
-        pc_word:        ff_in.pc_word,
-        rd_src:         ff_in.rd_src,
-        rd_idx:         ff_in.rd_idx,
-        rd_we:          ff_in.rd_we,
-        csr_idx:        ff_in.csr_idx,
-        csr_old_val:    ff_in.csr_old_val,
+        pc_word:        d_to_e_ff.pc_word,
+        rd_src:         d_to_e_ff.rd_src,
+        rd_idx:         d_to_e_ff.rd_idx,
+        rd_we:          d_to_e_ff.rd_we,
+        csr_idx:        d_to_e_ff.csr_idx,
+        csr_old_val:    d_to_e_ff.csr_old_val,
         csr_new_val:    new_csr_value,
-        rs1_idx:        ff_in.rs1_idx,
-        rs2_idx:        ff_in.rs2_idx,
+        rs1_idx:        d_to_e_ff.rs1_idx,
+        rs2_idx:        d_to_e_ff.rs2_idx,
         alu_result:     alu_result,
-        memory_op:      ff_in.memory_op,
-        memory_signed:  ff_in.memory_signed,
-        memory_size:    ff_in.memory_size,
+        memory_op:      d_to_e_ff.memory_op,
+        memory_signed:  d_to_e_ff.memory_signed,
+        memory_size:    d_to_e_ff.memory_size,
         rs2_val:        rs2_val,
         branch_taken:   cmp_result
     };
