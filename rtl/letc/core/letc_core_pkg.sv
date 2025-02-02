@@ -185,6 +185,7 @@ typedef struct packed {
     riscv_pkg::reg_idx_t    rd_idx;
     logic                   rd_we;
 
+    logic                   csr_expl_wen;
     csr_idx_t               csr_idx;
     riscv_pkg::word_t       csr_old_val;//To be written to rd
     riscv_pkg::word_t       csr_new_val;//To be written back to the CSR
@@ -210,6 +211,7 @@ typedef struct packed {
     rd_src_e                rd_src;
     riscv_pkg::reg_idx_t    rd_idx;
     logic                   rd_we;
+    logic                   csr_expl_wen;
     csr_idx_t               csr_idx;
     riscv_pkg::word_t       csr_old_val;
     riscv_pkg::word_t       csr_new_val;
@@ -227,6 +229,7 @@ typedef struct packed {
     riscv_pkg::reg_idx_t    rd_idx;
     logic                   rd_we;
 
+    logic                   csr_expl_wen;
     csr_idx_t               csr_idx;
 
     riscv_pkg::word_t       csr_old_val;//Written to rd, sometimes

@@ -31,10 +31,7 @@ module letc_core_stage_execute
     input  logic e_stall,
 
     //From D
-    // verilator lint_save
-    // verilator lint_off UNUSEDSIGNAL
     input   logic       d_to_e_valid,
-    // verilator lint_restore
     input   d_to_e_s    d_to_e,
 
     //To E2
@@ -45,10 +42,6 @@ module letc_core_stage_execute
 /* ------------------------------------------------------------------------------------------------
  * Input Flop Stage
  * --------------------------------------------------------------------------------------------- */
-
-//TODO remove this waiver once we decide what to do about csr_expl_wen (see `letc_core_pkg.sv`)
-//verilator lint_save
-//verilator lint_off UNUSEDSIGNAL
 
 logic    d_to_e_valid_ff;
 d_to_e_s d_to_e_ff;
@@ -70,8 +63,6 @@ always_ff @(posedge clk) begin
 end
 
 assign e_ready = 1'b1; // TODO: Will not be ready during multicycle multiply
-
-//verilator lint_restore
 
 /* ------------------------------------------------------------------------------------------------
  * Arithmetic
@@ -166,6 +157,7 @@ always_comb begin
         rd_src:         d_to_e_ff.rd_src,
         rd_idx:         d_to_e_ff.rd_idx,
         rd_we:          d_to_e_ff.rd_we,
+        csr_expl_wen:   d_to_e_ff.csr_expl_wen,
         csr_idx:        d_to_e_ff.csr_idx,
         csr_old_val:    d_to_e_ff.csr_old_val,
         csr_new_val:    csr_new_val,

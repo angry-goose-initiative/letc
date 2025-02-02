@@ -155,6 +155,8 @@ letc_core_rf rf (.*);
 
 letc_core_imss imss (.*);
 
+letc_core_dmss dmss (.*);
+
 letc_core_stage_fetch1 stage_fetch1 (
     .*,
 

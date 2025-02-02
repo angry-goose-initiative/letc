@@ -61,6 +61,7 @@ assign m1_to_m2 = '{
     rd_src:         ff_in.rd_src,
     rd_idx:         ff_in.rd_idx,
     rd_we:          ff_in.rd_we,
+    csr_expl_wen:   ff_in.csr_expl_wen,
     csr_idx:        ff_in.csr_idx,
     csr_old_val:    ff_in.csr_old_val,
     csr_new_val:    ff_in.csr_new_val,
