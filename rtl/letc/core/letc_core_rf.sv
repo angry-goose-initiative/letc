@@ -28,17 +28,17 @@ module letc_core_rf
     input logic clk,
 
     //rd Write Port
-    input   reg_idx_t   rd_idx,
-    input   word_t      rd_val,
-    input   logic       rd_wen,
+    input   reg_idx_t   rf_rd_idx,
+    input   word_t      rf_rd_val,
+    input   logic       rf_rd_we,
 
     //rs1 Read Port
-    input   reg_idx_t   rs1_idx,
-    output  word_t      rs1_val,
+    input   reg_idx_t   rf_rs1_idx,
+    output  word_t      rf_rs1_val,
 
     //rs2 Read Port
-    input   reg_idx_t   rs2_idx,
-    output  word_t      rs2_val
+    input   reg_idx_t   rf_rs2_idx,
+    output  word_t      rf_rs2_val
 );
 
 /* ------------------------------------------------------------------------------------------------
@@ -81,8 +81,8 @@ always_ff @(posedge clk) begin
     end
     */
 
-    if (rd_wen & (rd_idx != '0)) begin
-        registers[rd_idx] <= rd_val;
+    if (rf_rd_we & (rf_rd_idx != '0)) begin
+        registers[rf_rd_idx] <= rf_rd_val;
     end
 end
 
@@ -93,21 +93,21 @@ end
 //Muxes and bypass logic
 always_comb begin
     //rs1
-    if (rs1_idx == '0) begin//x0
-        rs1_val = '0;
-    end else if ((rs1_idx == rd_idx) & rd_wen) begin//Need to bypass write -> read
-        rs1_val = rd_val;
+    if (rf_rs1_idx == '0) begin//x0
+        rf_rs1_val = '0;
+    end else if ((rf_rs1_idx == rf_rd_idx) & rf_rd_we) begin//Need to bypass write -> read
+        rf_rs1_val = rf_rd_val;
     end else begin
-        rs1_val = registers[rs1_idx];
+        rf_rs1_val = registers[rf_rs1_idx];
     end
 
     //rs2
-    if (rs2_idx == '0) begin//x0
-        rs2_val = '0;
-    end else if ((rs2_idx == rd_idx) & rd_wen) begin//Need to bypass write -> read
-        rs2_val = rd_val;
+    if (rf_rs2_idx == '0) begin//x0
+        rf_rs2_val = '0;
+    end else if ((rf_rs2_idx == rf_rd_idx) & rf_rd_we) begin//Need to bypass write -> read
+        rf_rs2_val = rf_rd_val;
     end else begin
-        rs2_val = registers[rs2_idx];
+        rf_rs2_val = registers[rf_rs2_idx];
     end
 end
 

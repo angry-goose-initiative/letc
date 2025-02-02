@@ -46,17 +46,17 @@ module letc_core_top
  * --------------------------------------------------------------------------------------------- */
 
 //rd Write Port
-reg_idx_t   rd_idx;
-word_t      rd_val;
-logic       rd_wen;
+reg_idx_t   rf_rd_idx;
+word_t      rf_rd_val;
+logic       rf_rd_we;
 
 //rs1 Read Port
-reg_idx_t   rs1_idx;
-word_t      rs1_val;
+reg_idx_t   rf_rs1_idx;
+word_t      rf_rs1_val;
 
 //rs2 Read Port
-reg_idx_t   rs2_idx;
-word_t      rs2_val;
+reg_idx_t   rf_rs2_idx;
+word_t      rf_rs2_val;
 
 //Explicit CSR access
 csr_idx_t    csr_de_expl_idx;
@@ -186,14 +186,7 @@ letc_core_stage_decode stage_decode (
     //Hazard/backpressure signals
     .d_ready(stage_ready[2]),
     .d_flush(stage_flush[2]),
-    .d_stall(stage_stall[2]),
-
-    // Register file read ports
-    //TODO change letc_core_rf to match these names so we can just use .* for this too
-    .rf_rs1_idx(rs1_idx),
-    .rf_rs1_val(rs1_val),
-    .rf_rs2_idx(rs2_idx),
-    .rf_rs2_val(rs2_val)
+    .d_stall(stage_stall[2])
 );
 
 letc_core_stage_execute stage_execute (
@@ -221,6 +214,15 @@ letc_core_stage_memory2 stage_memory2 (
     .m2_ready(stage_ready[5]),
     .m2_flush(stage_flush[5]),
     .m2_stall(stage_stall[5])
+);
+
+letc_core_stage_writeback stage_writeback (
+    .*,
+
+    //Hazard/backpressure signals
+    .w_ready(stage_ready[6]),
+    .w_flush(stage_flush[6]),
+    .w_stall(stage_stall[6])
 );
 
 /*

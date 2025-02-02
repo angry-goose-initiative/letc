@@ -57,6 +57,7 @@ word_t amo_alu_result;
 word_t mem_wdata;
 word_t mem_rdata;
 always_comb begin
+    mem_rdata = dmss_if.load_data;
     unique case (ff_in.amo_alu_op)
         AMO_OP_SWAP:    amo_alu_result = ff_in.rs2_val;
         AMO_OP_ADD:     amo_alu_result = mem_rdata + ff_in.rs2_val;
@@ -71,10 +72,9 @@ always_comb begin
                                             ? mem_rdata : ff_in.rs2_val;
         AMO_OP_MAXU:    amo_alu_result = (mem_rdata > ff_in.rs2_val)
                                             ? mem_rdata : ff_in.rs2_val;
+        default:        amo_alu_result = 32'hDEADBEEF;
     endcase
-
-    mem_rdata <= dmss_if.load_data;
-    mem_wdata <= (ff_in.mem_op == MEM_OP_AMO) ? amo_alu_result : ff_in.rs2_val;
+    mem_wdata = (ff_in.mem_op == MEM_OP_AMO) ? amo_alu_result : ff_in.rs2_val;
 end
 
 assign m2_to_w_valid = out_valid;
