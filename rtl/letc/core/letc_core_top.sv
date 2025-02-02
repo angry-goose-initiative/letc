@@ -212,6 +212,15 @@ letc_core_stage_memory1 stage_memory1 (
     .m1_stall(stage_stall[4])
 );
 
+letc_core_stage_memory2 stage_memory2 (
+    .*,
+
+    //Hazard/backpressure signals
+    .m2_ready(stage_ready[5]),
+    .m2_flush(stage_flush[5]),
+    .m2_stall(stage_stall[5])
+);
+
 /*
 letc_core_stage_e2 stage_e2 (
     .*,

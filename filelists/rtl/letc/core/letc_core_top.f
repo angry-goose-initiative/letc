@@ -26,6 +26,6 @@
 #include "rtl/letc/core/letc_core_stage_decode.f"
 #include "rtl/letc/core/letc_core_stage_execute.f"
 #include "rtl/letc/core/letc_core_stage_memory1.f"
-// #include "rtl/letc/core/letc_core_stage_memory2.f"
+#include "rtl/letc/core/letc_core_stage_memory2.f"
 // #include "rtl/letc/core/letc_core_stage_writeback.f"
 rtl/letc/core/letc_core_top.sv

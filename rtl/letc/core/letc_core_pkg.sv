@@ -231,12 +231,12 @@ typedef struct packed {
 
     riscv_pkg::word_t       csr_old_val;//Written to rd, sometimes
     riscv_pkg::word_t       alu_result;//Written to rd, sometimes
-    riscv_pkg::word_t       memory_rdata;//Written to rd, sometimes
+    riscv_pkg::word_t       mem_rdata;//Written to rd, sometimes
     riscv_pkg::word_t       csr_new_val;//Written to a CSR
 
     mem_op_e                mem_op;
     mem_size_e              mem_size;
-    riscv_pkg::word_t       rs2_val;
+    riscv_pkg::word_t       mem_wdata;
 
     //TODO add exception status signal
 } m2_to_w_s;

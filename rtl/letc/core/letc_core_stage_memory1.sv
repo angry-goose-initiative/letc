@@ -72,4 +72,4 @@ assign m1_to_m2 = '{
     rs2_val:        ff_in.rs2_val
 };
 
-endmodule
+endmodule : letc_core_stage_memory1
