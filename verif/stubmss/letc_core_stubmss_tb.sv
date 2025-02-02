@@ -85,7 +85,7 @@ task reset();
 
     $display("Running test program in stubmss mode: %s", get_test_program_path());
     $readmemh(get_test_program_path(), dut.imss.imem);
-    //$readmemh(get_test_program_path(), dut.dmss.dmem);
+    $readmemh(get_test_program_path(), dut.dmss.dmem);
 
     rst_n <= 1'b1;
     repeat(2) @(negedge clk);

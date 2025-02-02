@@ -15,19 +15,20 @@
 interface letc_core_dmss_if;
 
 import riscv_pkg::*;
+import letc_core_pkg::*;
 
 // logic   dmss1_flop_en;
 // logic   dmss1_ready;
 // logic   load_req;
 // logic   store_req;
-word_t  load_addr;
+vaddr_t load_addr;
 
 // logic   dmss2_flop_en;
 // logic   dmss2_ready;
 word_t  load_data;
 
 word_t  store_data;
-word_t  store_addr;
+vaddr_t store_addr;//TODO or should this be physical, with virtual translation having happened earlier?
 logic   store_en;
 
 modport memory1 (
@@ -45,11 +46,11 @@ modport writeback (
 );
 
 modport subsystem (
-    output  load_addr,
-    input   load_data,
-    output  store_data,
-    output  store_addr,
-    output  store_en
+    input   load_addr,
+    output  load_data,
+    input   store_data,
+    input   store_addr,
+    input   store_en
 );
 
 endinterface : letc_core_dmss_if
