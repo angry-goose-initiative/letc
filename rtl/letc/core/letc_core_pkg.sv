@@ -46,10 +46,10 @@ parameter pc_word_t RESET_PC_WORD = 30'h00000000;
 
 typedef enum logic [1:0] {
     //Values correspond to RISC-V instruction encoding for potential efficiency gains
-    SIZE_BYTE       = 2'b00,
-    SIZE_HALFWORD   = 2'b01,
-    SIZE_WORD       = 2'b10
-} size_e;
+    MEM_SIZE_BYTE       = 2'b00,
+    MEM_SIZE_HALFWORD   = 2'b01,
+    MEM_SIZE_WORD       = 2'b10
+} mem_size_e;
 
 typedef enum logic [2:0] {
     //Enum values based on funct3 of branch instructions
@@ -80,9 +80,21 @@ typedef enum logic [3:0] {
 typedef enum logic [1:0] {
     MEM_OP_NOP = 2'b00,
     MEM_OP_LOAD,
-    MEM_OP_STORE
-    //TODO perhaps something for atomics in the future?
+    MEM_OP_STORE,
+    MEM_OP_AMO
 } mem_op_e;
+
+typedef enum logic [3:0] {
+    AMO_OP_SWAP,
+    AMO_OP_ADD,
+    AMO_OP_AND,
+    AMO_OP_OR,
+    AMO_OP_XOR,
+    AMO_OP_MIN,
+    AMO_OP_MAX,
+    AMO_OP_MINU,
+    AMO_OP_MAXU
+} amo_alu_op_e;
 
 typedef enum logic [1:0] {
     CSR_ALU_OP_PASSTHRU = 2'b00,
@@ -157,9 +169,10 @@ typedef struct packed {
     alu_op2_src_e           alu_op2_src;
     alu_op_e                alu_op;
 
-    mem_op_e                memory_op;
-    logic                   memory_signed;
-    size_e                  memory_size;
+    mem_op_e                mem_op;
+    logic                   mem_signed;
+    mem_size_e              mem_size;
+    amo_alu_op_e            amo_alu_op;
 
     cmp_op_e                cmp_op;
 
@@ -181,9 +194,10 @@ typedef struct packed {
 
     riscv_pkg::word_t       alu_result;
 
-    mem_op_e                memory_op;
-    logic                   memory_signed;
-    size_e                  memory_size;
+    mem_op_e                mem_op;
+    logic                   mem_signed;
+    mem_size_e              mem_size;
+    amo_alu_op_e            amo_alu_op;
     riscv_pkg::word_t       rs2_val;//rs2 is what is written to memory
 
     logic                   branch_taken;
@@ -196,6 +210,15 @@ typedef struct packed {
     rd_src_e                rd_src;
     riscv_pkg::reg_idx_t    rd_idx;
     logic                   rd_we;
+    csr_idx_t               csr_idx;
+    riscv_pkg::word_t       csr_old_val;
+    riscv_pkg::word_t       csr_new_val;
+    riscv_pkg::word_t       alu_result;
+    mem_op_e                mem_op;
+    logic                   mem_signed;
+    mem_size_e              mem_size;
+    amo_alu_op_e            amo_alu_op;
+    riscv_pkg::word_t       rs2_val;
 } m1_to_m2_s;
 
 typedef struct packed {
@@ -210,6 +233,10 @@ typedef struct packed {
     riscv_pkg::word_t       alu_result;//Written to rd, sometimes
     riscv_pkg::word_t       memory_rdata;//Written to rd, sometimes
     riscv_pkg::word_t       csr_new_val;//Written to a CSR
+
+    mem_op_e                mem_op;
+    mem_size_e              mem_size;
+    riscv_pkg::word_t       rs2_val;
 
     //TODO add exception status signal
 } m2_to_w_s;

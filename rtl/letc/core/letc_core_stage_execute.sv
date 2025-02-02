@@ -98,7 +98,7 @@ end
 always_comb begin
     unique case (d_to_e_ff.alu_op1_src)
         ALU_OP1_SRC_RS1:  alu_operands[0] = rs1_val;
-        ALU_OP1_SRC_PC:   alu_operands[0] = d_to_e_ff.pc_word;
+        ALU_OP1_SRC_PC:   alu_operands[0] = {d_to_e_ff.pc_word, 2'h0};
         ALU_OP1_SRC_CSR:  alu_operands[0] = d_to_e_ff.csr_old_val;
         ALU_OP1_SRC_ZERO: alu_operands[0] = 32'h0;
     endcase
@@ -144,13 +144,13 @@ always_comb begin
 end
 
 //Modify the CSR value
-word_t new_csr_value;
+word_t csr_new_val;
 always_comb begin
     unique case (d_to_e_ff.csr_alu_op)
-        CSR_ALU_OP_PASSTHRU:    new_csr_value = csr_operand;
-        CSR_ALU_OP_BITSET:      new_csr_value = d_to_e_ff.csr_old_val |  csr_operand;
-        CSR_ALU_OP_BITCLEAR:    new_csr_value = d_to_e_ff.csr_old_val & ~csr_operand;
-        default:                new_csr_value = 32'hDEADBEEF;
+        CSR_ALU_OP_PASSTHRU:    csr_new_val = csr_operand;
+        CSR_ALU_OP_BITSET:      csr_new_val = d_to_e_ff.csr_old_val |  csr_operand;
+        CSR_ALU_OP_BITCLEAR:    csr_new_val = d_to_e_ff.csr_old_val & ~csr_operand;
+        default:                csr_new_val = 32'hDEADBEEF;
     endcase
 end
 
@@ -168,13 +168,14 @@ always_comb begin
         rd_we:          d_to_e_ff.rd_we,
         csr_idx:        d_to_e_ff.csr_idx,
         csr_old_val:    d_to_e_ff.csr_old_val,
-        csr_new_val:    new_csr_value,
+        csr_new_val:    csr_new_val,
         rs1_idx:        d_to_e_ff.rs1_idx,
         rs2_idx:        d_to_e_ff.rs2_idx,
         alu_result:     alu_result,
-        memory_op:      d_to_e_ff.memory_op,
-        memory_signed:  d_to_e_ff.memory_signed,
-        memory_size:    d_to_e_ff.memory_size,
+        mem_op:         d_to_e_ff.mem_op,
+        mem_signed:     d_to_e_ff.mem_signed,
+        mem_size:       d_to_e_ff.mem_size,
+        amo_alu_op:     d_to_e_ff.amo_alu_op,
         rs2_val:        rs2_val,
         branch_taken:   cmp_result
     };

@@ -75,7 +75,7 @@ f1_to_f2_s  f1_to_f2;
 f2_to_d_s   f2_to_d;
 d_to_e_s    d_to_e;
 e_to_m1_s   e_to_m1;
-m1_to_m2_s  m2_to_m2;
+m1_to_m2_s  m1_to_m2;
 m2_to_w_s   m2_to_w;
 
 //Implicitly read CSRs by LETC Core logic, always valid
@@ -88,7 +88,7 @@ logic [6:0] stage_stall;
 
 //MSS Interfaces
 letc_core_imss_if imss_if (.*);
-//TODO dmss
+letc_core_dmss_if dmss_if (.*);
 
 //Change the PC (useful for branches, exceptions, etc)
 logic       pc_load_en;
@@ -182,10 +182,9 @@ letc_core_stage_decode stage_decode (
     .*,
 
     //Hazard/backpressure signals
-    //TODO make the naming of these ports consistent with the other stages
-    .stage_ready(stage_ready[2]),
-    .stage_flush(stage_flush[2]),
-    .stage_stall(stage_stall[2]),
+    .d_ready(stage_ready[2]),
+    .d_flush(stage_flush[2]),
+    .d_stall(stage_stall[2]),
 
     // Register file read ports
     //TODO change letc_core_rf to match these names so we can just use .* for this too
@@ -202,6 +201,15 @@ letc_core_stage_execute stage_execute (
     .e_ready(stage_ready[3]),
     .e_flush(stage_flush[3]),
     .e_stall(stage_stall[3])
+);
+
+letc_core_stage_memory1 stage_memory1 (
+    .*,
+
+    //Hazard/backpressure signals
+    .m1_ready(stage_ready[4]),
+    .m1_flush(stage_flush[4]),
+    .m1_stall(stage_stall[4])
 );
 
 /*

@@ -23,9 +23,9 @@ module letc_core_stage_decode
     input logic         rst_n,
 
     // Hazard/backpressure signals
-    output logic        stage_ready,
-    input  logic        stage_flush,
-    input  logic        stage_stall,
+    output logic        d_ready,
+    input  logic        d_flush,
+    input  logic        d_stall,
 
     // Register file read ports
     output reg_idx_t    rf_rs1_idx,
@@ -58,7 +58,7 @@ logic ff_in_valid;
 always_ff @(posedge clk) begin
     if (!rst_n) begin
         ff_in_valid <= 1'b0;
-    end else if (!stage_stall) begin
+    end else if (!d_stall) begin
         ff_in_valid <= f2_to_d_valid;
     end
 end
@@ -68,15 +68,15 @@ end
 f2_to_d_s ff_in;
 // verilator lint_restore
 always_ff @(posedge clk) begin
-    if (!stage_stall) begin
+    if (!d_stall) begin
         ff_in <= f2_to_d;
     end
 end
 
-assign stage_ready = 1'b1; // The decode stage always takes only a single cycle; no caches here!
+assign d_ready = 1'b1; // The decode stage always takes only a single cycle; no caches here!
 
 logic out_valid;
-assign out_valid = ff_in_valid && !stage_flush && !stage_stall;
+assign out_valid = ff_in_valid && !d_flush && !d_stall;
 
 /* ------------------------------------------------------------------------------------------------
  * Internal Types
@@ -126,9 +126,10 @@ typedef struct packed {
     alu_op1_src_e   alu_op1_src;
     alu_op2_src_e   alu_op2_src;
     alu_op_e        alu_op;
-    mem_op_e        memory_op;
-    logic           memory_signed;
-    size_e          memory_size;
+    mem_op_e        mem_op;
+    logic           mem_signed;
+    mem_size_e      mem_size;
+    amo_alu_op_e    amo_alu_op;
     branch_e        branch;
     cmp_op_e        cond_branch_cmp_op;
     logic           fence;
@@ -242,7 +243,14 @@ always_comb begin
             endcase
         end
         OPCODE_AMO: begin
-            // TODO: Control signals for AMO
+            ctrl.rd_src         = RD_SRC_MEM;
+            ctrl.rd_we          = !rd_is_x0;
+            ctrl.alu_op1_src    = ALU_OP1_SRC_ZERO;
+            ctrl.alu_op2_src    = ALU_OP2_SRC_RS1;
+            ctrl.alu_op         = ALU_OP_ADD;
+            ctrl.mem_op         = MEM_OP_AMO;
+            ctrl.mem_size       = MEM_SIZE_WORD;
+            // ctrl.amo_alu_op     = TODO
         end
         OPCODE_LOAD: begin
             ctrl.rd_src         = RD_SRC_MEM;
@@ -250,9 +258,9 @@ always_comb begin
             ctrl.alu_op1_src    = ALU_OP1_SRC_RS1;
             ctrl.alu_op2_src    = ALU_OP2_SRC_IMM;
             ctrl.alu_op         = ALU_OP_ADD;
-            ctrl.memory_op      = MEM_OP_LOAD;
-            ctrl.memory_signed  = !funct3[2];
-            ctrl.memory_size    = size_e'(funct3[1:0]);
+            ctrl.mem_op         = MEM_OP_LOAD;
+            ctrl.mem_signed     = !funct3[2];
+            ctrl.mem_size       = mem_size_e'(funct3[1:0]);
         end
         OPCODE_OP_IMM: begin
             ctrl.rd_src         = RD_SRC_ALU;
@@ -285,8 +293,8 @@ always_comb begin
             ctrl.alu_op1_src    = ALU_OP1_SRC_RS1;
             ctrl.alu_op2_src    = ALU_OP2_SRC_IMM;
             ctrl.alu_op         = ALU_OP_ADD;
-            ctrl.memory_op      = MEM_OP_STORE;
-            ctrl.memory_size    = size_e'(funct3[1:0]);
+            ctrl.mem_op         = MEM_OP_STORE;
+            ctrl.mem_size       = mem_size_e'(funct3[1:0]);
         end
         OPCODE_BRANCH: begin
             ctrl.branch                 = BRANCH_COND;
@@ -419,9 +427,10 @@ assign d_to_e = '{
     alu_op1_src:    ctrl.alu_op1_src,
     alu_op2_src:    ctrl.alu_op2_src,
     alu_op:         ctrl.alu_op,
-    memory_op:      ctrl.memory_op,
-    memory_signed:  ctrl.memory_signed,
-    memory_size:    ctrl.memory_size,
+    mem_op:         ctrl.mem_op,
+    mem_signed:     ctrl.mem_signed,
+    mem_size:       ctrl.mem_size,
+    amo_alu_op:     ctrl.amo_alu_op,
     cmp_op:         ctrl.cond_branch_cmp_op
 };
 
@@ -438,9 +447,9 @@ assign d_to_e_valid = out_valid;
 
 // Assumptions of inputs to the stage
 assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(f2_to_d_valid));
-assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(stage_flush));
-assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(stage_stall));
-assert property (@(posedge clk) disable iff (!rst_n) !(stage_flush && stage_stall));
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(d_flush));
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(d_stall));
+assert property (@(posedge clk) disable iff (!rst_n) !(d_flush && d_stall));
 assert property (@(posedge clk) disable iff (!rst_n) f2_to_d_valid |-> !$isunknown(f2_to_d.instr));
 
 // Make sure output control signals unguarded by valids (or valids themselves)
@@ -448,31 +457,28 @@ assert property (@(posedge clk) disable iff (!rst_n) f2_to_d_valid |-> !$isunkno
 assert property (@(posedge clk) disable iff (!rst_n)
     !rst_n |=> !$isunknown(d_to_e_valid) // Extra |=> needed to deal with the reset
 );
-assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(stage_ready));
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(d_ready));
 
 // Valid means not unknown and, well, valid for control signals
 assert property (@(posedge clk) disable iff (!rst_n) d_to_e_valid |-> !$isunknown(d_to_e));
 assert property (@(posedge clk) disable iff (!rst_n)
-    d_to_e_valid |-> !$isunknown(d_to_e.memory_op)
-);
-assert property (@(posedge clk) disable iff (!rst_n)
-    d_to_e_valid |-> (d_to_e.memory_op != mem_op_e'(2'b11))
+    d_to_e_valid |-> (d_to_e.mem_op != mem_op_e'(2'b11))
 );
 
 assert property (@(posedge clk) disable iff (!rst_n) d_to_e.rd_we |-> !rd_is_x0);
 
 // If stalled then the input should be invalid
-assert property (@(posedge clk) disable iff (!rst_n) stage_stall |-> !f2_to_d_valid);
+assert property (@(posedge clk) disable iff (!rst_n) d_stall |-> !f2_to_d_valid);
 
 // If flushed then the input should be invalid
-assert property (@(posedge clk) disable iff (!rst_n) stage_flush |-> !f2_to_d_valid);
+assert property (@(posedge clk) disable iff (!rst_n) d_flush |-> !f2_to_d_valid);
 
 // Outputs should remain constant if the stage is stalled
-assert property (@(posedge clk) disable iff (!rst_n) stage_stall |-> $stable(stage_ready));
-assert property (@(posedge clk) disable iff (!rst_n) stage_stall |-> $stable(rf_rs1_idx));
-assert property (@(posedge clk) disable iff (!rst_n) stage_stall |-> $stable(rf_rs2_idx));
-assert property (@(posedge clk) disable iff (!rst_n) stage_stall |-> $stable(csr_de_expl_idx));
-assert property (@(posedge clk) disable iff (!rst_n) stage_stall |-> $stable(d_to_e));
+assert property (@(posedge clk) disable iff (!rst_n) d_stall |-> $stable(d_ready));
+assert property (@(posedge clk) disable iff (!rst_n) d_stall |-> $stable(rf_rs1_idx));
+assert property (@(posedge clk) disable iff (!rst_n) d_stall |-> $stable(rf_rs2_idx));
+assert property (@(posedge clk) disable iff (!rst_n) d_stall |-> $stable(csr_de_expl_idx));
+assert property (@(posedge clk) disable iff (!rst_n) d_stall |-> $stable(d_to_e));
 
 `endif // ifdef SIMULATION
 

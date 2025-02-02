@@ -34,9 +34,9 @@ localparam CLOCK_PERIOD = 10;
 
 logic       clk;
 logic       rst_n;
-logic       stage_ready;
-logic       stage_flush;
-logic       stage_stall;
+logic       d_ready;
+logic       d_flush;
+logic       d_stall;
 reg_idx_t   rf_rs1_idx;
 word_t      rf_rs1_val;
 reg_idx_t   rf_rs2_idx;
@@ -85,7 +85,7 @@ task test_instr_op(
     assert(d_to_e.alu_op        == expected_alu_op);
     assert(d_to_e.alu_op1_src   == ALU_OP1_SRC_RS1);
     assert(d_to_e.alu_op2_src   == ALU_OP2_SRC_RS2);
-    assert(d_to_e.memory_op     == MEM_OP_NOP);
+    assert(d_to_e.mem_op        == MEM_OP_NOP);
 endtask
 
 task test_instr_op_imm(
@@ -105,16 +105,16 @@ task test_instr_op_imm(
     assert(d_to_e.alu_op        == expected_alu_op);
     assert(d_to_e.alu_op1_src   == ALU_OP1_SRC_RS1);
     assert(d_to_e.alu_op2_src   == ALU_OP2_SRC_IMM);
-    assert(d_to_e.memory_op     == MEM_OP_NOP);
+    assert(d_to_e.mem_op        == MEM_OP_NOP);
 endtask
 
 task test_instr_load(
-    input   string  assembly,
-    input   instr_t instr,
-    input   logic   expected_rd_we,
-    input   word_t  expected_immediate,
-    input   logic   expected_signed,
-    input   size_e  expected_size
+    input   string      assembly,
+    input   instr_t     instr,
+    input   logic       expected_rd_we,
+    input   word_t      expected_immediate,
+    input   logic       expected_mem_signed,
+    input   mem_size_e  expected_mem_size
 );
     $display("Testing load instruction: %s", assembly);
     f2_to_d.instr = instr;
@@ -126,9 +126,9 @@ task test_instr_load(
     assert(d_to_e.alu_op        == ALU_OP_ADD);
     assert(d_to_e.alu_op1_src   == ALU_OP1_SRC_RS1);
     assert(d_to_e.alu_op2_src   == ALU_OP2_SRC_IMM);
-    assert(d_to_e.memory_op     == MEM_OP_LOAD);
-    assert(d_to_e.memory_signed == expected_signed);
-    assert(d_to_e.memory_size   == expected_size);
+    assert(d_to_e.mem_op        == MEM_OP_LOAD);
+    assert(d_to_e.mem_signed    == expected_mem_signed);
+    assert(d_to_e.mem_size      == expected_mem_size);
 endtask
 
 task test_instr_csr(
@@ -147,17 +147,19 @@ task test_instr_csr(
     assert(d_to_e.csr_alu_op    == expected_csr_alu_op);
     assert(d_to_e.csr_expl_wen  == expected_csr_expl_wen);
     assert(d_to_e.csr_op_src    == expected_csr_op_src);
-    assert(d_to_e.memory_op     == MEM_OP_NOP);
+    assert(d_to_e.mem_op        == MEM_OP_NOP);
 endtask
 
 /* ------------------------------------------------------------------------------------------------
  * Stimulus
  * --------------------------------------------------------------------------------------------- */
 
-logic in_valid;
+logic in_valid, out_valid, stage_flush, stage_stall, stage_ready;
 assign f2_to_d_valid = in_valid;
-logic out_valid;
 assign out_valid = d_to_e_valid;
+assign d_flush = stage_flush;
+assign d_stall = stage_stall;
+assign stage_ready = d_ready;
 
 logic ff_out_valid;
 always_ff @(posedge clk) begin
@@ -222,6 +224,7 @@ initial begin
     assert(out_valid);
 
     // ---------- Register file -----------------------------------------------
+    
     rf_rs1_val      = 32'hAAAAAAAA;
     rf_rs2_val      = 32'hBBBBBBBB;
     f2_to_d.instr   = 32'h009433b3; // sltu x7, x8, x9
@@ -233,6 +236,7 @@ initial begin
     assert(d_to_e.rs2_val   == 32'hBBBBBBBB);
 
     // ---------- OP ----------------------------------------------------------
+
     test_instr_op(
         .assembly("sltu x7, x8, x9"),
         .instr(32'h009433b3),
@@ -247,6 +251,7 @@ initial begin
     );
 
     // ---------- OP_IMM ------------------------------------------------------
+
     test_instr_op_imm(
         .assembly("addi t0, gp, -123"),
         .instr(32'hf8518293),
@@ -291,13 +296,14 @@ initial begin
     );
 
     // ---------- LOAD --------------------------------------------------------
+
     test_instr_load(
         .assembly("lbu a5, 360(s1)"),
         .instr(32'h1684c783),
         .expected_rd_we(1'b1),
         .expected_immediate(32'd360),
-        .expected_signed(1'b0),
-        .expected_size(SIZE_BYTE)
+        .expected_mem_signed(1'b0),
+        .expected_mem_size(MEM_SIZE_BYTE)
     );
 
     // ---------- STORE -------------------------------------------------------
@@ -305,16 +311,16 @@ initial begin
     // S-type instructions
     f2_to_d.instr = 32'h00112623; // sw ra, 12(sp)
     @(negedge clk);
-    assert(d_to_e.immediate   == 32'd12);
-    assert(d_to_e.rd_we       == 1'b0);
-    assert(d_to_e.memory_op   == MEM_OP_STORE);
-    assert(d_to_e.memory_size == SIZE_WORD);
+    assert(d_to_e.immediate == 32'd12);
+    assert(d_to_e.rd_we     == 1'b0);
+    assert(d_to_e.mem_op    == MEM_OP_STORE);
+    assert(d_to_e.mem_size  == MEM_SIZE_WORD);
     f2_to_d.instr = 32'he2489c23; // sh tp, -456(a7)
     @(negedge clk);
-    assert(d_to_e.immediate     == 32'hfffffe38);
-    assert(d_to_e.rd_we         == 1'b0);
-    assert(d_to_e.memory_op     == MEM_OP_STORE);
-    assert(d_to_e.memory_size   == SIZE_HALFWORD);
+    assert(d_to_e.immediate == 32'hfffffe38);
+    assert(d_to_e.rd_we     == 1'b0);
+    assert(d_to_e.mem_op    == MEM_OP_STORE);
+    assert(d_to_e.mem_size  == MEM_SIZE_HALFWORD);
 
     // ---------- BRANCH ------------------------------------------------------
 
@@ -323,12 +329,12 @@ initial begin
     // @(negedge clk);
     // assert(d_to_e.immediate == 32'h00000014);
     // assert(d_to_e.rd_we     == 1'b0);
-    // assert(d_to_e.memory_op == MEM_OP_NOP);
+    // assert(d_to_e.mem_op == MEM_OP_NOP);
     // f2_to_d.instr = 32'hfc20e6e3; // bltu x1, x2, offset -0x34
     // @(negedge clk);
     // assert(d_to_e.immediate == 32'hffffffcc);
     // assert(d_to_e.rd_we     == 1'b0);
-    // assert(d_to_e.memory_op == MEM_OP_NOP);
+    // assert(d_to_e.mem_op == MEM_OP_NOP);
 
     // // U-type instructions
     // f2_to_d.instr = 32'h000067b7; // lui a5, 0x6
@@ -336,13 +342,13 @@ initial begin
     // assert(d_to_e.immediate == 32'h00006000);
     // assert(d_to_e.rd_we     == 1'b1);
     // assert(d_to_e.rd_src    == RD_SRC_ALU);
-    // assert(d_to_e.memory_op == MEM_OP_NOP);
+    // assert(d_to_e.mem_op == MEM_OP_NOP);
     // f2_to_d.instr = 32'habcd1117; // auipc sp, 0xabcd1
     // @(negedge clk);
     // assert(d_to_e.immediate == 32'habcd1000);
     // assert(d_to_e.rd_we     == 1'b1);
     // assert(d_to_e.rd_src    == RD_SRC_ALU);
-    // assert(d_to_e.memory_op == MEM_OP_NOP);
+    // assert(d_to_e.mem_op == MEM_OP_NOP);
 
     // // J-type instructions
     // f2_to_d.instr = 32'hfd9fc0ef; // jal offset -0x3028
@@ -350,13 +356,13 @@ initial begin
     // assert(d_to_e.immediate == 32'hffffcfd8);
     // assert(d_to_e.rd_we     == 1'b1);
     // assert(d_to_e.rd_src    == RD_SRC_ALU);
-    // assert(d_to_e.memory_op == MEM_OP_NOP);
+    // assert(d_to_e.mem_op == MEM_OP_NOP);
     // f2_to_d.instr = 32'h0040006f; // jal x0 offset +4
     // @(negedge clk);
     // assert(d_to_e.immediate == 32'h4);
     // assert(d_to_e.rd_we     == 1'b0);
     // assert(d_to_e.rd_src    == RD_SRC_ALU);
-    // assert(d_to_e.memory_op == MEM_OP_NOP);
+    // assert(d_to_e.mem_op == MEM_OP_NOP);
 
     // ---------- CSR ---------------------------------------------------------
 
