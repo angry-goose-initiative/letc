@@ -89,7 +89,7 @@ end
 always_comb begin
     unique case (ff_in.alu_op1_src)
         ALU_OP1_SRC_RS1:  alu_operands[0] = rs1_val;
-        ALU_OP1_SRC_PC:   alu_operands[0] = {ff_in.pc_word, 2'h0};
+        ALU_OP1_SRC_PC:   alu_operands[0] = ff_in.pc;
         ALU_OP1_SRC_CSR:  alu_operands[0] = ff_in.csr_old_val;
         ALU_OP1_SRC_ZERO: alu_operands[0] = 32'h0;
     endcase
@@ -153,7 +153,7 @@ always_comb begin
     e_to_m1_valid = ff_in_valid && !e_flush && !e_stall;
 
     e_to_m1 = '{
-        pc_word:        ff_in.pc_word,
+        pc:             ff_in.pc,
         rd_src:         ff_in.rd_src,
         rd_idx:         ff_in.rd_idx,
         rd_we:          ff_in.rd_we,

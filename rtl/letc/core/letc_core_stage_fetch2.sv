@@ -70,7 +70,7 @@ end
 
 assign f2_to_d_valid    = f1_to_f2_valid_ff & !f2_flush & !f2_stall;
 assign f2_ready         = imss_if.rsp_valid;
-assign f2_to_d.pc_word  = f1_to_f2_ff.pc_word;
+assign f2_to_d.pc       = f1_to_f2_ff.pc;
 assign f2_to_d.instr    = imss_if.rsp_data[31:0];
 
 /* ------------------------------------------------------------------------------------------------

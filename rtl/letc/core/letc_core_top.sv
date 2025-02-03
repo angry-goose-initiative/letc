@@ -91,8 +91,8 @@ letc_core_imss_if imss_if (.*);
 letc_core_dmss_if dmss_if (.*);
 
 //Change the PC (useful for branches, exceptions, etc)
-logic       pc_load_en;
-pc_word_t   pc_load_val;
+logic   pc_load_en;
+pc_t    pc_load_val;
 
 /*
 

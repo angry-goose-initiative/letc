@@ -22,9 +22,10 @@ package letc_core_pkg;
 typedef logic [11:0]    csr_idx_t;
 typedef logic [4:0]     csr_zimm_t;
 
-typedef logic [31:2]    pc_word_t;
-
-//TODO decide if we should save hardware by leaving off the two lsbs off instr_t
+//TODO decide if we should save hardware by leaving off the two lsbs off instr_t and pc_t
+//We were originally doing that but switched to this to make our lives easier
+//Might help timing though by easing routing pressure?
+typedef logic [31:0]    pc_t;
 typedef logic [31:0]    instr_t;
 
 typedef logic [31:0]    vaddr_t;
@@ -36,7 +37,7 @@ typedef logic [31:0]    vaddr_t;
 //verilator lint_save
 //verilator lint_off UNUSEDPARAM
 
-parameter pc_word_t RESET_PC_WORD = 30'h00000000;
+parameter pc_t RESET_PC = 32'h00000000;
 
 //verilator lint_restore
 
@@ -132,20 +133,20 @@ typedef enum logic [1:0] {
  * --------------------------------------------------------------------------------------------- */
 
 typedef struct packed {
-    pc_word_t           pc_word;
+    pc_t           pc;
 
     //TODO add exception status signal
 } f1_to_f2_s;
 
 typedef struct packed {
-    pc_word_t   pc_word;
+    pc_t   pc;
     instr_t     instr;
 
     //TODO add exception status signal
 } f2_to_d_s;
 
 typedef struct packed {
-    pc_word_t               pc_word;
+    pc_t                    pc;
 
     rd_src_e                rd_src;
     riscv_pkg::reg_idx_t    rd_idx;
@@ -180,7 +181,7 @@ typedef struct packed {
 } d_to_e_s;
 
 typedef struct packed {
-    pc_word_t               pc_word;
+    pc_t                    pc;
     rd_src_e                rd_src;
     riscv_pkg::reg_idx_t    rd_idx;
     logic                   rd_we;
@@ -207,7 +208,7 @@ typedef struct packed {
 } e_to_m1_s;
 
 typedef struct packed {
-    pc_word_t               pc_word;
+    pc_t                    pc;
     rd_src_e                rd_src;
     riscv_pkg::reg_idx_t    rd_idx;
     logic                   rd_we;
@@ -224,7 +225,7 @@ typedef struct packed {
 } m1_to_m2_s;
 
 typedef struct packed {
-    pc_word_t               pc_word;
+    pc_t                    pc;
     rd_src_e                rd_src;
     riscv_pkg::reg_idx_t    rd_idx;
     logic                   rd_we;

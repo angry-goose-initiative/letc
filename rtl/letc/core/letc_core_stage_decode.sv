@@ -409,7 +409,7 @@ logic illegal_instr_exception = (
  * --------------------------------------------------------------------------------------------- */
 
 assign d_to_e = '{
-    pc_word:        ff_in.pc_word,
+    pc:             ff_in.pc,
     rd_src:         ctrl.rd_src,
     rd_idx:         rd_idx,
     rd_we:          ctrl.rd_we,

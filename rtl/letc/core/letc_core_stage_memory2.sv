@@ -79,7 +79,7 @@ end
 
 assign m2_to_w_valid = out_valid;
 assign m2_to_w = '{
-    pc_word:        ff_in.pc_word,
+    pc:             ff_in.pc,
     rd_src:         ff_in.rd_src,
     rd_idx:         ff_in.rd_idx,
     rd_we:          ff_in.rd_we,

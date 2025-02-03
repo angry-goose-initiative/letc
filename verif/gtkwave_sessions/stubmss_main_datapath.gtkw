@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.118 (w)1999-2023 BSI
-[*] Mon Feb  3 02:40:53 2025
+[*] Mon Feb  3 13:28:55 2025
 [*]
-[dumpfile] "/home/jzj/wd/tech/ece/2023/agi/letc/jzj/primary/build/stubmss/increment/waves.fst"
-[dumpfile_mtime] "Mon Feb  3 02:40:08 2025"
-[dumpfile_size] 409704
+[dumpfile] "/home/jzj/wd/tech/ece/2023/agi/letc/jzj/primary/build/stubmss/adding2/waves.fst"
+[dumpfile_mtime] "Mon Feb  3 13:25:45 2025"
+[dumpfile_size] 59785
 [savefile] "/home/jzj/wd/tech/ece/2023/agi/letc/jzj/primary/verif/gtkwave_sessions/stubmss_main_datapath.gtkw"
 [timestart] 0
 [size] 2560 1348
 [pos] -46 -46
-*-4.200000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-4.200000 20 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.letc_core_stubmss_tb.
 [treeopen] TOP.letc_core_stubmss_tb.dut.
@@ -25,13 +25,13 @@ TOP.letc_core_stubmss_tb.dut.rst_n
 @28
 TOP.letc_core_stubmss_tb.dut.f1_to_f2_valid
 @22
-TOP.letc_core_stubmss_tb.dut.f1_to_f2.pc_word[31:2]
+TOP.letc_core_stubmss_tb.dut.f1_to_f2.pc[31:0]
 @200
 -f2_to_d
 @28
 TOP.letc_core_stubmss_tb.dut.f2_to_d_valid
 @22
-TOP.letc_core_stubmss_tb.dut.f2_to_d.pc_word[31:2]
+TOP.letc_core_stubmss_tb.dut.f2_to_d.pc[31:0]
 TOP.letc_core_stubmss_tb.dut.f2_to_d.instr[31:0]
 @200
 -d_to_e
@@ -41,6 +41,7 @@ TOP.letc_core_stubmss_tb.dut.d_to_e_valid
 TOP.letc_core_stubmss_tb.dut.d_to_e.alu_op1_src[1:0]
 TOP.letc_core_stubmss_tb.dut.d_to_e.alu_op2_src[1:0]
 TOP.letc_core_stubmss_tb.dut.d_to_e.alu_op[3:0]
+TOP.letc_core_stubmss_tb.dut.d_to_e.amo_alu_op[3:0]
 TOP.letc_core_stubmss_tb.dut.d_to_e.cmp_op[2:0]
 TOP.letc_core_stubmss_tb.dut.d_to_e.csr_alu_op[1:0]
 @28
@@ -53,7 +54,14 @@ TOP.letc_core_stubmss_tb.dut.d_to_e.csr_op_src
 @22
 TOP.letc_core_stubmss_tb.dut.d_to_e.csr_zimm[4:0]
 TOP.letc_core_stubmss_tb.dut.d_to_e.immediate[31:0]
-TOP.letc_core_stubmss_tb.dut.d_to_e.pc_word[31:2]
+@100000028
+TOP.letc_core_stubmss_tb.dut.d_to_e.mem_op[1:0]
+@28
+TOP.letc_core_stubmss_tb.dut.d_to_e.mem_signed
+@100000028
+TOP.letc_core_stubmss_tb.dut.d_to_e.mem_size[1:0]
+@22
+TOP.letc_core_stubmss_tb.dut.d_to_e.pc[31:0]
 TOP.letc_core_stubmss_tb.dut.d_to_e.rd_idx[4:0]
 @100000028
 TOP.letc_core_stubmss_tb.dut.d_to_e.rd_src[1:0]
@@ -70,13 +78,23 @@ TOP.letc_core_stubmss_tb.dut.d_to_e.rs2_val[31:0]
 TOP.letc_core_stubmss_tb.dut.e_to_m1_valid
 @22
 TOP.letc_core_stubmss_tb.dut.e_to_m1.alu_result[31:0]
+@100000028
+TOP.letc_core_stubmss_tb.dut.e_to_m1.amo_alu_op[3:0]
 @28
 TOP.letc_core_stubmss_tb.dut.e_to_m1.branch_taken
+TOP.letc_core_stubmss_tb.dut.e_to_m1.csr_expl_wen
 @22
 TOP.letc_core_stubmss_tb.dut.e_to_m1.csr_idx[11:0]
 TOP.letc_core_stubmss_tb.dut.e_to_m1.csr_new_val[31:0]
 TOP.letc_core_stubmss_tb.dut.e_to_m1.csr_old_val[31:0]
-TOP.letc_core_stubmss_tb.dut.e_to_m1.pc_word[31:2]
+@100000028
+TOP.letc_core_stubmss_tb.dut.e_to_m1.mem_op[1:0]
+@28
+TOP.letc_core_stubmss_tb.dut.e_to_m1.mem_signed
+@100000028
+TOP.letc_core_stubmss_tb.dut.e_to_m1.mem_size[1:0]
+@22
+TOP.letc_core_stubmss_tb.dut.e_to_m1.pc[31:0]
 TOP.letc_core_stubmss_tb.dut.e_to_m1.rd_idx[4:0]
 @100000028
 TOP.letc_core_stubmss_tb.dut.e_to_m1.rd_src[1:0]
@@ -90,16 +108,52 @@ TOP.letc_core_stubmss_tb.dut.e_to_m1.rs2_val[31:0]
 -m1_to_m2
 @28
 TOP.letc_core_stubmss_tb.dut.m1_to_m2_valid
+@22
+TOP.letc_core_stubmss_tb.dut.m1_to_m2.alu_result[31:0]
+@100000028
+TOP.letc_core_stubmss_tb.dut.m1_to_m2.amo_alu_op[3:0]
+@28
+TOP.letc_core_stubmss_tb.dut.m1_to_m2.csr_expl_wen
+@22
+TOP.letc_core_stubmss_tb.dut.m1_to_m2.csr_idx[11:0]
+TOP.letc_core_stubmss_tb.dut.m1_to_m2.csr_new_val[31:0]
+TOP.letc_core_stubmss_tb.dut.m1_to_m2.csr_old_val[31:0]
+@100000028
+TOP.letc_core_stubmss_tb.dut.m1_to_m2.mem_op[1:0]
+@28
+TOP.letc_core_stubmss_tb.dut.m1_to_m2.mem_signed
+@100000028
+TOP.letc_core_stubmss_tb.dut.m1_to_m2.mem_size[1:0]
+@22
+TOP.letc_core_stubmss_tb.dut.m1_to_m2.pc[31:0]
+TOP.letc_core_stubmss_tb.dut.m1_to_m2.rd_idx[4:0]
+@100000028
+TOP.letc_core_stubmss_tb.dut.m1_to_m2.rd_src[1:0]
+@28
+TOP.letc_core_stubmss_tb.dut.m1_to_m2.rd_we
+@22
+TOP.letc_core_stubmss_tb.dut.m1_to_m2.rs2_val[31:0]
 @200
 -m2_to_w
 @28
 TOP.letc_core_stubmss_tb.dut.m2_to_w_valid
 @22
 TOP.letc_core_stubmss_tb.dut.m2_to_w.alu_result[31:0]
+@28
+TOP.letc_core_stubmss_tb.dut.m2_to_w.csr_expl_wen
+@22
 TOP.letc_core_stubmss_tb.dut.m2_to_w.csr_idx[11:0]
 TOP.letc_core_stubmss_tb.dut.m2_to_w.csr_new_val[31:0]
 TOP.letc_core_stubmss_tb.dut.m2_to_w.csr_old_val[31:0]
-TOP.letc_core_stubmss_tb.dut.m2_to_w.pc_word[31:2]
+@100000028
+TOP.letc_core_stubmss_tb.dut.m2_to_w.mem_op[1:0]
+@22
+TOP.letc_core_stubmss_tb.dut.m2_to_w.mem_rdata[31:0]
+@100000028
+TOP.letc_core_stubmss_tb.dut.m2_to_w.mem_size[1:0]
+@22
+TOP.letc_core_stubmss_tb.dut.m2_to_w.mem_wdata[31:0]
+TOP.letc_core_stubmss_tb.dut.m2_to_w.pc[31:0]
 TOP.letc_core_stubmss_tb.dut.m2_to_w.rd_idx[4:0]
 @100000028
 TOP.letc_core_stubmss_tb.dut.m2_to_w.rd_src[1:0]
@@ -107,9 +161,7 @@ TOP.letc_core_stubmss_tb.dut.m2_to_w.rd_src[1:0]
 TOP.letc_core_stubmss_tb.dut.m2_to_w.rd_we
 @200
 -rf
-@29
-TOP.letc_core_stubmss_tb.dut.rf.clk
-@23
+@22
 TOP.letc_core_stubmss_tb.dut.rf.registers[1][31:0]
 TOP.letc_core_stubmss_tb.dut.rf.registers[2][31:0]
 TOP.letc_core_stubmss_tb.dut.rf.registers[3][31:0]
@@ -143,9 +195,9 @@ TOP.letc_core_stubmss_tb.dut.rf.registers[30][31:0]
 TOP.letc_core_stubmss_tb.dut.rf.registers[31][31:0]
 TOP.letc_core_stubmss_tb.dut.rf.rf_rd_idx[4:0]
 TOP.letc_core_stubmss_tb.dut.rf.rf_rd_val[31:0]
-@29
+@28
 TOP.letc_core_stubmss_tb.dut.rf.rf_rd_we
-@23
+@22
 TOP.letc_core_stubmss_tb.dut.rf.rf_rs1_idx[4:0]
 TOP.letc_core_stubmss_tb.dut.rf.rf_rs1_val[31:0]
 TOP.letc_core_stubmss_tb.dut.rf.rf_rs2_idx[4:0]

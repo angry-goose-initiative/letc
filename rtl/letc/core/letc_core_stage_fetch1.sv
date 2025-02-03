@@ -25,8 +25,8 @@ module letc_core_stage_fetch1
     input logic rst_n,
 
     //Change the PC: useful for branches, exceptions, etc
-    input logic     pc_load_en,
-    input pc_word_t pc_load_val,
+    input logic pc_load_en,
+    input pc_t  pc_load_val,
 
     //Hazard/backpressure signals
     output logic f1_ready,
@@ -61,24 +61,24 @@ end
  * PC Logic
  * --------------------------------------------------------------------------------------------- */
 
-pc_word_t pc_word_ff, next_pc_word, next_seq_pc_word;
+pc_t pc_ff, next_pc, next_seq_pc;
 
 always_comb begin
-    next_seq_pc_word = pc_word_ff + 30'h1;
+    next_seq_pc = pc_ff + 32'h4;
 
     if (pc_load_en) begin
-        next_pc_word = pc_load_val;
+        next_pc = pc_load_val;
     end else begin
-        next_pc_word = next_seq_pc_word;
+        next_pc = next_seq_pc;
     end
 end
 
 always_ff @(posedge clk) begin
     if (!rst_n) begin
-        pc_word_ff <= RESET_PC_WORD;
+        pc_ff <= RESET_PC;
     end else begin
         if (!f1_stall & !f1_init) begin
-            pc_word_ff <= next_pc_word;
+            pc_ff <= next_pc;
         end
     end
 end
@@ -91,9 +91,9 @@ end
 vaddr_t fetch_addr;
 always_comb begin
     if (f1_stall | f1_init) begin
-        fetch_addr = {pc_word_ff, 2'b00};
+        fetch_addr = pc_ff;
     end else begin
-        fetch_addr = {next_pc_word, 2'b00};
+        fetch_addr = next_pc;
     end
 end
 
@@ -110,7 +110,7 @@ assign f1_ready                 = 1'b1;
  * --------------------------------------------------------------------------------------------- */
 
 assign f1_to_f2_valid   = !f1_flush & !f1_stall & !f1_init;
-assign f1_to_f2.pc_word = pc_word_ff;
+assign f1_to_f2.pc      = pc_ff;
 
 /* ------------------------------------------------------------------------------------------------
  * Assertions
@@ -121,10 +121,12 @@ assign f1_to_f2.pc_word = pc_word_ff;
 //verilator lint_save
 //verilator lint_off UNUSED
 
+/*
 word_t pc, next_pc, next_seq_pc;//Useful for debugging
 assign pc          = {pc_word_ff,       2'b00};
 assign next_pc     = {next_pc_word,     2'b00};
 assign next_seq_pc = {next_seq_pc_word, 2'b00};
+*/
 
 //TODO
 
