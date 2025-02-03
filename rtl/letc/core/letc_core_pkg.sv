@@ -152,7 +152,7 @@ typedef struct packed {
     logic                   rd_we;
 
     csr_alu_op_e            csr_alu_op;
-    logic                   csr_expl_wen;//FIXME wouldn't this already be handled by csr_alu_op?
+    logic                   csr_expl_wen;
     csr_op_src_e            csr_op_src;
     csr_idx_t               csr_idx;
     csr_zimm_t              csr_zimm;

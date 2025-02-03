@@ -71,6 +71,4 @@ always_ff @(posedge clk) begin
     end
 end
 
-assign imss_if.req_ready = 1'b1;
-
 endmodule : letc_core_imss

@@ -34,7 +34,6 @@ interface letc_core_imss_if
 //Fetc 1 <-> Memory Subsystem
 logic  req_valid;
 word_t req_virtual_addr;
-logic  req_ready;//Reverse
 //TODO also req_illegal in reverse
 
 //Fetch 2 <-> Memory Subsystem
@@ -53,8 +52,7 @@ word_t rsp_data;
 
 modport fetch1 (
     output req_valid,
-    output req_virtual_addr,
-    input  req_ready
+    output req_virtual_addr
 );
 
 modport fetch2 (
@@ -67,7 +65,6 @@ modport fetch2 (
 modport subsystem (
     input  req_valid,
     input  req_virtual_addr,
-    output req_ready,
 
     output rsp_valid,
     output rsp_illegal,

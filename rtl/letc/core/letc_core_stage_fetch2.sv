@@ -52,14 +52,14 @@ always_ff @(posedge clk) begin
     if (!rst_n) begin
         f1_to_f2_valid_ff <= 1'b0;
     end else begin
-        if (!f2_stall & f2_ready) begin
+        if (!f2_stall) begin
             f1_to_f2_valid_ff <= f1_to_f2_valid;
         end
     end
 end
 
 always_ff @(posedge clk) begin
-    if (!f2_stall & f2_ready) begin
+    if (!f2_stall) begin
         f1_to_f2_ff <= f1_to_f2;
     end
 end
@@ -68,7 +68,7 @@ end
  * IMSS Communication and Output Logic
  * --------------------------------------------------------------------------------------------- */
 
-assign f2_to_d_valid    = f1_to_f2_valid_ff & f2_ready & !f2_flush & !f2_stall;
+assign f2_to_d_valid    = f1_to_f2_valid_ff & !f2_flush & !f2_stall;
 assign f2_ready         = imss_if.rsp_valid;
 assign f2_to_d.pc_word  = f1_to_f2_ff.pc_word;
 assign f2_to_d.instr    = imss_if.rsp_data[31:0];

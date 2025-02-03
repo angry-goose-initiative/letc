@@ -43,22 +43,22 @@ module letc_core_stage_execute
  * Input Flop Stage
  * --------------------------------------------------------------------------------------------- */
 
-logic    d_to_e_valid_ff;
-d_to_e_s d_to_e_ff;
+logic    ff_in_valid;
+d_to_e_s ff_in;
 
 always_ff @(posedge clk) begin
     if (!rst_n) begin
-        d_to_e_valid_ff <= 1'b0;
+        ff_in_valid <= 1'b0;
     end else begin
         if (!e_stall) begin
-            d_to_e_valid_ff <= d_to_e_valid;
+            ff_in_valid <= d_to_e_valid;
         end
     end
 end
 
 always_ff @(posedge clk) begin
     if (!e_stall) begin
-        d_to_e_ff <= d_to_e;
+        ff_in <= d_to_e;
     end
 end
 
@@ -80,32 +80,32 @@ word_t rs1_val;
 word_t rs2_val;
 always_comb begin
     //TODO bypass logic
-    rs1_val = /* bypass_rs1 ? bypassed_rs1_data : */ d_to_e_ff.rs1_val;
-    rs2_val = /* bypass_rs1 ? bypassed_rs2_data : */ d_to_e_ff.rs2_val;
+    rs1_val = /* bypass_rs1 ? bypassed_rs1_data : */ ff_in.rs1_val;
+    rs2_val = /* bypass_rs1 ? bypassed_rs2_data : */ ff_in.rs2_val;
 end
 
 //ALU connections
 //op1
 always_comb begin
-    unique case (d_to_e_ff.alu_op1_src)
+    unique case (ff_in.alu_op1_src)
         ALU_OP1_SRC_RS1:  alu_operands[0] = rs1_val;
-        ALU_OP1_SRC_PC:   alu_operands[0] = {d_to_e_ff.pc_word, 2'h0};
-        ALU_OP1_SRC_CSR:  alu_operands[0] = d_to_e_ff.csr_old_val;
+        ALU_OP1_SRC_PC:   alu_operands[0] = {ff_in.pc_word, 2'h0};
+        ALU_OP1_SRC_CSR:  alu_operands[0] = ff_in.csr_old_val;
         ALU_OP1_SRC_ZERO: alu_operands[0] = 32'h0;
     endcase
 end
 //op2
 always_comb begin
-    unique case (d_to_e_ff.alu_op2_src)
+    unique case (ff_in.alu_op2_src)
         ALU_OP2_SRC_RS1:  alu_operands[1] = rs1_val;
         ALU_OP2_SRC_RS2:  alu_operands[1] = rs2_val;
-        ALU_OP2_SRC_IMM:  alu_operands[1] = d_to_e_ff.immediate;
+        ALU_OP2_SRC_IMM:  alu_operands[1] = ff_in.immediate;
         ALU_OP2_SRC_FOUR: alu_operands[1] = 32'h4;
     endcase
 end
 //operation
 always_comb begin
-    alu_operation = d_to_e_ff.alu_op;
+    alu_operation = ff_in.alu_op;
 end
 
 /* ------------------------------------------------------------------------------------------------
@@ -116,7 +116,7 @@ end
 logic cmp_result;
 
 letc_core_branch_comparator branch_comparator (
-    .cmp_operation(d_to_e_ff.cmp_op),
+    .cmp_operation(ff_in.cmp_op),
     .*
 );
 
@@ -127,9 +127,9 @@ letc_core_branch_comparator branch_comparator (
 //CSR Operand Mux
 word_t csr_operand;
 always_comb begin
-    unique case (d_to_e_ff.csr_op_src)
+    unique case (ff_in.csr_op_src)
         CSR_OP_SRC_RS1:     csr_operand = rs1_val;
-        CSR_OP_SRC_ZIMM:    csr_operand = {27'h0, d_to_e_ff.csr_zimm};
+        CSR_OP_SRC_ZIMM:    csr_operand = {27'h0, ff_in.csr_zimm};
         default:            csr_operand = 32'hDEADBEEF;
     endcase
 end
@@ -137,10 +137,10 @@ end
 //Modify the CSR value
 word_t csr_new_val;
 always_comb begin
-    unique case (d_to_e_ff.csr_alu_op)
+    unique case (ff_in.csr_alu_op)
         CSR_ALU_OP_PASSTHRU:    csr_new_val = csr_operand;
-        CSR_ALU_OP_BITSET:      csr_new_val = d_to_e_ff.csr_old_val |  csr_operand;
-        CSR_ALU_OP_BITCLEAR:    csr_new_val = d_to_e_ff.csr_old_val & ~csr_operand;
+        CSR_ALU_OP_BITSET:      csr_new_val = ff_in.csr_old_val |  csr_operand;
+        CSR_ALU_OP_BITCLEAR:    csr_new_val = ff_in.csr_old_val & ~csr_operand;
         default:                csr_new_val = 32'hDEADBEEF;
     endcase
 end
@@ -150,24 +150,24 @@ end
  * --------------------------------------------------------------------------------------------- */
 
 always_comb begin
-    e_to_m1_valid = d_to_e_valid_ff && !e_flush && !e_stall;
+    e_to_m1_valid = ff_in_valid && !e_flush && !e_stall;
 
     e_to_m1 = '{
-        pc_word:        d_to_e_ff.pc_word,
-        rd_src:         d_to_e_ff.rd_src,
-        rd_idx:         d_to_e_ff.rd_idx,
-        rd_we:          d_to_e_ff.rd_we,
-        csr_expl_wen:   d_to_e_ff.csr_expl_wen,
-        csr_idx:        d_to_e_ff.csr_idx,
-        csr_old_val:    d_to_e_ff.csr_old_val,
+        pc_word:        ff_in.pc_word,
+        rd_src:         ff_in.rd_src,
+        rd_idx:         ff_in.rd_idx,
+        rd_we:          ff_in.rd_we,
+        csr_expl_wen:   ff_in.csr_expl_wen,
+        csr_idx:        ff_in.csr_idx,
+        csr_old_val:    ff_in.csr_old_val,
         csr_new_val:    csr_new_val,
-        rs1_idx:        d_to_e_ff.rs1_idx,
-        rs2_idx:        d_to_e_ff.rs2_idx,
+        rs1_idx:        ff_in.rs1_idx,
+        rs2_idx:        ff_in.rs2_idx,
         alu_result:     alu_result,
-        mem_op:         d_to_e_ff.mem_op,
-        mem_signed:     d_to_e_ff.mem_signed,
-        mem_size:       d_to_e_ff.mem_size,
-        amo_alu_op:     d_to_e_ff.amo_alu_op,
+        mem_op:         ff_in.mem_op,
+        mem_signed:     ff_in.mem_signed,
+        mem_size:       ff_in.mem_size,
+        amo_alu_op:     ff_in.amo_alu_op,
         rs2_val:        rs2_val,
         branch_taken:   cmp_result
     };

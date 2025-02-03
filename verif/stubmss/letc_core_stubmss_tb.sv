@@ -107,7 +107,7 @@ initial begin
     //Run for a while
     //TODO detect when the sim finishes and stop it then instead of just
     //waiting a fixed amount of time
-    repeat(100000) @(negedge clk);
+    repeat(1000) @(negedge clk);
 
     //Et fini!
     repeat(10) @(negedge clk);

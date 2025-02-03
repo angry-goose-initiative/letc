@@ -1,20 +1,20 @@
 [*]
 [*] GTKWave Analyzer v3.3.118 (w)1999-2023 BSI
-[*] Mon Feb  3 02:40:53 2025
+[*] Mon Feb  3 00:54:32 2025
 [*]
-[dumpfile] "/home/jzj/wd/tech/ece/2023/agi/letc/jzj/primary/build/stubmss/increment/waves.fst"
-[dumpfile_mtime] "Mon Feb  3 02:40:08 2025"
-[dumpfile_size] 409704
-[savefile] "/home/jzj/wd/tech/ece/2023/agi/letc/jzj/primary/verif/gtkwave_sessions/stubmss_main_datapath.gtkw"
+[dumpfile] "/home/jzj/wd/tech/ece/2023/agi/letc/jzj/primary/build/stubmss/adding2/waves.fst"
+[dumpfile_mtime] "Mon Feb  3 00:52:47 2025"
+[dumpfile_size] 4076893
+[savefile] "/home/jzj/wd/tech/ece/2023/agi/letc/jzj/primary/verif/gtkwave_sessions/stubmss_f2_debug.gtkw"
 [timestart] 0
 [size] 2560 1348
 [pos] -46 -46
-*-4.200000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-4.200000 28 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.letc_core_stubmss_tb.
 [treeopen] TOP.letc_core_stubmss_tb.dut.
 [sst_width] 209
-[signals_width] 182
+[signals_width] 206
 [sst_expanded] 1
 [sst_vpaned_height] 415
 @28
@@ -27,12 +27,36 @@ TOP.letc_core_stubmss_tb.dut.f1_to_f2_valid
 @22
 TOP.letc_core_stubmss_tb.dut.f1_to_f2.pc_word[31:2]
 @200
+-imss_if
+@29
+TOP.letc_core_stubmss_tb.dut.imss_if.req_ready
+TOP.letc_core_stubmss_tb.dut.imss_if.req_valid
+@23
+TOP.letc_core_stubmss_tb.dut.imss_if.req_virtual_addr[31:0]
+TOP.letc_core_stubmss_tb.dut.imss_if.rsp_data[31:0]
+@29
+TOP.letc_core_stubmss_tb.dut.imss_if.rsp_illegal
+TOP.letc_core_stubmss_tb.dut.imss_if.rsp_valid
+@23
+TOP.letc_core_stubmss_tb.dut.imss_if.rsp_virtual_addr[31:0]
+@200
 -f2_to_d
 @28
 TOP.letc_core_stubmss_tb.dut.f2_to_d_valid
 @22
 TOP.letc_core_stubmss_tb.dut.f2_to_d.pc_word[31:2]
 TOP.letc_core_stubmss_tb.dut.f2_to_d.instr[31:0]
+@200
+-f2_internal
+@28
+TOP.letc_core_stubmss_tb.dut.stage_fetch2.clk
+TOP.letc_core_stubmss_tb.dut.stage_fetch2.f1_to_f2_valid
+TOP.letc_core_stubmss_tb.dut.stage_fetch2.f1_to_f2_valid_ff
+TOP.letc_core_stubmss_tb.dut.stage_fetch2.f2_flush
+TOP.letc_core_stubmss_tb.dut.stage_fetch2.f2_ready
+TOP.letc_core_stubmss_tb.dut.stage_fetch2.f2_stall
+TOP.letc_core_stubmss_tb.dut.stage_fetch2.f2_to_d_valid
+TOP.letc_core_stubmss_tb.dut.stage_fetch2.rst_n
 @200
 -d_to_e
 @28
@@ -105,50 +129,5 @@ TOP.letc_core_stubmss_tb.dut.m2_to_w.rd_idx[4:0]
 TOP.letc_core_stubmss_tb.dut.m2_to_w.rd_src[1:0]
 @28
 TOP.letc_core_stubmss_tb.dut.m2_to_w.rd_we
-@200
--rf
-@29
-TOP.letc_core_stubmss_tb.dut.rf.clk
-@23
-TOP.letc_core_stubmss_tb.dut.rf.registers[1][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[2][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[3][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[4][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[5][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[6][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[7][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[8][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[9][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[10][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[11][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[12][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[13][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[14][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[15][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[16][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[17][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[18][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[19][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[20][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[21][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[22][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[23][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[24][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[25][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[26][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[27][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[28][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[29][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[30][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.registers[31][31:0]
-TOP.letc_core_stubmss_tb.dut.rf.rf_rd_idx[4:0]
-TOP.letc_core_stubmss_tb.dut.rf.rf_rd_val[31:0]
-@29
-TOP.letc_core_stubmss_tb.dut.rf.rf_rd_we
-@23
-TOP.letc_core_stubmss_tb.dut.rf.rf_rs1_idx[4:0]
-TOP.letc_core_stubmss_tb.dut.rf.rf_rs1_val[31:0]
-TOP.letc_core_stubmss_tb.dut.rf.rf_rs2_idx[4:0]
-TOP.letc_core_stubmss_tb.dut.rf.rf_rs2_val[31:0]
 [pattern_trace] 1
 [pattern_trace] 0
