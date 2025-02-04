@@ -76,6 +76,14 @@ function string get_test_program_path();
     return test_program_path;
 endfunction
 
+function string get_trace_path();
+    string trace_path;
+    assert($value$plusargs("OUTPUT_TRACE_PATH=%s", trace_path));
+    return trace_path;
+endfunction
+
+integer trace_file_handle;
+
 task reset();
     rst_n <= 1'b0;
     repeat(2) @(negedge clk);
@@ -86,6 +94,9 @@ task reset();
     $display("Running test program in stubmss mode: %s", get_test_program_path());
     $readmemh(get_test_program_path(), dut.imss.imem);
     $readmemh(get_test_program_path(), dut.dmss.dmem);
+
+    $display("Saving output trace to: %s", get_trace_path());
+    trace_file_handle = $fopen(get_trace_path(), "w");
 
     rst_n <= 1'b1;
     repeat(2) @(negedge clk);
@@ -111,9 +122,22 @@ initial begin
 
     //Et fini!
     repeat(10) @(negedge clk);
+    $fclose(trace_file_handle);
     $finish;
 
     //verilator lint_restore
+end
+
+/* ------------------------------------------------------------------------------------------------
+ * Tracing
+ * --------------------------------------------------------------------------------------------- */
+
+always_ff @(posedge clk) begin
+    if (rst_n) begin
+        if (dut.rf_rd_we & (dut.rf_rd_idx != '0)) begin
+            $fdisplay(trace_file_handle, "[letc_core_rf]: %h was written to register %d", dut.rf_rd_val, dut.rf_rd_idx);
+        end
+    end
 end
 
 endmodule : letc_core_stubmss_tb

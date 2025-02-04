@@ -26,6 +26,7 @@ OUT_DIR=${STUBMSS_OUT_DIR}/${TEST_PROGRAM}
 
 LOG=${OUT_DIR}/simulation_log.txt
 OUTPUT_WAVES=${OUT_DIR}/waves.fst
+OUTPUT_TRACE=${OUT_DIR}/trace.txt
 
 INTERMEDIATE_DIR=${STUBMSS_OUT_DIR}/intermediate
 SIM_BIN=${INTERMEDIATE_DIR}/simulation.elf
@@ -62,7 +63,7 @@ echo "SIM_BIN:              $SIM_BIN" | tee -a $LOG
 ####################################################################################################
 
 echo "Running $SIM_BIN..." | tee -a $LOG
-$SIM_BIN +TEST_PROGRAM_PATH=$TEST_PROGRAM_PATH 2>&1 | tee -a $LOG
+$SIM_BIN +TEST_PROGRAM_PATH=$TEST_PROGRAM_PATH +OUTPUT_TRACE_PATH=$OUTPUT_TRACE 2>&1 | tee -a $LOG
 
 #Also convert the waves to VCD
 #Actually don't do this (much less efficient)
