@@ -82,9 +82,9 @@ m2_to_w_s   m2_to_w;
 csr_implicit_rdata_s csr_implicit_rdata;
 
 //Hazard/backpressure signals
-logic [6:0] stage_ready;
-logic [6:0] stage_flush;
-logic [6:0] stage_stall;
+logic [NUM_STAGES-1:0] stage_ready;
+logic [NUM_STAGES-1:0] stage_flush;
+logic [NUM_STAGES-1:0] stage_stall;
 
 //MSS Interfaces
 letc_core_imss_if imss_if (.*);
@@ -151,6 +151,8 @@ logic global_cache_flush;
  * Module Instantiations
  * --------------------------------------------------------------------------------------------- */
 
+letc_core_adhesive glue (.*);
+
 letc_core_rf rf (.*);
 
 letc_core_imss imss (.*);
@@ -161,18 +163,18 @@ letc_core_stage_fetch1 stage_fetch1 (
     .*,
 
     //Hazard/backpressure signals
-    .f1_ready(stage_ready[0]),
-    .f1_flush(stage_flush[0]),
-    .f1_stall(stage_stall[0])
+    .f1_ready(stage_ready[FETCH1_STAGE_IDX]),
+    .f1_flush(stage_flush[FETCH1_STAGE_IDX]),
+    .f1_stall(stage_stall[FETCH1_STAGE_IDX])
 );
 
 letc_core_stage_fetch2 stage_fetch2 (
     .*,
 
     //Hazard/backpressure signals
-    .f2_ready(stage_ready[1]),
-    .f2_flush(stage_flush[1]),
-    .f2_stall(stage_stall[1])
+    .f2_ready(stage_ready[FETCH2_STAGE_IDX]),
+    .f2_flush(stage_flush[FETCH2_STAGE_IDX]),
+    .f2_stall(stage_stall[FETCH2_STAGE_IDX])
 );
 
 //FIXME why does XSIM act like stage_ready has multiple drivers
@@ -184,45 +186,45 @@ letc_core_stage_decode stage_decode (
     .*,
 
     //Hazard/backpressure signals
-    .d_ready(stage_ready[2]),
-    .d_flush(stage_flush[2]),
-    .d_stall(stage_stall[2])
+    .d_ready(stage_ready[DECODE_STAGE_IDX]),
+    .d_flush(stage_flush[DECODE_STAGE_IDX]),
+    .d_stall(stage_stall[DECODE_STAGE_IDX])
 );
 
 letc_core_stage_execute stage_execute (
     .*,
 
     //Hazard/backpressure signals
-    .e_ready(stage_ready[3]),
-    .e_flush(stage_flush[3]),
-    .e_stall(stage_stall[3])
+    .e_ready(stage_ready[EXECUTE_STAGE_IDX]),
+    .e_flush(stage_flush[EXECUTE_STAGE_IDX]),
+    .e_stall(stage_stall[EXECUTE_STAGE_IDX])
 );
 
 letc_core_stage_memory1 stage_memory1 (
     .*,
 
     //Hazard/backpressure signals
-    .m1_ready(stage_ready[4]),
-    .m1_flush(stage_flush[4]),
-    .m1_stall(stage_stall[4])
+    .m1_ready(stage_ready[MEMORY1_STAGE_IDX]),
+    .m1_flush(stage_flush[MEMORY1_STAGE_IDX]),
+    .m1_stall(stage_stall[MEMORY1_STAGE_IDX])
 );
 
 letc_core_stage_memory2 stage_memory2 (
     .*,
 
     //Hazard/backpressure signals
-    .m2_ready(stage_ready[5]),
-    .m2_flush(stage_flush[5]),
-    .m2_stall(stage_stall[5])
+    .m2_ready(stage_ready[MEMORY2_STAGE_IDX]),
+    .m2_flush(stage_flush[MEMORY2_STAGE_IDX]),
+    .m2_stall(stage_stall[MEMORY2_STAGE_IDX])
 );
 
 letc_core_stage_writeback stage_writeback (
     .*,
 
     //Hazard/backpressure signals
-    .w_ready(stage_ready[6]),
-    .w_flush(stage_flush[6]),
-    .w_stall(stage_stall[6])
+    .w_ready(stage_ready[WRITEBACK_STAGE_IDX]),
+    .w_flush(stage_flush[WRITEBACK_STAGE_IDX]),
+    .w_stall(stage_stall[WRITEBACK_STAGE_IDX])
 );
 
 /*

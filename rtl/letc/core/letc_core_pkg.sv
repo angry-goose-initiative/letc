@@ -39,6 +39,15 @@ typedef logic [31:0]    vaddr_t;
 
 parameter pc_t RESET_PC = 32'h00000000;
 
+parameter NUM_STAGES            = 7;
+parameter FETCH1_STAGE_IDX      = 0;
+parameter FETCH2_STAGE_IDX      = 1;
+parameter DECODE_STAGE_IDX      = 2;
+parameter EXECUTE_STAGE_IDX     = 3;
+parameter MEMORY1_STAGE_IDX     = 4;
+parameter MEMORY2_STAGE_IDX     = 5;
+parameter WRITEBACK_STAGE_IDX   = 6;
+
 //verilator lint_restore
 
 /* ------------------------------------------------------------------------------------------------
