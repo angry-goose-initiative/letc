@@ -69,7 +69,10 @@ end
  * --------------------------------------------------------------------------------------------- */
 
 assign f2_to_d_valid    = f1_to_f2_valid_ff & !f2_flush & !f2_stall;
-assign f2_ready         = imss_if.rsp_valid;
+
+//We're to accept something from F1 if we don't have anything yet, or we have something and the imss is ready to provide it
+assign f2_ready         = !f1_to_f2_valid_ff | (f1_to_f2_valid_ff & imss_if.rsp_valid);
+
 assign f2_to_d.pc       = f1_to_f2_ff.pc;
 assign f2_to_d.instr    = imss_if.rsp_data[31:0];
 
