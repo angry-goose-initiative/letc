@@ -22,6 +22,10 @@ module letc_core_bubble_wrap
     import letc_core_pkg::*;
     import riscv_pkg::*;
 (
+    //Just used for assertions at the moment
+    input   logic clk,
+    input   logic rst_n,
+
     input   logic [NUM_STAGES-1:0] stage_ready,
     output  logic [NUM_STAGES-1:0] stage_stall
 
@@ -73,6 +77,25 @@ assign stage_stall = backpressured_stage_stall;
  * Assertions
  * --------------------------------------------------------------------------------------------- */
 
-//TODO
+`ifdef SIMULATION
+
+//Control signals should always be known out of reset
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(stage_ready));
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(stage_stall));
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(unforwardable_stage_hazard));
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(stage_stall_loopback));
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(direct_stage_stall));
+
+//Per-bit checks
+generate
+    for (genvar ii = 0; ii < NUM_STAGES; ++ii) begin : gen_asserts
+        assert property (@(posedge clk) disable iff (!rst_n) !stage_ready[ii] |-> stage_stall[ii]);//Loopback
+        if (ii != NUM_STAGES-1) begin
+            assert property (@(posedge clk) disable iff (!rst_n) stage_stall[ii+1] |-> stage_stall[ii]);//Backpressure
+        end
+    end : gen_asserts
+endgenerate
+
+`endif //SIMULATION
 
 endmodule : letc_core_bubble_wrap

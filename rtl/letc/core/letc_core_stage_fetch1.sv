@@ -41,6 +41,9 @@ module letc_core_stage_fetch1
     output f1_to_f2_s f1_to_f2
 );
 
+//f1 is always ready!
+assign f1_ready = 1'b1;
+
 /* ------------------------------------------------------------------------------------------------
  * Post-Reset Initialization
  * --------------------------------------------------------------------------------------------- */
@@ -87,7 +90,8 @@ end
  * PC Latency Management
  * --------------------------------------------------------------------------------------------- */
 
-//Need to deal with stalling latency/etc because fetch_addr needs to be the "same" as the PC
+//Need to deal with stalling latency/etc because the delayed version of fetch_addr needs to be the
+//"same" as the PC even though the imss_if doesn't have an enable for it's address in flops
 vaddr_t fetch_addr;
 always_comb begin
     if (f1_stall | f1_init) begin
@@ -101,15 +105,14 @@ end
  * IMSS Communication
  * --------------------------------------------------------------------------------------------- */
 
-assign imss_if.req_valid        = !f1_flush & !f1_stall;
+assign imss_if.req_valid        = !f1_flush & !f1_stall;//TODO or should this just be constant 1?
 assign imss_if.req_virtual_addr = fetch_addr;
-assign f1_ready                 = 1'b1;
 
 /* ------------------------------------------------------------------------------------------------
  * Output To F2
  * --------------------------------------------------------------------------------------------- */
 
-assign f1_to_f2_valid   = !f1_flush & !f1_stall & !f1_init;
+assign f1_to_f2_valid   = !f1_init & !f1_flush & !f1_stall;
 assign f1_to_f2.pc      = pc_ff;
 
 /* ------------------------------------------------------------------------------------------------
@@ -121,16 +124,41 @@ assign f1_to_f2.pc      = pc_ff;
 //verilator lint_save
 //verilator lint_off UNUSED
 
+//f1_init should only be high for a single cycle after reset
+assert property (@(posedge clk) disable iff (!rst_n) f1_init  |=> !f1_init);
+assert property (@(posedge clk) disable iff (!rst_n) !f1_init |=> !f1_init);
+
+//When stalled, fetch_addr shouldn't change
+assert property (@(posedge clk) disable iff (!rst_n) f1_stall |-> $stable(fetch_addr));
+
+//Control signals should always be known out of reset
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(pc_load_en));
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(f1_to_f2_valid));
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(f1_ready));
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(f1_flush));
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(f1_stall));
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(imss_if.req_valid));
+
+//Valid qualified signals should be known
+assert property (@(posedge clk) disable iff (!rst_n) pc_load_en         |-> !$isunknown(pc_load_val));
+assert property (@(posedge clk) disable iff (!rst_n) f1_to_f2_valid     |-> !$isunknown(f1_to_f2));
+assert property (@(posedge clk) disable iff (!rst_n) imss_if.req_valid  |-> !$isunknown(imss_if.req_virtual_addr));
+
+//If we're not ready, adhesive should stall us (loopback)
+assert property (@(posedge clk) disable iff (!rst_n) !f1_ready |-> f1_stall);
+
+//Outputs should stay stable when we're stalled
+assert property (@(posedge clk) disable iff (!rst_n) f1_stall |-> $stable(f1_to_f2));
+
+//Flushing and stalling a stage at the same time is likely a logic bug in adhesive
+assert property (@(posedge clk) disable iff (!rst_n) !(f1_flush & f1_stall));
+
 /*
 word_t pc, next_pc, next_seq_pc;//Useful for debugging
 assign pc          = {pc_word_ff,       2'b00};
 assign next_pc     = {next_pc_word,     2'b00};
 assign next_seq_pc = {next_seq_pc_word, 2'b00};
 */
-
-//TODO
-
-//TODO also in simulation init registers to 32'hDEADBEEF to aid debugging
 
 //verilator lint_restore
 

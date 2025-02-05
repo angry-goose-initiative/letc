@@ -39,6 +39,8 @@ module letc_core_stage_execute
     output  e_to_m1_s   e_to_m1
 );
 
+assign e_ready = 1'b1; // TODO: Will not be ready during multicycle multiply
+
 /* ------------------------------------------------------------------------------------------------
  * Input Flop Stage
  * --------------------------------------------------------------------------------------------- */
@@ -61,8 +63,6 @@ always_ff @(posedge clk) begin
         ff_in <= d_to_e;
     end
 end
-
-assign e_ready = 1'b1; // TODO: Will not be ready during multicycle multiply
 
 /* ------------------------------------------------------------------------------------------------
  * Arithmetic
@@ -179,9 +179,26 @@ end
 
 `ifdef SIMULATION
 
-//TODO
+//Control signals should always be known out of reset
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(d_to_e_valid));
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(e_to_m1_valid));
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(e_ready));
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(e_flush));
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(e_stall));
 
-//assert property (@(posedge clk) disable iff (!rst_n) !(stage_flush && stage_stall));
+//Valid qualified signals should be known
+assert property (@(posedge clk) disable iff (!rst_n) d_to_e_valid  |-> !$isunknown(d_to_e));
+assert property (@(posedge clk) disable iff (!rst_n) e_to_m1_valid |-> !$isunknown(e_to_m1));
+assert property (@(posedge clk) disable iff (!rst_n) ff_in_valid   |-> !$isunknown(ff_in));
+
+//If we're not ready, adhesive should stall us (loopback)
+assert property (@(posedge clk) disable iff (!rst_n) !e_ready |-> e_stall);
+
+//Outputs should stay stable when we're stalled
+assert property (@(posedge clk) disable iff (!rst_n) e_stall |-> $stable(e_to_m1));
+
+//Flushing and stalling a stage at the same time is likely a logic bug in adhesive
+assert property (@(posedge clk) disable iff (!rst_n) !(e_flush & e_stall));
 
 `endif //SIMULATION
 

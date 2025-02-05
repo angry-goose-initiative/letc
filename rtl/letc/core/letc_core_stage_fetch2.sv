@@ -86,10 +86,35 @@ assign f2_to_d.instr    = imss_if.rsp_data[31:0];
 //verilator lint_save
 //verilator lint_off UNUSED
 
+//Control signals should always be known out of reset
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(f1_to_f2_valid));
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(f2_to_d_valid));
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(f2_ready));
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(f2_flush));
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(f2_stall));
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(imss_if.rsp_valid));
+
+//Valid qualified signals should be known
+assert property (@(posedge clk) disable iff (!rst_n) f1_to_f2_valid     |-> !$isunknown(f1_to_f2));
+assert property (@(posedge clk) disable iff (!rst_n) f2_to_d_valid      |-> !$isunknown(f2_to_d));
+assert property (@(posedge clk) disable iff (!rst_n) imss_if.rsp_valid  |-> !$isunknown(imss_if.rsp_data));
+assert property (@(posedge clk) disable iff (!rst_n) ff_in_valid        |-> !$isunknown(ff_in));
+
+//If we're not ready, adhesive should stall us (loopback)
+assert property (@(posedge clk) disable iff (!rst_n) !f2_ready |-> f2_stall);
+
+//Outputs should stay stable when we're stalled, with the exception of instr
+//as the imss may be refilling a cache line
+assert property (@(posedge clk) disable iff (!rst_n) f2_stall |-> $stable(f2_to_d.pc));
+
+//If we don't have a valid from f1, we shouldn't have one from imss_if
+assert property (@(posedge clk) disable iff (!rst_n) imss_if.rsp_valid |-> ff_in_valid);//Contrapostive
+
+//Flushing and stalling a stage at the same time is likely a logic bug in adhesive
+assert property (@(posedge clk) disable iff (!rst_n) !(f2_flush & f2_stall));
+
 //Useful for debugging
 //word_t nice_instr = {f2_to_d.instr, 2'b11};
-
-//TODO
 
 //verilator lint_restore
 

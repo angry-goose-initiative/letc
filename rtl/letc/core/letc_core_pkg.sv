@@ -142,14 +142,14 @@ typedef enum logic [1:0] {
  * --------------------------------------------------------------------------------------------- */
 
 typedef struct packed {
-    pc_t           pc;
+    pc_t pc;
 
     //TODO add exception status signal
 } f1_to_f2_s;
 
 typedef struct packed {
-    pc_t   pc;
-    instr_t     instr;
+    pc_t    pc;
+    instr_t instr;
 
     //TODO add exception status signal
 } f2_to_d_s;
