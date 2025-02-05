@@ -88,6 +88,20 @@ logic [NUM_STAGES-1:0] stage_ready;
 logic [NUM_STAGES-1:0] stage_flush;
 logic [NUM_STAGES-1:0] stage_stall;
 
+// Decided branches
+logic branch_taken;
+word_t branch_target;
+
+// Forwarding interfaces
+letc_core_forwardee_if e_forwardee_rs1();
+letc_core_forwardee_if e_forwardee_rs2();
+letc_core_forwardee_if m1_forwardee_rs2();
+letc_core_forwardee_if m2_forwardee_rs2();
+
+letc_core_forwarder_if m1_forwarder();
+letc_core_forwarder_if m2_forwarder();
+letc_core_forwarder_if w_forwarder();
+
 //MSS Interfaces
 letc_core_imss_if imss_if (.*);
 letc_core_dmss_if dmss_if (.*);

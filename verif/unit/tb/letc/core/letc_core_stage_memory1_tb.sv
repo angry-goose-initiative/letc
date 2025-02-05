@@ -32,11 +32,15 @@ logic       rst_n;
 logic       m1_ready;
 logic       m1_flush;
 logic       m1_stall;
+logic       branch_taken;
+word_t      branch_target;
 logic       e_to_m1_valid;
 e_to_m1_s   e_to_m1;
 logic       m1_to_m2_valid;
 m1_to_m2_s  m1_to_m2;
 letc_core_dmss_if dmss_if();
+letc_core_forwarder_if m1_forwarder();
+letc_core_forwardee_if m1_forwardee_rs2();
 
 letc_core_stage_memory1 dut(.*);
 

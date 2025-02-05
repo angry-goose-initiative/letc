@@ -9,6 +9,9 @@
  *
 */
 
+// verilator lint_save
+// verilator lint_off COMBDLY
+
 module letc_core_stage_memory1
     import letc_pkg::*;
     import letc_core_pkg::*;
@@ -21,12 +24,18 @@ module letc_core_stage_memory1
     input   logic       m1_flush,
     input   logic       m1_stall,
 
+    output  logic       branch_taken,
+    output  word_t      branch_target,
+
     input   logic       e_to_m1_valid,
     input   e_to_m1_s   e_to_m1,
     output  logic       m1_to_m2_valid,
     output  m1_to_m2_s  m1_to_m2,
 
-    letc_core_dmss_if.memory1 dmss_if
+    letc_core_dmss_if.memory1 dmss_if,
+
+    letc_core_forwarder_if.stage m1_forwarder,
+    letc_core_forwardee_if.stage m1_forwardee_rs2
 );
 
 logic ff_in_valid;
@@ -54,6 +63,23 @@ logic out_valid;
 assign out_valid = ff_in_valid && !m1_flush && !m1_stall;
 
 assign dmss_if.load_addr = e_to_m1.alu_result;
+
+always_comb begin
+    m1_forwarder.rd_we <= ff_in.rd_we;
+    m1_forwarder.rd_idx <= ff_in.rd_idx;
+    m1_forwarder.fwd_val_avail <= 1'b0; // TODO
+    unique case (ff_in.rd_src)
+        RD_SRC_ALU: m1_forwarder.fwd_val <= ff_in.alu_result;
+        RD_SRC_CSR: m1_forwarder.fwd_val <= ff_in.csr_old_val;
+        default:    m1_forwarder.fwd_val <= 32'hDEADBEEF;
+    endcase
+end
+
+assign m1_forwardee_rs2.reg_idx_valid = 1'b0; // M1 is never user of rs2
+assign m1_forwardee_rs2.reg_idx = ff_in.rs2_idx;
+
+assign branch_taken = ff_in.branch_taken;
+assign branch_target = ff_in.alu_result;
 
 assign m1_to_m2_valid = out_valid;
 assign m1_to_m2 = '{

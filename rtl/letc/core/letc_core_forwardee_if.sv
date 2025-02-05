@@ -11,6 +11,9 @@
  *
 */
 
+// verilator lint_save
+// verilator lint_off UNUSEDSIGNAL
+
 interface letc_core_forwardee_if;
 
 import riscv_pkg::*;
