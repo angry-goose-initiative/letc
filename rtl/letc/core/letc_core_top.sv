@@ -45,6 +45,8 @@ module letc_core_top
  * Connections
  * --------------------------------------------------------------------------------------------- */
 
+//TODO signal to globally flush caches?
+
 //rd Write Port
 reg_idx_t   rf_rd_idx;
 word_t      rf_rd_val;
@@ -93,57 +95,6 @@ letc_core_dmss_if dmss_if (.*);
 //Change the PC (useful for branches, exceptions, etc)
 logic   pc_load_en;
 pc_t    pc_load_val;
-
-/*
-
-//Branch signals
-logic       branch_taken;
-pc_word_t   branch_target;
-
-//Bypass signals
-//d1
-logic  stage_d_bypass_rs1;
-logic  stage_d_bypass_rs2;
-word_t stage_d_bypass_rs1_rdata;
-word_t stage_d_bypass_rs2_rdata;
-//e1
-logic  stage_e1_bypass_rs1;
-logic  stage_e1_bypass_rs2;
-word_t stage_e1_bypass_rs1_rdata;
-word_t stage_e1_bypass_rs2_rdata;
-//TODO any other stages that need bypassing
-
-//Memory requests to the AXI FSM
-letc_core_limp_if axi_fsm_limp[2:0](.*);
-
-//Interface for CSRs whose state (at least partially) exists outside of letc_core_csr
-//TODO
-
-//CSR explicit software read interface
-logic       csr_explicit_ren;
-csr_idx_t   csr_explicit_ridx;
-word_t      csr_explicit_rdata;
-logic       csr_explicit_rill;
-
-//CSR explicit software read interface
-logic           csr_explicit_wen;
-csr_idx_t       csr_explicit_widx;
-word_t          csr_explicit_wdata;
-logic           csr_explicit_will;
-
-//Cache interfaces
-letc_core_limp_if l1icache_limp(.*);
-letc_core_limp_if l1dcache_limp(.*);
-
-//TLB interfaces
-letc_core_tlb_if itlb_if(.*);
-letc_core_tlb_if dtlb_if(.*);
-
-//Signal to flush all caches and TLBs
-//TODO how to detect if the flush is complete?
-logic global_cache_flush;
-
-*/
 
 //assign o_debug = d_to_e1[7:0];//TESTING
 
@@ -226,58 +177,5 @@ letc_core_stage_writeback stage_writeback (
     .w_flush(stage_flush[WRITEBACK_STAGE_IDX]),
     .w_stall(stage_stall[WRITEBACK_STAGE_IDX])
 );
-
-/*
-
-letc_core_tghm tghm (
-    .*,
-
-    //Interrupts
-    //Passed through via .* above
-
-    //Hazard/backpressure signals
-    .i_stage_ready(stage_ready),
-    .o_stage_flush(stage_flush),
-    .o_stage_stall(stage_stall),
-
-    //Register index signals for hazard detection
-    //Even if we aren't actually reading registers, to be safe, we will still bypass/stall
-    .i_stage_d_valid(f2_to_d.valid),
-    .i_stage_d_rs1_idx(rs1_idx),
-    .i_stage_d_rs2_idx(rs2_idx),
-    .i_stage_e1_valid(d_to_e1.valid),
-    .i_stage_e1_rs1_idx(d_to_e1.rs1_idx),
-    .i_stage_e1_rs2_idx(d_to_e1.rs2_idx),
-    .i_stage_e1_rd_we(d_to_e1.rd_we),
-    .i_stage_e1_rd_idx(d_to_e1.rd_idx),
-    .i_stage_e2_valid(e1_to_e2.valid),
-    .i_stage_e2_rd_we(e1_to_e2.rd_we),
-    .i_stage_e2_rd_idx(e1_to_e2.rd_idx),
-    .i_stage_w_valid(e2_to_w.valid),
-    .i_stage_w_rd_we(e2_to_w.rd_we),
-    .i_stage_w_rd_idx(e2_to_w.rd_idx),
-
-    //Bypass signals
-    .o_stage_d_bypass_rs1(stage_d_bypass_rs1),
-    .o_stage_d_bypass_rs2(stage_d_bypass_rs2),
-    .o_stage_d_bypass_rs1_rdata(stage_d_bypass_rs1_rdata),
-    .o_stage_d_bypass_rs2_rdata(stage_d_bypass_rs2_rdata),
-    .o_stage_e1_bypass_rs1(stage_e1_bypass_rs1),
-    .o_stage_e1_bypass_rs2(stage_e1_bypass_rs2),
-    .o_stage_e1_bypass_rs1_rdata(stage_e1_bypass_rs1_rdata),
-    .o_stage_e1_bypass_rs2_rdata(stage_e1_bypass_rs2_rdata),
-    .i_stage_e2_alu_result(e1_to_e2.alu_result),
-    .i_stage_w_rd_wdata(rd_wdata),
-
-    //Signal to flush all caches and TLBs
-    .o_global_cache_flush(global_cache_flush),
-
-    //Branch snooping (to flush earlier stages on a branch)
-    .i_branch_taken(branch_taken)
-
-    //TODO
-);
-
-*/
 
 endmodule : letc_core_top

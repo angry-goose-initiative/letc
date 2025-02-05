@@ -224,7 +224,7 @@ initial begin
     assert(out_valid);
 
     // ---------- Register file -----------------------------------------------
-    
+
     rf_rs1_val      = 32'hAAAAAAAA;
     rf_rs2_val      = 32'hBBBBBBBB;
     f2_to_d.instr   = 32'h009433b3; // sltu x7, x8, x9

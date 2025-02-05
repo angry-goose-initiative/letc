@@ -23,7 +23,7 @@ module letc_core_bubble_wrap
     import riscv_pkg::*;
 (
     input   logic [NUM_STAGES-1:0] stage_ready,
-    output  logic [NUM_STAGES-1:0] stage_stall 
+    output  logic [NUM_STAGES-1:0] stage_stall
 
     //TODO also need to have some inputs to detect data hazards, feeding from the forwarder/forwardee interfaces
     //TODO flushing should happen in a different module

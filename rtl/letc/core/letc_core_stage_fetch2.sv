@@ -45,22 +45,22 @@ module letc_core_stage_fetch2
  * Input Flop Stage
  * --------------------------------------------------------------------------------------------- */
 
-logic      f1_to_f2_valid_ff;
-f1_to_f2_s f1_to_f2_ff;
+logic      ff_in_valid;
+f1_to_f2_s ff_in;
 
 always_ff @(posedge clk) begin
     if (!rst_n) begin
-        f1_to_f2_valid_ff <= 1'b0;
+        ff_in_valid <= 1'b0;
     end else begin
         if (!f2_stall) begin
-            f1_to_f2_valid_ff <= f1_to_f2_valid;
+            ff_in_valid <= f1_to_f2_valid;
         end
     end
 end
 
 always_ff @(posedge clk) begin
     if (!f2_stall) begin
-        f1_to_f2_ff <= f1_to_f2;
+        ff_in <= f1_to_f2;
     end
 end
 
@@ -68,12 +68,13 @@ end
  * IMSS Communication and Output Logic
  * --------------------------------------------------------------------------------------------- */
 
-assign f2_to_d_valid    = f1_to_f2_valid_ff & !f2_flush & !f2_stall;
+assign f2_to_d_valid    = ff_in_valid & !f2_flush & !f2_stall;
 
-//We're to accept something from F1 if we don't have anything yet, or we have something and the imss is ready to provide it
-assign f2_ready         = !f1_to_f2_valid_ff | (f1_to_f2_valid_ff & imss_if.rsp_valid);
+//We're to accept something from F1 if we don't have anything from it yet, or we have something from it
+//and the imss is ready to provide the actual instruction
+assign f2_ready         = !ff_in_valid | (ff_in_valid & imss_if.rsp_valid);
 
-assign f2_to_d.pc       = f1_to_f2_ff.pc;
+assign f2_to_d.pc       = ff_in.pc;
 assign f2_to_d.instr    = imss_if.rsp_data[31:0];
 
 /* ------------------------------------------------------------------------------------------------

@@ -31,7 +31,7 @@ help:
 	@echo "    synth_vivado_ooc       Synthesize a module with Vivado in out-of-context mode (requires TARGET option)"
 	@echo "    synth_yosys            Synthesize a module with Yosys (requires TARGET option)"
 	@echo "    regression             Run a regression (single-threaded)"
-	@echo "    regression_parallel    Multi-threaded using GNU Parallel"
+	@echo "    regression_parallel    Run a multi-threaded regression using GNU Parallel"
 	@echo "    svlint                 Run the svlint linting tool"
 	@echo "    software               Build software to run on the core"
 	@echo "    stubmss_build          Build the stubmss testbench to run test programs on the core"

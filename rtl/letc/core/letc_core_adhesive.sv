@@ -21,7 +21,7 @@ module letc_core_adhesive
 (
     input   logic [NUM_STAGES-1:0] stage_ready,
     output  logic [NUM_STAGES-1:0] stage_flush,
-    output  logic [NUM_STAGES-1:0] stage_stall 
+    output  logic [NUM_STAGES-1:0] stage_stall
 );
 
 //TODO
