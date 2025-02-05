@@ -11,6 +11,7 @@
 
 // verilator lint_save
 // verilator lint_off UNUSEDSIGNAL
+// verilator lint_off INITIALDLY
 
 /* ------------------------------------------------------------------------------------------------
  * Module Definition
@@ -77,7 +78,7 @@ task test_instr_op(
     input   alu_op_e    expected_alu_op
 );
     $display("Testing op instruction: %s", assembly);
-    f2_to_d.instr = instr;
+    f2_to_d.instr <= instr;
     @(negedge clk);
     assert(d_to_e.rd_src        == RD_SRC_ALU);
     assert(d_to_e.rd_we         == expected_rd_we);
@@ -96,7 +97,7 @@ task test_instr_op_imm(
     input   alu_op_e    expected_alu_op
 );
     $display("Testing op_imm instruction: %s", assembly);
-    f2_to_d.instr = instr;
+    f2_to_d.instr <= instr;
     @(negedge clk);
     assert(d_to_e.rd_src        == RD_SRC_ALU);
     assert(d_to_e.rd_we         == expected_rd_we);
@@ -117,7 +118,7 @@ task test_instr_load(
     input   mem_size_e  expected_mem_size
 );
     $display("Testing load instruction: %s", assembly);
-    f2_to_d.instr = instr;
+    f2_to_d.instr <= instr;
     @(negedge clk);
     assert(d_to_e.rd_src        == RD_SRC_MEM);
     assert(d_to_e.rd_we         == expected_rd_we);
@@ -140,7 +141,7 @@ task test_instr_csr(
     input   csr_op_src_e    expected_csr_op_src
 );
     $display("Testing csr instruction: %s", assembly);
-    f2_to_d.instr = instr;
+    f2_to_d.instr <= instr;
     @(negedge clk);
     assert(d_to_e.rd_src        == RD_SRC_CSR);
     assert(d_to_e.rd_we         == expected_rd_we);
@@ -168,66 +169,64 @@ end
 
 initial begin
     // Setup
-    stage_flush         = 1'b0;
-    stage_stall         = 1'b0;
-    csr_de_expl_rdata   = 32'h0;
-    csr_de_expl_rill    = 1'b0;
-    csr_de_expl_will    = 1'b0;
-    f2_to_d             = '0;
+    stage_flush         <= 1'b0;
+    stage_stall         <= 1'b0;
+    csr_de_expl_rdata   <= 32'h0;
+    csr_de_expl_rill    <= 1'b0;
+    csr_de_expl_will    <= 1'b0;
+    f2_to_d             <= '0;
 
     // Reset things
-    rst_n = 1'b0;
+    rst_n <= 1'b0;
     @(negedge clk);
-    rst_n = 1'b1;
+    rst_n <= 1'b1;
     @(negedge clk);
 
-    /////////////////////////////////////////
-    // Testing valid signal timing
-    /////////////////////////////////////////
+    // ---------- Valid signal ------------------------------------------------
 
-    in_valid = 1'b1;
+    in_valid <= 1'b1;
     @(negedge clk);
     assert(out_valid);
 
-    in_valid = 1'b0;
+    in_valid <= 1'b0;
     @(negedge clk);
     assert(!out_valid);
 
-    in_valid = 1'b1;
+    in_valid <= 1'b1;
     @(negedge clk);
     assert(out_valid);
 
     // Stall
-    stage_stall = 1'b1;
-    in_valid = 1'b0;
+    stage_stall <= 1'b1;
+    in_valid <= 1'b0;
     @(negedge clk);
     assert(!out_valid);
 
     // Resume
-    stage_stall = 1'b0;
-    in_valid = 1'b1;
+    stage_stall <= 1'b0;
+    in_valid <= 1'b1;
     @(negedge clk);
     assert(ff_out_valid);
     assert(out_valid);
 
     // Flush
-    stage_flush = 1'b1;
-    in_valid = 1'b0;
+    stage_flush <= 1'b1;
+    in_valid <= 1'b0;
     @(negedge clk);
     assert(!out_valid);
 
     // Deassert flush
-    stage_flush = 1'b0;
-    in_valid = 1'b1;
+    stage_flush <= 1'b0;
+    in_valid <= 1'b1;
     @(negedge clk);
     assert(!ff_out_valid);
     assert(out_valid);
 
     // ---------- Register file -----------------------------------------------
 
-    rf_rs1_val      = 32'hAAAAAAAA;
-    rf_rs2_val      = 32'hBBBBBBBB;
-    f2_to_d.instr   = 32'h009433b3; // sltu x7, x8, x9
+    rf_rs1_val      <= 32'hAAAAAAAA;
+    rf_rs2_val      <= 32'hBBBBBBBB;
+    f2_to_d.instr   <= 32'h009433b3; // sltu x7, x8, x9
     @(negedge clk);
     assert(d_to_e.rd_idx    == 7);
     assert(d_to_e.rs1_idx   == 8);
@@ -309,13 +308,13 @@ initial begin
     // ---------- STORE -------------------------------------------------------
 
     // S-type instructions
-    f2_to_d.instr = 32'h00112623; // sw ra, 12(sp)
+    f2_to_d.instr <= 32'h00112623; // sw ra, 12(sp)
     @(negedge clk);
     assert(d_to_e.immediate == 32'd12);
     assert(d_to_e.rd_we     == 1'b0);
     assert(d_to_e.mem_op    == MEM_OP_STORE);
     assert(d_to_e.mem_size  == MEM_SIZE_WORD);
-    f2_to_d.instr = 32'he2489c23; // sh tp, -456(a7)
+    f2_to_d.instr <= 32'he2489c23; // sh tp, -456(a7)
     @(negedge clk);
     assert(d_to_e.immediate == 32'hfffffe38);
     assert(d_to_e.rd_we     == 1'b0);
@@ -393,7 +392,7 @@ initial begin
         .expected_csr_op_src(CSR_OP_SRC_ZIMM)
     );
 
-    f2_to_d.instr = 32'h301fba73; // csrrc x20, misa, x31
+    f2_to_d.instr <= 32'h301fba73; // csrrc x20, misa, x31
 
     // ---------- AMO ---------------------------------------------------------
 

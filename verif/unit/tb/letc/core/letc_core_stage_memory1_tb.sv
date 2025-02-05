@@ -11,6 +11,7 @@
 
 // verilator lint_save
 // verilator lint_off UNUSEDSIGNAL
+// verilator lint_off INITIALDLY
 
 /* ------------------------------------------------------------------------------------------------
  * Module Definition
@@ -56,12 +57,12 @@ clock_generator #(
  * --------------------------------------------------------------------------------------------- */
 
 initial begin
-    rst_n = 1'b0;
-    m1_flush = 1'b0;
-    m1_stall = 1'b0;
-    e_to_m1_valid = 1'b0;
-    e_to_m1 = '0;
-    e_to_m1.alu_result = 32'd9;
+    rst_n <= 1'b0;
+    m1_flush <= 1'b0;
+    m1_stall <= 1'b0;
+    e_to_m1_valid <= 1'b0;
+    e_to_m1 <= '0;
+    e_to_m1.alu_result <= 32'd9;
 
     $finish;
 end
