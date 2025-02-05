@@ -26,7 +26,7 @@ module letc_core_stage_writeback
     output  logic       rf_rd_we,
 
     input   logic       m2_to_w_valid,
-    input   m1_to_m2_s  m2_to_w,
+    input   m2_to_w_s   m2_to_w,
 
     letc_core_dmss_if.writeback dmss_if
 );
