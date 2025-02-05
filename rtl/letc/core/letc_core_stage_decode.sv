@@ -63,10 +63,7 @@ always_ff @(posedge clk) begin
     end
 end
 
-// verilator lint_save
-// verilator lint_off UNUSEDSIGNAL
 f2_to_d_s ff_in;
-// verilator lint_restore
 always_ff @(posedge clk) begin
     if (!d_stall) begin
         ff_in <= f2_to_d;
@@ -202,11 +199,8 @@ always_comb begin
     endcase
 end
 
-// verilator lint_save
-// verilator lint_off UNUSEDSIGNAL
-word_t imm_z;
-// verilator lint_restore
-assign imm_z = imm_z_from_instr(instr);
+csr_zimm_t imm_z;
+assign imm_z = 5'(imm_z_from_instr(instr));
 
 /* ------------------------------------------------------------------------------------------------
  * Control Signal Generation
@@ -396,13 +390,14 @@ end
 
 // verilator lint_save
 // verilator lint_off UNUSEDSIGNAL
-logic illegal_instr_exception = (
+logic illegal_instr_exception;
+// verilator lint_restore
+
+assign illegal_instr_exception =
     ctrl.illegal_instr
     || (csr_de_expl_rill && ctrl.csr_expl_ren)
     || (csr_de_expl_will && ctrl.csr_expl_wen)
-    || instr[1:0] != 2'b11
-);
-// verilator lint_restore
+    || instr[1:0] != 2'b11;
 
 /* ------------------------------------------------------------------------------------------------
  * Output to next stage
@@ -417,7 +412,7 @@ assign d_to_e = '{
     csr_expl_wen:   ctrl.csr_expl_wen,
     csr_op_src:     ctrl.csr_op_src,
     csr_idx:        csr_idx,
-    csr_zimm:       imm_z[4:0],
+    csr_zimm:       imm_z,
     csr_old_val:    csr_old_val,
     rs1_idx:        rs1_idx,
     rs2_idx:        rs2_idx,
