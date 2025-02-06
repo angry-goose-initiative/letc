@@ -23,7 +23,9 @@ module letc_core_stage_execute
     input logic clk,
     input logic rst_n,
 
-    //TODO forwarding IF
+    //Forwarding logic
+    letc_core_forwardee_if.stage e_forwardee_rs1,
+    letc_core_forwardee_if.stage e_forwardee_rs2,
 
     //Hazard/backpressure signals
     output logic e_ready,
@@ -65,6 +67,23 @@ always_ff @(posedge clk) begin
 end
 
 /* ------------------------------------------------------------------------------------------------
+ * Forwarding
+ * --------------------------------------------------------------------------------------------- */
+
+assign e_forwardee_rs1.reg_idx_valid = ff_in_valid;//TODO should this be qualified with flush or stall as well?
+assign e_forwardee_rs2.reg_idx_valid = ff_in_valid;//TODO should this be qualified with flush or stall as well?
+
+assign e_forwardee_rs1.reg_idx = ff_in.rs1_idx;
+assign e_forwardee_rs2.reg_idx = ff_in.rs2_idx;
+
+word_t rs1_val;
+word_t rs2_val;
+always_comb begin
+    rs1_val = e_forwardee_rs1.use_fwd ? e_forwardee_rs1.fwd_val : ff_in.rs1_val;
+    rs2_val = e_forwardee_rs2.use_fwd ? e_forwardee_rs2.fwd_val : ff_in.rs2_val;
+end
+
+/* ------------------------------------------------------------------------------------------------
  * Arithmetic
  * --------------------------------------------------------------------------------------------- */
 
@@ -74,15 +93,6 @@ alu_op_e        alu_operation;
 word_t          alu_result;
 
 letc_core_alu alu (.*);
-
-//rs1 and rs2 bypass muxing
-word_t rs1_val;
-word_t rs2_val;
-always_comb begin
-    //TODO bypass logic
-    rs1_val = /* bypass_rs1 ? bypassed_rs1_data : */ ff_in.rs1_val;
-    rs2_val = /* bypass_rs1 ? bypassed_rs2_data : */ ff_in.rs2_val;
-end
 
 //ALU connections
 //op1

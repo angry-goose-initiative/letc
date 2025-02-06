@@ -29,6 +29,10 @@ interface axi_if #(
  * Connections
  * --------------------------------------------------------------------------------------------- */
 
+//FIXME remove this waiver once letc_core_top actually uses axi
+//verilator lint_save
+//verilator lint_off UNDRIVEN
+
 //NOT using (most of) the axi_pkg typedefs here to allow for parameter overrides
 //Enums are still used since those never change and can't be overridden: same goes for size_t even
 //though it is a typedef
@@ -72,6 +76,8 @@ logic [IDWIDTH-1:0]     rid;
 logic [DWIDTH-1:0]      rdata;
 axi_pkg::resp_e         rresp;
 logic                   rlast;
+
+//verilator lint_restore
 
 /* ------------------------------------------------------------------------------------------------
  * Modports
@@ -245,14 +251,14 @@ end
 //Valid and ready signals shouldn't be unknown outside of reset
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) !$isunknown(awvalid));
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) !$isunknown(awready));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) !$isunknown(wvalid));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) !$isunknown(wready));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) !$isunknown(bvalid));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) !$isunknown(bready));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) !$isunknown( wvalid));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) !$isunknown( wready));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) !$isunknown( bvalid));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) !$isunknown( bready));
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) !$isunknown(arvalid));
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) !$isunknown(arready));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) !$isunknown(rvalid));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) !$isunknown(rready));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) !$isunknown( rvalid));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) !$isunknown( rready));
 
 //When valid, signals shouldn't be unknown
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) (awvalid |-> !$isunknown(awid)));
@@ -260,21 +266,21 @@ assert property (@(posedge i_aclk) disable iff (!i_arst_n) (awvalid |-> !$isunkn
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) (awvalid |-> !$isunknown(awlen)));
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) (awvalid |-> !$isunknown(awsize)));
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) (awvalid |-> !$isunknown(awburst)));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) (wvalid  |-> !$isunknown(wid)));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) (wvalid  |-> !$isunknown(wdata)));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) (wvalid  |-> !$isunknown(wstrb)));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) (wvalid  |-> !$isunknown(wlast)));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) (bvalid  |-> !$isunknown(bid)));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) (bvalid  |-> !$isunknown(bresp)));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) ( wvalid |-> !$isunknown(wid)));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) ( wvalid |-> !$isunknown(wdata)));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) ( wvalid |-> !$isunknown(wstrb)));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) ( wvalid |-> !$isunknown(wlast)));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) ( bvalid |-> !$isunknown(bid)));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) ( bvalid |-> !$isunknown(bresp)));
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) (arvalid |-> !$isunknown(arid)));
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) (arvalid |-> !$isunknown(araddr)));
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) (arvalid |-> !$isunknown(arlen)));
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) (arvalid |-> !$isunknown(arsize)));
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) (arvalid |-> !$isunknown(arburst)));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) (rvalid  |-> !$isunknown(rid)));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) (rvalid  |-> !$isunknown(rdata)));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) (rvalid  |-> !$isunknown(rresp)));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) (rvalid  |-> !$isunknown(rlast)));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) ( rvalid |-> !$isunknown(rid)));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) ( rvalid |-> !$isunknown(rdata)));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) ( rvalid |-> !$isunknown(rresp)));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n) ( rvalid |-> !$isunknown(rlast)));
 
 //AxBURST shouldn't be reserved
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) (awvalid |-> (awburst != axi_pkg::AXI_BURST_RESERVED)));
@@ -283,10 +289,10 @@ assert property (@(posedge i_aclk) disable iff (!i_arst_n) (arvalid |-> (arburst
 //AXI valid and ready handshaking
 `ifndef VERILATOR//Verilator doesn't support the `throughout` keyword
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) awvalid |-> (awvalid throughout awready[->1]));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) wvalid  |-> (wvalid throughout  wready[->1]));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) bvalid  |-> (bvalid throughout  bready[->1]));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n)  wvalid |-> ( wvalid throughout  wready[->1]));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n)  bvalid |-> ( bvalid throughout  bready[->1]));
 assert property (@(posedge i_aclk) disable iff (!i_arst_n) arvalid |-> (arvalid throughout arready[->1]));
-assert property (@(posedge i_aclk) disable iff (!i_arst_n) rvalid  |-> (rvalid throughout  rready[->1]));
+assert property (@(posedge i_aclk) disable iff (!i_arst_n)  rvalid |-> ( rvalid throughout  rready[->1]));
 `endif //VERILATOR
 
 //Stable while valid

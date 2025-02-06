@@ -78,8 +78,8 @@ end
 assign m1_forwardee_rs2.reg_idx_valid = 1'b0; // M1 is never user of rs2
 assign m1_forwardee_rs2.reg_idx = ff_in.rs2_idx;
 
-assign branch_taken = ff_in.branch_taken;
-assign branch_target = ff_in.alu_result;
+assign branch_taken     = ff_in_valid & ff_in.branch_taken;
+assign branch_target    = ff_in.alu_result;
 
 assign m1_to_m2_valid = out_valid;
 assign m1_to_m2 = '{
