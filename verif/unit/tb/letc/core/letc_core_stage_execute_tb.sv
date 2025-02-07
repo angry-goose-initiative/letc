@@ -37,16 +37,22 @@ localparam CLOCK_PERIOD = 10;
 logic clk;
 logic rst_n;
 
-//IO
-//letc_core_tlb_if dtlb_if(.clk(clk), .rst_n(rst_n));
-logic d_to_e_valid;
-d_to_e_s d_to_e;
-logic e_to_m1_valid;
-e_to_m1_s e_to_m1;
+//Forwarding logic
+letc_core_forwardee_if e_forwardee_rs1();
+letc_core_forwardee_if e_forwardee_rs2();
 
+//Hazard/backpressure signals
 logic e_ready;
 logic e_flush;
 logic e_stall;
+
+//From D
+logic       d_to_e_valid;
+d_to_e_s    d_to_e;
+
+//To M1
+logic       e_to_m1_valid;
+e_to_m1_s   e_to_m1;
 
 //verilator lint_restore
 
@@ -75,11 +81,7 @@ clock_generator #(
 
 task original_test_sequence();
     //assign initial values
-    //stage_stall <= 1'b0;
-    //stage_flush <= 1'b0;
     d_to_e      <= '0;
-    //bypass_rs1  <= 1'b0;
-    //bypass_rs2  <= 1'b0;
 
     //reset things
     rst_n <= 1'b0;
@@ -118,7 +120,7 @@ task original_test_sequence();
     d_to_e_valid <= 1'b0;
 
     //next let's try to increment the program counter
-    d_to_e.pc_word <= 30'(32'h100000 >> 2);
+    d_to_e.pc <= 32'h100000;
     d_to_e.alu_op <= ALU_OP_ADD;
     d_to_e.alu_op1_src <= ALU_OP1_SRC_PC;
     d_to_e.alu_op2_src <= ALU_OP2_SRC_FOUR;
@@ -223,6 +225,10 @@ initial begin
     //verilator lint_off INITIALDLY
     e_flush <= 1'b0;
     e_stall <= 1'b0;
+    e_forwardee_rs1.use_fwd <= 1'b0;
+    e_forwardee_rs2.use_fwd <= 1'b0;
+    e_forwardee_rs1.fwd_val <= '0;
+    e_forwardee_rs2.fwd_val <= '0;
 
     //Run the original test sequence
     original_test_sequence();

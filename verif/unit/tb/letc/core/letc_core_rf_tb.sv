@@ -34,17 +34,17 @@ localparam CLOCK_PERIOD = 10;
 logic clk;
 
 //rd Write Port
-reg_idx_t   rd_idx;
-word_t      rd_val;
-logic       rd_wen;
+reg_idx_t   rf_rd_idx;
+word_t      rf_rd_val;
+logic       rf_rd_we;
 
 //rs1 Read Port
-reg_idx_t   rs1_idx;
-word_t      rs1_val;
+reg_idx_t   rf_rs1_idx;
+word_t      rf_rs1_val;
 
 //rs2 Read Port
-reg_idx_t   rs2_idx;
-word_t      rs2_val;
+reg_idx_t   rf_rs2_idx;
+word_t      rf_rs2_val;
 
 /* ------------------------------------------------------------------------------------------------
  * DUT
@@ -74,27 +74,27 @@ clock_generator #(
 task setup();
 begin
     //Set initial input states
-    rd_idx  <= '0;
-    rd_val  <= '0;
-    rd_wen  <= 1'b0;
-    rs1_idx <= '0;
-    rs2_idx <= '0;
+    rf_rd_idx  <= '0;
+    rf_rd_val  <= '0;
+    rf_rd_we   <= 1'b0;
+    rf_rs1_idx <= '0;
+    rf_rs2_idx <= '0;
 end
 endtask
 
 task write(input reg_idx_t new_rd_idx, input word_t new_rd_wdata);
 begin
-    rd_idx  <= new_rd_idx;
-    rd_val  <= new_rd_wdata;
-    rd_wen  <= 1'b1;
+    rf_rd_idx  <= new_rd_idx;
+    rf_rd_val  <= new_rd_wdata;
+    rf_rd_we   <= 1'b1;
 end
 endtask
 
 task nowrite();
 begin
-    rd_idx  <= 'x;
-    rd_val  <= 'x;
-    rd_wen  <= 1'b0;
+    rf_rd_idx  <= 'x;
+    rf_rd_val  <= 'x;
+    rf_rd_we   <= 1'b0;
 end
 endtask
 
@@ -121,22 +121,22 @@ initial begin
     repeat(3) @(negedge clk);
 
     //Some reads
-    rs1_idx <= 5'h1A;
-    rs2_idx <= 5'h0;
+    rf_rs1_idx <= 5'h1A;
+    rf_rs2_idx <= 5'h0;
     @(negedge clk);
-    rs1_idx <= 'x;
-    rs2_idx <= 'x;
-    assert(rs1_val == 32'hABCD1234);
-    assert(rs2_val == '0);//x0 is always 0
+    rf_rs1_idx <= 'x;
+    rf_rs2_idx <= 'x;
+    assert(rf_rs1_val == 32'hABCD1234);
+    assert(rf_rs2_val == '0);//x0 is always 0
     repeat(3) @(negedge clk);
 
     //Reads and writes in the same cycle
-    rs1_idx <= 5'h10;
-    rs2_idx <= 5'hB;
+    rf_rs1_idx <= 5'h10;
+    rf_rs2_idx <= 5'hB;
     write(5'h10, 32'h12345678);
     #1;
-    assert(rs1_val == 32'h12345678);//Write should be forwarded to read (read NEW data)
-    assert(rs2_val == 32'hBBBBBBBB);//This should NOT be forwarded
+    assert(rf_rs1_val == 32'h12345678);//Write should be forwarded to read (read NEW data)
+    assert(rf_rs2_val == 32'hBBBBBBBB);//This should NOT be forwarded
     @(negedge clk);//Now the write has happened
     repeat(3) @(negedge clk);
 

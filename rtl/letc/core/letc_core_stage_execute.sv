@@ -36,7 +36,7 @@ module letc_core_stage_execute
     input   logic       d_to_e_valid,
     input   d_to_e_s    d_to_e,
 
-    //To E2
+    //To M1
     output  logic       e_to_m1_valid,
     output  e_to_m1_s   e_to_m1
 );

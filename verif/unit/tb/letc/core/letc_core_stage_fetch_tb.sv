@@ -36,8 +36,8 @@ logic rst_n;
 
 letc_core_imss_if imss_if (.*);
 
-logic     pc_load_en;
-pc_word_t pc_load_val;
+logic pc_load_en;
+pc_t  pc_load_val;
 
 logic f1_ready, f2_ready;
 logic f1_flush, f2_flush;
@@ -48,20 +48,6 @@ logic      f1_to_f2_valid;
 f1_to_f2_s f1_to_f2;
 logic      f2_to_d_valid;
 f2_to_d_s  f2_to_d;
-
-/*
-//Bypass signals
-logic     bypass_rs1;
-logic     bypass_rs2;
-word_t    bypassed_rs1_data;
-word_t    bypassed_rs2_data;
-
-
-//Hazards
-logic o_stage_ready;
-logic stage_flush;
-logic stage_stall;
-*/
 
 //verilator lint_restore
 

@@ -36,7 +36,6 @@ OUT_DIR=${IVERILOG_OUT_DIR}/${REL_TB_FILELIST_DIR}/${TB}
 
 OUTPUT_WAVES=${OUT_DIR}/waves.fst
 #OUTPUT_WAVES_VCD=${OUT_DIR}/waves.vcd
-STATS_OUTPUT=${OUT_DIR}/stats.csv
 LOG=${OUT_DIR}/log.txt
 
 INTERMEDIATE_DIR=${OUT_DIR}/intermediate
@@ -74,7 +73,6 @@ echo "IVERILOG_OUT_DIR:     $IVERILOG_OUT_DIR" | tee -a $LOG
 echo "OUT_DIR:              $OUT_DIR" | tee -a $LOG
 echo "OUTPUT_WAVES:         $OUTPUT_WAVES" | tee -a $LOG
 #echo "OUTPUT_WAVES_VCD:     $OUTPUT_WAVES_VCD" | tee -a $LOG
-echo "STATS_OUTPUT:         $STATS_OUTPUT" | tee -a $LOG
 echo "LOG:                  $LOG" | tee -a $LOG
 echo "INTERMEDIATE_DIR:     $INTERMEDIATE_DIR" | tee -a $LOG
 echo "SIM_BIN:              $SIM_BIN" | tee -a $LOG
