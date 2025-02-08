@@ -1,6 +1,6 @@
-/**
- * File    letc_core_stage_memory1.sv
- * Brief   LETC Core Memory 1 Stage
+/*
+ * File:    letc_core_stage_memory1.sv
+ * Brief:   LETC Core Memory 1 Stage
  *
  * Copyright:
  *  Copyright (C) 2025 Nick Chan
@@ -9,8 +9,9 @@
  *
 */
 
-// verilator lint_save
-// verilator lint_off COMBDLY
+/* ------------------------------------------------------------------------------------------------
+ * Module Definition
+ * --------------------------------------------------------------------------------------------- */
 
 module letc_core_stage_memory1
     import letc_pkg::*;
@@ -47,10 +48,7 @@ always_ff @(posedge clk) begin
     end
 end
 
-// verilator lint_save
-// verilator lint_off UNUSEDSIGNAL
 e_to_m1_s ff_in;
-// verilator lint_restore
 always_ff @(posedge clk) begin
     if (!m1_stall) begin
         ff_in <= e_to_m1;
@@ -63,6 +61,10 @@ logic out_valid;
 assign out_valid = ff_in_valid && !m1_flush && !m1_stall;
 
 assign dmss_if.load_addr = e_to_m1.alu_result;
+
+/* ------------------------------------------------------------------------------------------------
+ * Forwarding
+ * --------------------------------------------------------------------------------------------- */
 
 // Forwarder
 always_comb begin
@@ -83,26 +85,32 @@ assign m1_forwardee_rs2.reg_idx = ff_in.rs2_idx;
 assign branch_taken     = ff_in_valid && ff_in.branch_taken;
 assign branch_target    = ff_in.branch_target;
 
-assign m1_to_m2_valid = out_valid;
-assign m1_to_m2 = '{
-    pc:             ff_in.pc,
-    rd_src:         ff_in.rd_src,
-    rd_idx:         ff_in.rd_idx,
-    rd_we:          ff_in.rd_we,
-    csr_expl_wen:   ff_in.csr_expl_wen,
-    csr_idx:        ff_in.csr_idx,
-    csr_old_val:    ff_in.csr_old_val,
-    csr_new_val:    ff_in.csr_new_val,
-    rs2_idx:        ff_in.rs2_idx,
-    alu_result:     ff_in.alu_result,
-    mem_op:         ff_in.mem_op,
-    mem_signed:     ff_in.mem_signed,
-    mem_size:       ff_in.mem_size,
-    amo_alu_op:     ff_in.amo_alu_op,
-`ifdef SIMULATION
-    sim_exit_req:   ff_in.sim_exit_req,
-`endif
-    rs2_val:        ff_in.rs2_val
-};
+/* ------------------------------------------------------------------------------------------------
+ * Output Connections
+ * --------------------------------------------------------------------------------------------- */
+
+always_comb begin
+    m1_to_m2_valid = out_valid;
+    m1_to_m2 = '{
+        `ifdef SIMULATION
+        sim_exit_req:   ff_in.sim_exit_req,
+        `endif
+        pc:             ff_in.pc,
+        rd_src:         ff_in.rd_src,
+        rd_idx:         ff_in.rd_idx,
+        rd_we:          ff_in.rd_we,
+        csr_expl_wen:   ff_in.csr_expl_wen,
+        csr_idx:        ff_in.csr_idx,
+        csr_old_val:    ff_in.csr_old_val,
+        csr_new_val:    ff_in.csr_new_val,
+        rs2_idx:        ff_in.rs2_idx,
+        alu_result:     ff_in.alu_result,
+        mem_op:         ff_in.mem_op,
+        mem_signed:     ff_in.mem_signed,
+        mem_size:       ff_in.mem_size,
+        amo_alu_op:     ff_in.amo_alu_op,
+        rs2_val:        ff_in.rs2_val
+    };
+end
 
 endmodule : letc_core_stage_memory1

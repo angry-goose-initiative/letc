@@ -1,6 +1,6 @@
-/**
- * File    letc_core_stage_memory2.sv
- * Brief   LETC Core Memory 2 Stage
+/*
+ * File:    letc_core_stage_memory2.sv
+ * Brief:   LETC Core Memory 2 Stage
  *
  * Copyright:
  *  Copyright (C) 2025 Nick Chan
@@ -8,6 +8,10 @@
  * See the LICENSE file at the root of the project for licensing info.
  *
 */
+
+/* ------------------------------------------------------------------------------------------------
+ * Module Definition
+ * --------------------------------------------------------------------------------------------- */
 
 module letc_core_stage_memory2
     import letc_pkg::*;
@@ -56,6 +60,10 @@ assign m2_ready = 1'b1; // TODO: DMSS could cause stall
 logic out_valid;
 assign out_valid = ff_in_valid && !m2_flush && !m2_stall;
 
+/* ------------------------------------------------------------------------------------------------
+ * Forwarding
+ * --------------------------------------------------------------------------------------------- */
+
 // Forwarder
 always_comb begin
     m2_forwarder.instr_produces_rd = ff_in.rd_we && ff_in_valid;
@@ -71,6 +79,10 @@ end
 // Forwardee
 assign m2_forwardee_rs2.stage_uses_reg = 1'b0;
 assign m2_forwardee_rs2.reg_idx = ff_in.rs2_idx;
+
+/* ------------------------------------------------------------------------------------------------
+ * AMO ALU
+ * --------------------------------------------------------------------------------------------- */
 
 word_t amo_alu_result;
 word_t mem_wdata;
@@ -96,24 +108,30 @@ always_comb begin
     mem_wdata = (ff_in.mem_op == MEM_OP_AMO) ? amo_alu_result : ff_in.rs2_val;
 end
 
-assign m2_to_w_valid = out_valid;
-assign m2_to_w = '{
-    pc:             ff_in.pc,
-    rd_src:         ff_in.rd_src,
-    rd_idx:         ff_in.rd_idx,
-    rd_we:          ff_in.rd_we,
-    csr_expl_wen:   ff_in.csr_expl_wen,
-    csr_idx:        ff_in.csr_idx,
-    csr_old_val:    ff_in.csr_old_val,
-    csr_new_val:    ff_in.csr_new_val,
-    alu_result:     ff_in.alu_result,
-    mem_rdata:      dmss_if.load_data,
-    mem_op:         ff_in.mem_op,
-    mem_size:       ff_in.mem_size,
-`ifdef SIMULATION
-    sim_exit_req:   ff_in.sim_exit_req,
-`endif
-    mem_wdata:      mem_wdata
-};
+/* ------------------------------------------------------------------------------------------------
+ * Output Connections
+ * --------------------------------------------------------------------------------------------- */
+
+always_comb begin
+    m2_to_w_valid = out_valid;
+    m2_to_w = '{
+        `ifdef SIMULATION
+        sim_exit_req:   ff_in.sim_exit_req,
+        `endif
+        pc:             ff_in.pc,
+        rd_src:         ff_in.rd_src,
+        rd_idx:         ff_in.rd_idx,
+        rd_we:          ff_in.rd_we,
+        csr_expl_wen:   ff_in.csr_expl_wen,
+        csr_idx:        ff_in.csr_idx,
+        csr_old_val:    ff_in.csr_old_val,
+        csr_new_val:    ff_in.csr_new_val,
+        alu_result:     ff_in.alu_result,
+        mem_rdata:      dmss_if.load_data,
+        mem_op:         ff_in.mem_op,
+        mem_size:       ff_in.mem_size,
+        mem_wdata:      mem_wdata
+    };
+end
 
 endmodule : letc_core_stage_memory2
