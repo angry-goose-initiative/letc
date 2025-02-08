@@ -169,12 +169,15 @@ end
 
 initial begin
     // Setup
+    in_valid            <= 1'b0;
     stage_flush         <= 1'b0;
     stage_stall         <= 1'b0;
     csr_de_expl_rdata   <= 32'h0;
     csr_de_expl_rill    <= 1'b0;
     csr_de_expl_will    <= 1'b0;
     f2_to_d             <= '0;
+    rf_rs1_val          <= '0;
+    rf_rs2_val          <= '0;
 
     // Reset things
     rst_n <= 1'b0;

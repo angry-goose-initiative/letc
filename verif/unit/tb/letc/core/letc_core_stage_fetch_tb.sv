@@ -110,6 +110,10 @@ task init_imem();
     write_imem(12, 32'hDDDDDDD << 2);
     write_imem(16, 32'hEEEEEEE << 2);
     write_imem(20, 32'hFFFFFFF << 2);
+
+    for (int ii = 24; ii < 1024; ii += 4) begin
+        write_imem(ii, 32'h12344321);
+    end
 endtask
 
 //verilator lint_restore

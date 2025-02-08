@@ -147,10 +147,11 @@ task test_alu();
 endtask
 
 task test_branching();
-    d_to_e_valid    <= 1'b1;
-    d_to_e.rs1_val  <= 32'h5;
-    d_to_e.rs2_val  <= 32'h5;
-    d_to_e.cmp_op   <= CMP_OP_EQ;
+    d_to_e_valid        <= 1'b1;
+    d_to_e.rs1_val      <= 32'h5;
+    d_to_e.rs2_val      <= 32'h5;
+    d_to_e.branch_type  <= BRANCH_COND;
+    d_to_e.cmp_op       <= CMP_OP_EQ;
     @(negedge clk);
     assert(d_to_e_valid == 1'b1);
     assert(e_to_m1.branch_taken == 1'b1);
@@ -161,6 +162,27 @@ task test_branching();
     assert(e_to_m1.branch_taken == 1'b0);
 
     d_to_e <= '0;
+
+    d_to_e_valid        <= 1'b1;
+    d_to_e.branch_type  <= BRANCH_JAL;
+    @(negedge clk);
+    assert(e_to_m1_valid == 1'b1);
+    assert(e_to_m1.branch_taken == 1'b1);
+
+    d_to_e_valid        <= 1'b1;
+    d_to_e.branch_type  <= BRANCH_JALR;
+    @(negedge clk);
+    assert(e_to_m1_valid == 1'b1);
+    assert(e_to_m1.branch_taken == 1'b1);
+
+    d_to_e_valid        <= 1'b1;
+    d_to_e.branch_type  <= BRANCH_NOP;
+    @(negedge clk);
+    assert(e_to_m1_valid == 1'b1);
+    assert(e_to_m1.branch_taken == 1'b0);
+
+    d_to_e_valid    <= 1'b0;
+    d_to_e          <= '0;
     @(negedge clk);
 endtask
 

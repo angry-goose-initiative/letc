@@ -229,8 +229,8 @@ assert property (@(posedge clk) disable iff (!rst_n) d_to_e_valid  |-> !$isunkno
 assert property (@(posedge clk) disable iff (!rst_n) e_to_m1_valid |-> !$isunknown(e_to_m1));
 assert property (@(posedge clk) disable iff (!rst_n) ff_in_valid   |-> !$isunknown(ff_in));
 
-//If we're not ready, adhesive should stall us (loopback)
-assert property (@(posedge clk) disable iff (!rst_n) !e_ready |-> e_stall);
+//If we're not ready, adhesive should stall us (loopback), unless flush took precedence
+assert property (@(posedge clk) disable iff (!rst_n) !e_ready |-> (e_stall | e_flush));
 
 //Outputs should stay stable when we're stalled
 assert property (@(posedge clk) disable iff (!rst_n) e_stall |-> $stable(e_to_m1));

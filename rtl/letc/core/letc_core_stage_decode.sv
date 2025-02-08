@@ -455,9 +455,7 @@ assert property (@(posedge clk) disable iff (!rst_n) f2_to_d_valid |-> !$isunkno
 
 // Make sure output control signals unguarded by valids (or valids themselves)
 // are never unknown
-assert property (@(posedge clk) disable iff (!rst_n)
-    !rst_n |=> !$isunknown(d_to_e_valid) // Extra |=> needed to deal with the reset
-);
+assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(d_to_e_valid));
 assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(d_ready));
 
 // Valid means not unknown and, well, valid for control signals
