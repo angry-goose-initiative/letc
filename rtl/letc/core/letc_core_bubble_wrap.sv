@@ -30,21 +30,11 @@ module letc_core_bubble_wrap
     output  logic [NUM_STAGES-1:0] stage_flush,
     output  logic [NUM_STAGES-1:0] stage_stall,
 
-    input   logic branch_taken
+    input   logic branch_taken,
     //TODO also add exception in writeback signal, which should take precedence over branch_taken
 
-    //TODO also need to have some inputs to detect data hazards, feeding from the forwarder/forwardee interfaces
+    input logic [NUM_STAGES-1:0] unforwardable_stage_hazard
 );
-
-/* ------------------------------------------------------------------------------------------------
- * Hazard Detection
- * --------------------------------------------------------------------------------------------- */
-
-//Specifically hazards that can NOT be handled by forwarding
-
-logic [NUM_STAGES-1:0] unforwardable_stage_hazard;
-
-assign unforwardable_stage_hazard = '0;//TODO
 
 /* ------------------------------------------------------------------------------------------------
  * Ready To Stall Loopback

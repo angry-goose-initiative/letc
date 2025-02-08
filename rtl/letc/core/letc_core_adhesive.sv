@@ -42,7 +42,8 @@ module letc_core_adhesive
     letc_core_forwarder_if.adhesive  w_forwarder
 );
 
-//TODO
+logic [NUM_STAGES-1:0] unforwardable_stage_hazard;
+assign unforwardable_stage_hazard = '0;//FIXME actually implement this
 
 /* ------------------------------------------------------------------------------------------------
  * Forwarding Logic

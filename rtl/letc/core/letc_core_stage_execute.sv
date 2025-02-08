@@ -70,8 +70,10 @@ end
  * Forwarding
  * --------------------------------------------------------------------------------------------- */
 
-assign e_forwardee_rs1.reg_idx_valid = ff_in_valid;//TODO should this be qualified with flush or stall as well?
-assign e_forwardee_rs2.reg_idx_valid = ff_in_valid;//TODO should this be qualified with flush or stall as well?
+//TODO optimize and actually detect if a register is being used
+//TODO decide whether to do this in stages individually or decode?
+assign e_forwardee_rs1.reg_idx_valid = ff_in_valid;
+assign e_forwardee_rs2.reg_idx_valid = ff_in_valid;
 
 assign e_forwardee_rs1.reg_idx = ff_in.rs1_idx;
 assign e_forwardee_rs2.reg_idx = ff_in.rs2_idx;
