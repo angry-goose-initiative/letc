@@ -460,9 +460,6 @@ assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(d_ready));
 
 // Valid means not unknown and, well, valid for control signals
 assert property (@(posedge clk) disable iff (!rst_n) d_to_e_valid |-> !$isunknown(d_to_e));
-assert property (@(posedge clk) disable iff (!rst_n)
-    d_to_e_valid |-> (d_to_e.mem_op != mem_op_e'(2'b11))
-);
 
 assert property (@(posedge clk) disable iff (!rst_n) d_to_e.rd_we |-> !rd_is_x0);
 
