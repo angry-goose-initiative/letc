@@ -6,7 +6,7 @@
 #   Copyright (C) 2024-2025 John Jekel
 #See the README.md file at the root of the repo for licensing info.
 #
-#Example invocation: unit_verilator.sh path/to/test_program.vhex8
+#Example invocation: stubmss_run.sh path/to/test_program.vhex8 (and optionally an addititional "1" argument to view waves)
 set -e
 set -o pipefail
 
