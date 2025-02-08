@@ -195,7 +195,6 @@ always_comb begin
         csr_idx:        ff_in.csr_idx,
         csr_old_val:    ff_in.csr_old_val,
         csr_new_val:    csr_new_val,
-        rs1_idx:        ff_in.rs1_idx,
         rs2_idx:        ff_in.rs2_idx,
         alu_result:     alu_result,
         mem_op:         ff_in.mem_op,

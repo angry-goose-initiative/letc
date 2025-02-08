@@ -55,6 +55,19 @@ assign w_ready = 1'b1; // TODO: Would there ever be a cache write miss?
 logic out_valid;
 assign out_valid = ff_in_valid && !w_flush && !w_stall;
 
+// Forwarder
+always_comb begin
+    m1_forwarder.instr_produces_rd = ff_in.rd_we && ff_in_valid;
+    m1_forwarder.rd_idx = ff_in.rd_idx;
+    m1_forwarder.rd_val_avail = 1'b1;
+    unique case (ff_in.rd_src)
+        RD_SRC_ALU: m1_forwarder.rd_val = ff_in.alu_result;
+        RD_SRC_CSR: m1_forwarder.rd_val = ff_in.csr_old_val;
+        RD_SRC_MEM: m1_forwarder.rd_val = ff_in.mem_rdata;
+        default:    m1_forwarder.rd_val = 32'hDEADBEEF;
+    endcase
+end
+
 word_t rd_val;
 always_comb begin
     unique case (ff_in.rd_src)

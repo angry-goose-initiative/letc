@@ -26,7 +26,10 @@ module letc_core_stage_memory2
     output  logic       m2_to_w_valid,
     output  m2_to_w_s   m2_to_w,
 
-    letc_core_dmss_if.memory2 dmss_if
+    letc_core_dmss_if.memory2 dmss_if,
+
+    letc_core_forwarder_if.stage m2_forwarder,
+    letc_core_forwardee_if.stage m2_forwardee_rs2
 );
 
 logic ff_in_valid;
@@ -52,6 +55,22 @@ assign m2_ready = 1'b1; // TODO: DMSS could cause stall
 
 logic out_valid;
 assign out_valid = ff_in_valid && !m2_flush && !m2_stall;
+
+// Forwarder
+always_comb begin
+    m2_forwarder.instr_produces_rd = ff_in.rd_we && ff_in_valid;
+    m2_forwarder.rd_idx = ff_in.rd_idx;
+    m2_forwarder.rd_val_avail = ff_in.mem_op != MEM_OP_LOAD; // FIXME: Account for atomics
+    unique case (ff_in.rd_src)
+        RD_SRC_ALU: m2_forwarder.rd_val = ff_in.alu_result;
+        RD_SRC_CSR: m2_forwarder.rd_val = ff_in.csr_old_val;
+        default:    m2_forwarder.rd_val = 32'hDEADBEEF;
+    endcase
+end
+
+// Forwardee
+assign m2_forwardee_rs2.stage_uses_reg = 1'b0;
+assign m2_forwardee_rs2.reg_idx = ff_in.rs2_idx;
 
 word_t amo_alu_result;
 word_t mem_wdata;
