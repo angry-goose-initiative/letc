@@ -48,11 +48,7 @@ module letc_core_adhesive
  * Forwarding Logic
  * --------------------------------------------------------------------------------------------- */
 
-//TODO
-
-//TEMP just adding these so execute doesn't complain as it is already using the forwardee interfaces
-assign e_forwardee_rs1.use_fwd = 1'b0;
-assign e_forwardee_rs2.use_fwd = 1'b0;
+letc_core_forwarding_factory forwarder (.*);
 
 /* ------------------------------------------------------------------------------------------------
  * Pipeline Bubble Insertion
@@ -84,8 +80,8 @@ end
 //TODO improve this
 
 //FIXME causes a decode assertion to fire
-assign pc_load_en   = 1'b0;
-//assign pc_load_en   = branch_taken;
+//assign pc_load_en   = 1'b0;
+assign pc_load_en   = branch_taken;
 assign pc_load_val  = branch_target;
 
 endmodule : letc_core_adhesive

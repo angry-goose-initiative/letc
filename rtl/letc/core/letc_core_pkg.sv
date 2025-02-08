@@ -61,6 +61,13 @@ typedef enum logic [1:0] {
     MEM_SIZE_WORD       = 2'b10
 } mem_size_e;
 
+typedef enum logic [1:0] {
+    BRANCH_NOP = 2'b00,//Not a branch
+    BRANCH_COND,
+    BRANCH_JALR,
+    BRANCH_JAL
+} branch_e;
+
 typedef enum logic [2:0] {
     //Enum values based on funct3 of branch instructions
     CMP_OP_EQ   = 3'b000,
@@ -184,6 +191,7 @@ typedef struct packed {
     mem_size_e              mem_size;
     amo_alu_op_e            amo_alu_op;
 
+    branch_e                branch_type;
     cmp_op_e                cmp_op;
 
 `ifdef SIMULATION

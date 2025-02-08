@@ -124,11 +124,15 @@ end
 
 //Branch Comparator
 logic cmp_result;
-
 letc_core_branch_comparator branch_comparator (
     .cmp_operation(ff_in.cmp_op),
     .*
 );
+
+//Gate the result based on if this was an actual branch instruction
+//TODO what about JALR and JAL?
+logic branch_taken;
+assign branch_taken = (ff_in.branch_type == BRANCH_COND) & cmp_result;
 
 /* ------------------------------------------------------------------------------------------------
  * CSR Updating Logic
@@ -182,7 +186,7 @@ always_comb begin
 `ifdef SIMULATION
         sim_exit_req:   ff_in.sim_exit_req,
 `endif
-        branch_taken:   cmp_result
+        branch_taken:   branch_taken
     };
 end
 
