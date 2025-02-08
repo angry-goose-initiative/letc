@@ -42,8 +42,11 @@ module letc_core_adhesive
     letc_core_forwarder_if.fwd_factory  w_forwarder
 );
 
+/* ------------------------------------------------------------------------------------------------
+ * Common Signals
+ * --------------------------------------------------------------------------------------------- */
+
 logic [NUM_STAGES-1:0] unforwardable_stage_hazard;
-assign unforwardable_stage_hazard = '0;//FIXME actually implement this
 
 logic e_unforwardable_hazard;
 logic m1_unforwardable_hazard;
@@ -60,6 +63,13 @@ letc_core_forwarding_factory forwarder (.*);
  * --------------------------------------------------------------------------------------------- */
 
 letc_core_bubble_wrap pop_pop_pop (.*);
+
+always_comb begin
+    unforwardable_stage_hazard                      = '0;
+    unforwardable_stage_hazard[EXECUTE_STAGE_IDX]   =  e_unforwardable_hazard;
+    unforwardable_stage_hazard[MEMORY1_STAGE_IDX]   = m1_unforwardable_hazard;
+    unforwardable_stage_hazard[MEMORY2_STAGE_IDX]   = m2_unforwardable_hazard;
+end
 
 /* ------------------------------------------------------------------------------------------------
  * Branch Prediction / Exceptions / PC Handling
