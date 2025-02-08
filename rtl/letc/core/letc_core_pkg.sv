@@ -224,6 +224,7 @@ typedef struct packed {
     riscv_pkg::word_t       rs2_val;//rs2 is what is written to memory
 
     logic                   branch_taken;
+    pc_t                    branch_target;
 
 `ifdef SIMULATION
     logic                   sim_exit_req;

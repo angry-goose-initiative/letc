@@ -130,9 +130,27 @@ letc_core_branch_comparator branch_comparator (
 );
 
 //Gate the result based on if this was an actual branch instruction
-//TODO what about JALR and JAL?
 logic branch_taken;
-assign branch_taken = (ff_in.branch_type == BRANCH_COND) & cmp_result;
+always_comb begin
+    unique case (ff_in.branch_type)
+        BRANCH_COND:                branch_taken = cmp_result;
+        BRANCH_JAL, BRANCH_JALR:    branch_taken = 1'b1;
+        default:                    branch_taken = 1'b0;
+    endcase
+end
+
+/* ------------------------------------------------------------------------------------------------
+ * Branch Target Generation
+ * --------------------------------------------------------------------------------------------- */
+
+pc_t branch_target;
+always_comb begin
+    unique case (ff_in.branch_type)
+        BRANCH_JAL, BRANCH_COND:    branch_target = ff_in.pc + ff_in.immediate;
+        BRANCH_JALR:                branch_target = rs1_val + ff_in.immediate;
+        default:                    branch_target = 32'hDEADBEEF;
+    endcase
+end
 
 /* ------------------------------------------------------------------------------------------------
  * CSR Updating Logic
@@ -186,7 +204,8 @@ always_comb begin
 `ifdef SIMULATION
         sim_exit_req:   ff_in.sim_exit_req,
 `endif
-        branch_taken:   branch_taken
+        branch_taken:   branch_taken,
+        branch_target:  branch_target
     };
 end
 

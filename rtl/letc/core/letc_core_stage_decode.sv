@@ -274,7 +274,7 @@ always_comb begin
             ctrl.rd_src         = RD_SRC_ALU;
             ctrl.rd_we          = !rd_is_x0;
             ctrl.alu_op1_src    = ALU_OP1_SRC_PC;
-            ctrl.alu_op2_src    = ALU_OP2_SRC_FOUR;//FIXME but at the moment memory1 uses alu_result for the branch target, not the data to write back! Should we add seperate hardware for the branch target to execute?
+            ctrl.alu_op2_src    = ALU_OP2_SRC_FOUR;
             ctrl.alu_op         = ALU_OP_ADD;
             ctrl.branch         = BRANCH_JALR;
         end
@@ -290,10 +290,6 @@ always_comb begin
         OPCODE_BRANCH: begin
             ctrl.branch                 = BRANCH_COND;
             ctrl.cond_branch_cmp_op     = cmp_op_e'(funct3);
-            //FIXME at the moment memory1 uses alu_result for the branch target, not the data to write back, but this may change if we add seperate hardware for the branch target to execute to make this nicer for JAL(R)
-            ctrl.alu_op1_src            = ALU_OP1_SRC_PC;
-            ctrl.alu_op2_src            = ALU_OP2_SRC_IMM;
-            ctrl.alu_op                 = ALU_OP_ADD;
         end
         OPCODE_AUIPC: begin
             ctrl.rd_src         = RD_SRC_ALU;
@@ -313,7 +309,7 @@ always_comb begin
             ctrl.rd_src         = RD_SRC_ALU;
             ctrl.rd_we          = !rd_is_x0;
             ctrl.alu_op1_src    = ALU_OP1_SRC_PC;
-            ctrl.alu_op2_src    = ALU_OP2_SRC_FOUR;//FIXME but at the moment memory1 uses alu_result for the branch target, not the data to write back! Should we add seperate hardware for the branch target to execute?
+            ctrl.alu_op2_src    = ALU_OP2_SRC_FOUR;
             ctrl.alu_op         = ALU_OP_ADD;
             ctrl.branch         = BRANCH_JAL;
         end
