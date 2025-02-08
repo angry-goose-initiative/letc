@@ -7,8 +7,6 @@
  *  Copyright (C) 2025 John Jekel
  * See the LICENSE file at the root of the project for licensing info.
  *
- * One of these per register operand a stage may need
- *
 */
 
 // verilator lint_save
@@ -19,20 +17,28 @@ interface letc_core_forwardee_if;
 import riscv_pkg::*;
 import letc_core_pkg::*;
 
-logic       reg_idx_valid;//Useful for avoiding unnecessary stalls
+// - This interface is for a single register. If a stage holds/uses both rs1
+//   and rs2, then it will have two instances of this interface.
+// - "reg" is the register that the stage holds/uses.
+// - `stage_uses_reg` indicates if the stage uses reg, not if the instruction
+//   that the stage contains will use the reg at any point in the pipeline.
+// - A stage must account for its flopped valid signal when producing
+//   `stage_uses_reg`.
+
+logic       stage_uses_reg;
 reg_idx_t   reg_idx;
 logic       use_fwd;
 word_t      fwd_val;
 
-modport adhesive (
-    input   reg_idx_valid,
+modport fwd_factory (
+    input   stage_uses_reg,
     input   reg_idx,
     output  use_fwd,
     output  fwd_val
 );
 
 modport stage (
-    output  reg_idx_valid,
+    output  stage_uses_reg,
     output  reg_idx,
     input   use_fwd,
     input   fwd_val

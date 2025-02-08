@@ -32,18 +32,22 @@ module letc_core_adhesive
     output  logic   pc_load_en,
     output  pc_t    pc_load_val,
 
-    letc_core_forwardee_if.adhesive  e_forwardee_rs1,
-    letc_core_forwardee_if.adhesive  e_forwardee_rs2,
-    letc_core_forwardee_if.adhesive m1_forwardee_rs2,
-    letc_core_forwardee_if.adhesive m2_forwardee_rs2,
+    letc_core_forwardee_if.fwd_factory  e_forwardee_rs1,
+    letc_core_forwardee_if.fwd_factory  e_forwardee_rs2,
+    letc_core_forwardee_if.fwd_factory m1_forwardee_rs2,
+    letc_core_forwardee_if.fwd_factory m2_forwardee_rs2,
 
-    letc_core_forwarder_if.adhesive m1_forwarder,
-    letc_core_forwarder_if.adhesive m2_forwarder,
-    letc_core_forwarder_if.adhesive  w_forwarder
+    letc_core_forwarder_if.fwd_factory m1_forwarder,
+    letc_core_forwarder_if.fwd_factory m2_forwarder,
+    letc_core_forwarder_if.fwd_factory  w_forwarder
 );
 
 logic [NUM_STAGES-1:0] unforwardable_stage_hazard;
 assign unforwardable_stage_hazard = '0;//FIXME actually implement this
+
+logic e_unforwardable_hazard;
+logic m1_unforwardable_hazard;
+logic m2_unforwardable_hazard;
 
 /* ------------------------------------------------------------------------------------------------
  * Forwarding Logic

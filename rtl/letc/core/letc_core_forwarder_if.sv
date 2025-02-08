@@ -19,30 +19,23 @@ interface letc_core_forwarder_if;
 import riscv_pkg::*;
 import letc_core_pkg::*;
 
-//Decide if there is a hazard, and, depending on the stage, if we should forward or stall:
-// rd_we | fwd_val_avali | Action
-// 0     | x             | No hazard
-// 1     | 0             | Stall as appropriate
-// 1     | 1             | Forward fwd_val (which is valid)
-logic       rd_we;//Depending on the stage, adhesive
+logic       instr_produces_rd;
+logic       rd_val_avail;
+word_t      rd_val;
 reg_idx_t   rd_idx;
-logic       fwd_val_avail;
 
-//The actual data to forward if that's what we decide to do
-word_t      fwd_val;//The stage will have to have a mux to feed this
-
-modport adhesive (
-    input   rd_we,
-    input   rd_idx,
-    input   fwd_val_avail,
-    input   fwd_val
+modport fwd_factory (
+    input   instr_produces_rd,
+    input   rd_val_avail,
+    input   rd_val,
+    input   rd_idx
 );
 
 modport stage (
-    output  rd_we,
-    output  rd_idx,
-    output  fwd_val_avail,
-    output  fwd_val
+    output  instr_produces_rd,
+    output  rd_val_avail,
+    output  rd_val,
+    output  rd_idx
 );
 
 endinterface : letc_core_forwarder_if

@@ -65,17 +65,17 @@ assign out_valid = ff_in_valid && !m1_flush && !m1_stall;
 assign dmss_if.load_addr = e_to_m1.alu_result;
 
 always_comb begin
-    m1_forwarder.rd_we = ff_in.rd_we;
+    m1_forwarder.instr_produces_rd = ff_in.rd_we;
     m1_forwarder.rd_idx = ff_in.rd_idx;
-    m1_forwarder.fwd_val_avail = 1'b0; // TODO
+    m1_forwarder.rd_val_avail = 1'b0; // TODO
     unique case (ff_in.rd_src)
-        RD_SRC_ALU: m1_forwarder.fwd_val = ff_in.alu_result;
-        RD_SRC_CSR: m1_forwarder.fwd_val = ff_in.csr_old_val;
-        default:    m1_forwarder.fwd_val = 32'hDEADBEEF;
+        RD_SRC_ALU: m1_forwarder.rd_val = ff_in.alu_result;
+        RD_SRC_CSR: m1_forwarder.rd_val = ff_in.csr_old_val;
+        default:    m1_forwarder.rd_val = 32'hDEADBEEF;
     endcase
 end
 
-assign m1_forwardee_rs2.reg_idx_valid = 1'b0; // M1 is never user of rs2
+assign m1_forwardee_rs2.stage_uses_reg = 1'b0;
 assign m1_forwardee_rs2.reg_idx = ff_in.rs2_idx;
 
 assign branch_taken     = ff_in_valid & ff_in.branch_taken;
