@@ -1,6 +1,6 @@
-/**
- * File    letc_core_forwarder_if.sv
- * Brief   Interface to adhesive from stages that provide forwarded data
+/*
+ * File:    letc_core_forwarder_if.sv
+ * Brief:   Interface to adhesive from stages that provide forwarded data
  *
  * Copyright:
  *  Copyright (C) 2025 Nick Chan
@@ -10,9 +10,6 @@
  * One of these stage that produces forwarded data
  *
 */
-
-// verilator lint_save
-// verilator lint_off UNUSEDSIGNAL
 
 interface letc_core_forwarder_if;
 

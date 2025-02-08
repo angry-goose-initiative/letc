@@ -1,6 +1,6 @@
-/**
- * File    letc_core_forwardee_if.sv
- * Brief   Interface from adhesive to stages that need forwarded data
+/*
+ * File:    letc_core_forwardee_if.sv
+ * Brief:   Interface from adhesive to stages that need forwarded data
  *
  * Copyright:
  *  Copyright (C) 2025 Nick Chan
@@ -8,9 +8,6 @@
  * See the LICENSE file at the root of the project for licensing info.
  *
 */
-
-// verilator lint_save
-// verilator lint_off UNUSEDSIGNAL
 
 interface letc_core_forwardee_if;
 
