@@ -144,8 +144,8 @@ assert property (@(posedge clk) disable iff (!rst_n) pc_load_en         |-> !$is
 assert property (@(posedge clk) disable iff (!rst_n) f1_to_f2_valid     |-> !$isunknown(f1_to_f2));
 assert property (@(posedge clk) disable iff (!rst_n) imss_if.req_valid  |-> !$isunknown(imss_if.req_virtual_addr));
 
-//If we're not ready, adhesive should stall us (loopback)
-assert property (@(posedge clk) disable iff (!rst_n) !f1_ready |-> f1_stall);
+//If we're not ready, adhesive should stall us (loopback), unless flush took precedence
+assert property (@(posedge clk) disable iff (!rst_n) !f1_ready |-> (f1_stall | f1_flush));
 
 //Outputs should stay stable when we're stalled
 //FIXME this assertion seems broken when flushing?

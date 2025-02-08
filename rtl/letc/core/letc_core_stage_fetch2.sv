@@ -100,9 +100,8 @@ assert property (@(posedge clk) disable iff (!rst_n) f2_to_d_valid      |-> !$is
 assert property (@(posedge clk) disable iff (!rst_n) imss_if.rsp_valid  |-> !$isunknown(imss_if.rsp_data));
 assert property (@(posedge clk) disable iff (!rst_n) ff_in_valid        |-> !$isunknown(ff_in));
 
-//If we're not ready, adhesive should stall us (loopback)
-//FIXME not correct, as flush may take precedence over stall
-//assert property (@(posedge clk) disable iff (!rst_n) !f2_ready |-> f2_stall);
+//If we're not ready, adhesive should stall us (loopback), unless flush took precedence
+assert property (@(posedge clk) disable iff (!rst_n) !f2_ready |-> (f2_stall | f2_flush));
 
 //Outputs should stay stable when we're stalled, with the exception of instr
 //as the imss may be refilling a cache line

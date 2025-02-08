@@ -71,12 +71,9 @@ logic [NUM_STAGES-1:0] direct_stage_flush;
 
 always_comb begin
     //TODO prioritize writeback exeception flush over branch taken flush
-    //FIXME causes an f2 assertion to fire...
-    /**/
     if (branch_taken) begin
         direct_stage_flush = 7'b0001111;//Flush F1, F2, D and E since the branch decision is available in M1
     end else begin
-    /**/
         direct_stage_flush = '0;
     end
 end
@@ -85,9 +82,7 @@ end
  * Output Logic
  * --------------------------------------------------------------------------------------------- */
 
-//Avoid stalling and flushing at the same time
-
-//TODO is it correct for flushing to take priority?
+//Avoid stalling and flushing at the same time. Flushing takes priority
 assign stage_flush = direct_stage_flush;
 assign stage_stall = backpressured_stage_stall & ~direct_stage_flush;
 
@@ -108,8 +103,7 @@ assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(direct_stage_st
 //Per-bit checks
 generate
     for (genvar ii = 0; ii < NUM_STAGES; ++ii) begin : gen_asserts
-        //FIXME not correct, as flush may take precedence over stall
-        //assert property (@(posedge clk) disable iff (!rst_n) !stage_ready[ii] |-> stage_stall[ii]);//Loopback
+        assert property (@(posedge clk) disable iff (!rst_n) !stage_ready[ii] |-> (stage_stall[ii] | stage_flush[ii]));//Loopback, or flush took priority
         if (ii != NUM_STAGES-1) begin : gen_bp_asserts
             assert property (@(posedge clk) disable iff (!rst_n) stage_stall[ii+1] |-> stage_stall[ii]);//Backpressure
         end : gen_bp_asserts
