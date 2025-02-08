@@ -51,27 +51,10 @@ module letc_core_adhesive
 letc_core_forwarding_factory forwarder (.*);
 
 /* ------------------------------------------------------------------------------------------------
- * Pipeline Bubble Insertion
+ * Pipeline Bubble Insertion and Flushing
  * --------------------------------------------------------------------------------------------- */
 
 letc_core_bubble_wrap pop_pop_pop (.*);
-
-/* ------------------------------------------------------------------------------------------------
- * Flush Logic
- * --------------------------------------------------------------------------------------------- */
-
-//TODO put this into it's own module
-//FIXME coordinate with bubble_wrap so we never stall and flush at the same time
-always_comb begin
-    //FIXME causes an f2 assertion to fire...
-    /*
-    if (branch_taken) begin
-        stage_flush = 7'b0001111;//Flush F1, F2, D and E since the branch decision is available in M1
-    end else begin
-    */
-        stage_flush = '0;
-    //end
-end
 
 /* ------------------------------------------------------------------------------------------------
  * Branch Prediction / Exceptions / PC Handling
