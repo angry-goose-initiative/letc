@@ -96,6 +96,9 @@ assign m1_to_m2 = '{
     mem_signed:     ff_in.mem_signed,
     mem_size:       ff_in.mem_size,
     amo_alu_op:     ff_in.amo_alu_op,
+`ifdef SIMULATION
+    sim_exit_req:   ff_in.sim_exit_req,
+`endif
     rs2_val:        ff_in.rs2_val
 };
 

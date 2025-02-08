@@ -130,6 +130,10 @@ typedef struct packed {
     branch_e        branch;
     cmp_op_e        cond_branch_cmp_op;
     logic           fence;
+
+`ifdef SIMULATION
+    logic           sim_exit_req;
+`endif
 } ctrl_s;
 
 /* ------------------------------------------------------------------------------------------------
@@ -357,6 +361,11 @@ always_comb begin
                 default: ctrl.illegal_instr = 1'b1;
             endcase
         end
+`ifdef SIMULATION
+        OPCODE_CUSTOM_0: begin
+            ctrl.sim_exit_req = 1'b1;
+        end
+`endif
         default: ctrl.illegal_instr = 1'b1;
     endcase
 end
@@ -426,6 +435,9 @@ assign d_to_e = '{
     mem_signed:     ctrl.mem_signed,
     mem_size:       ctrl.mem_size,
     amo_alu_op:     ctrl.amo_alu_op,
+`ifdef SIMULATION
+    sim_exit_req:   ctrl.sim_exit_req,
+`endif
     cmp_op:         ctrl.cond_branch_cmp_op
 };
 

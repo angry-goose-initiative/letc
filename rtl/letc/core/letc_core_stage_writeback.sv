@@ -69,4 +69,13 @@ always_comb begin
     rf_rd_we = ff_in.rd_we && out_valid;
 end
 
+`ifdef SIMULATION
+//The testbench uses this
+//verilator lint_save
+//verilator lint_off UNUSEDSIGNAL
+logic sim_should_exit;
+assign sim_should_exit = ff_in_valid && ff_in.sim_exit_req;
+//verilator lint_restore
+`endif
+
 endmodule : letc_core_stage_writeback

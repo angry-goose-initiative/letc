@@ -91,6 +91,9 @@ assign m2_to_w = '{
     mem_rdata:      dmss_if.load_data,
     mem_op:         ff_in.mem_op,
     mem_size:       ff_in.mem_size,
+`ifdef SIMULATION
+    sim_exit_req:   ff_in.sim_exit_req,
+`endif
     mem_wdata:      mem_wdata
 };
 

@@ -82,14 +82,22 @@ function string get_trace_path();
     return trace_path;
 endfunction
 
+//verilator lint_restore
+
+/* ------------------------------------------------------------------------------------------------
+ * Stimulus
+ * --------------------------------------------------------------------------------------------- */
+
 integer trace_file_handle;
 
-task reset();
-    rst_n <= 1'b0;
-    repeat(2) @(negedge clk);
-
+initial begin
+    //verilator lint_save
+    //verilator lint_off INITIALDLY
     timer_irq_pending       <= 1'b0;
     external_irq_pending    <= 1'b0;
+
+    rst_n <= 1'b0;
+    repeat(2) @(negedge clk);
 
     $display("Running test program in stubmss mode: %s", get_test_program_path());
     $readmemh(get_test_program_path(), dut.imss.imem);
@@ -99,43 +107,29 @@ task reset();
     trace_file_handle = $fopen(get_trace_path(), "w");
 
     rst_n <= 1'b1;
-    repeat(2) @(negedge clk);
-endtask
 
-//verilator lint_restore
-
-/* ------------------------------------------------------------------------------------------------
- * Stimulus
- * --------------------------------------------------------------------------------------------- */
-
-initial begin
-    //verilator lint_save
-    //verilator lint_off INITIALDLY
-
-    //Reset things
-    reset();
-
-    //Run for a while
-    //TODO detect when the sim finishes and stop it then instead of just
-    //waiting a fixed amount of time
-    repeat(1000) @(negedge clk);
-
-    //Et fini!
-    repeat(10) @(negedge clk);
-    $fclose(trace_file_handle);
-    $finish;
-
+    //The sim exit logic is handled below when we get an IRVE.EXIT instruction
     //verilator lint_restore
 end
 
 /* ------------------------------------------------------------------------------------------------
- * Tracing
+ * Tracing and Exit Logic
  * --------------------------------------------------------------------------------------------- */
 
 always_ff @(posedge clk) begin
     if (rst_n) begin
+        //Tracing Logic
         if (dut.rf_rd_we & (dut.rf_rd_idx != '0)) begin
             $fdisplay(trace_file_handle, "[letc_core_rf]: %h was written to register %d", dut.rf_rd_val, dut.rf_rd_idx);
+        end
+
+        //TODO perhaps more tracing in the future?
+
+        //Exit Logic
+        if (dut.stage_writeback.sim_should_exit) begin
+            $display("Got IRVE.EXIT instruction, exiting simulation...");
+            $fclose(trace_file_handle);
+            $finish;
         end
     end
 end

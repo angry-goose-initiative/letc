@@ -38,6 +38,7 @@ help:
 	@echo "    software               Build software to run on the core"
 	@echo "    stubmss_build          Build the stubmss testbench to run test programs on the core"
 	@echo "    stubmss_run            Run a test program in stubmss mode (requires PROGRAM option, optionally WAVES option)"
+	@echo "    irve                   Build IRVE with modifications for LETC, to serve as a reference model"
 	@echo "Options:"
 	@echo "    TARGET                 Path to the filelist to simulate or synthesize"
 	@echo "    WAVES                  Set equal to 1 to open waves after a simulation completes"

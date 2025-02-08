@@ -26,7 +26,7 @@ OUT_DIR=${STUBMSS_OUT_DIR}/${TEST_PROGRAM}
 
 LOG=${OUT_DIR}/simulation_log.txt
 OUTPUT_WAVES=${OUT_DIR}/waves.fst
-OUTPUT_TRACE=${OUT_DIR}/trace.txt
+OUTPUT_TRACE=${OUT_DIR}/letc_trace.txt
 
 INTERMEDIATE_DIR=${STUBMSS_OUT_DIR}/intermediate
 SIM_BIN=${INTERMEDIATE_DIR}/simulation.elf

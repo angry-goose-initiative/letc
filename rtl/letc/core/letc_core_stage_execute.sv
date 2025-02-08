@@ -179,6 +179,9 @@ always_comb begin
         mem_size:       ff_in.mem_size,
         amo_alu_op:     ff_in.amo_alu_op,
         rs2_val:        rs2_val,
+`ifdef SIMULATION
+        sim_exit_req:   ff_in.sim_exit_req,
+`endif
         branch_taken:   cmp_result
     };
 end

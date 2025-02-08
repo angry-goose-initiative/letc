@@ -186,6 +186,10 @@ typedef struct packed {
 
     cmp_op_e                cmp_op;
 
+`ifdef SIMULATION
+    logic                   sim_exit_req;
+`endif
+
     //TODO add exception status signal
 } d_to_e_s;
 
@@ -213,6 +217,10 @@ typedef struct packed {
 
     logic                   branch_taken;
 
+`ifdef SIMULATION
+    logic                   sim_exit_req;
+`endif
+
     //TODO add exception status signal
 } e_to_m1_s;
 
@@ -231,6 +239,12 @@ typedef struct packed {
     mem_size_e              mem_size;
     amo_alu_op_e            amo_alu_op;
     riscv_pkg::word_t       rs2_val;
+
+`ifdef SIMULATION
+    logic                   sim_exit_req;
+`endif
+
+    //TODO add exception status signal
 } m1_to_m2_s;
 
 typedef struct packed {
@@ -250,6 +264,10 @@ typedef struct packed {
     mem_op_e                mem_op;
     mem_size_e              mem_size;
     riscv_pkg::word_t       mem_wdata;
+
+`ifdef SIMULATION
+    logic                   sim_exit_req;
+`endif
 
     //TODO add exception status signal
 } m2_to_w_s;

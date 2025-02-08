@@ -45,9 +45,8 @@ set(RVSW_SMODE_AND_KERNEL_ENTRY_ADDR 0xC0000000)#Your entry address here
 set(RVSW_MARCH "rv32ia_zicsr_zifencei")#Your -march=[...] here
 set(RVSW_MABI "ilp32")#Your -mabi=[...] here
 
-set(RVSW_EXIT_METHOD "SELF_JUMP")#One of: SELF_JUMP, CUSTOM_INSTRUCTION, FUNCTION_CALL, or potentially others in the future
-set(RVSW_CUSTOM_EXIT_INSTR ".insn r CUSTOM_0, 0, 0, zero, zero, zero")#Put your custom exit instruction here (this is the one from IRVE for example)
-set(RVSW_CUSTOM_EXIT_FN "my_custom_exit_fn_symbol")
+set(RVSW_EXIT_METHOD "CUSTOM_INSTRUCTION")
+set(RVSW_CUSTOM_EXIT_INSTR ".insn r CUSTOM_0, 0, 0, zero, zero, zero")#Same as IRVE.EXIT
 
 #set(RVSW_MMODE_NEWLIB_SYSCALLS_STATICLIB_CMAKE_TARGET "my_newlib_syscalls_staticlib")#The cmake target for your newlib syscalls static library
 set(RVSW_MMODE_NEWLIB_SYSCALLS_STATICLIB_CMAKE_TARGET "c")#Just use "c" here if you don't want to supply syscalls
