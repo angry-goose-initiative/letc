@@ -119,8 +119,20 @@ end
 always_ff @(posedge clk) begin
     if (rst_n) begin
         //Tracing Logic
-        if (dut.rf_rd_we & (dut.rf_rd_idx != '0)) begin
-            $fdisplay(trace_file_handle, "[letc_core_rf]: %h was written to register %d", dut.rf_rd_val, dut.rf_rd_idx);
+        // if (dut.rf_rd_we & (dut.rf_rd_idx != '0)) begin
+        //     $fdisplay(trace_file_handle, "[letc_core_rf]: %h was written to register %d", dut.rf_rd_val, dut.rf_rd_idx);
+        // end
+
+        if (dut.stage_writeback.ff_in_valid && !dut.stage_writeback.sim_should_exit) begin
+            if (dut.rf_rd_we) begin
+                $fdisplay(trace_file_handle,
+                          "0x%h | 0x%h -> x%0d",
+                          dut.stage_writeback.ff_in.pc,
+                          dut.rf_rd_val,
+                          dut.rf_rd_idx);
+            end else begin
+                $fdisplay(trace_file_handle, "0x%h", dut.stage_writeback.ff_in.pc);
+            end
         end
 
         //TODO perhaps more tracing in the future?
