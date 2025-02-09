@@ -65,10 +65,13 @@ reg_idx_t   rf_rs2_idx;
 word_t      rf_rs2_val;
 
 //Explicit CSR access
-csr_idx_t    csr_de_expl_idx;
-word_t       csr_de_expl_rdata;
-logic        csr_de_expl_rill;
-logic        csr_de_expl_will;
+csr_idx_t   d_csr_expl_idx;
+word_t      d_csr_expl_rdata;
+logic       d_csr_expl_rill;
+logic       d_csr_expl_will;
+csr_idx_t   w_csr_expl_idx;
+logic       w_csr_expl_we;
+word_t      w_csr_expl_wdata;
 
 //Inter-stage connections
 logic f1_to_f2_valid;
@@ -85,7 +88,10 @@ m1_to_m2_s  m1_to_m2;
 m2_to_w_s   m2_to_w;
 
 //Implicitly read CSRs by LETC Core logic, always valid
+// verilator lint_save
+// verilator lint_off UNUSEDSIGNAL
 csr_implicit_rdata_s csr_implicit_rdata;
+// verilator lint_restore
 
 //Hazard/backpressure signals
 logic [NUM_STAGES-1:0] stage_ready;
@@ -123,6 +129,8 @@ pc_t    pc_load_val;
 letc_core_adhesive glue (.*);
 
 letc_core_rf rf (.*);
+
+letc_core_csrf csrf (.*);
 
 letc_core_imss imss (.*);
 

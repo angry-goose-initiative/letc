@@ -19,28 +19,26 @@ module letc_core_stage_decode
     import riscv_pkg::*;
 (
     // Clock and reset
-    input logic         clk,
-    input logic         rst_n,
+    input   logic       clk,
+    input   logic       rst_n,
 
     // Hazard/backpressure signals
-    output logic        d_ready,
-    input  logic        d_flush,
-    input  logic        d_stall,
+    output  logic       d_ready,
+    input   logic       d_flush,
+    input   logic       d_stall,
 
     // Register file read ports
-    output reg_idx_t    rf_rs1_idx,
-    input  word_t       rf_rs1_val,
-    output reg_idx_t    rf_rs2_idx,
-    input  word_t       rf_rs2_val,
+    output  reg_idx_t   rf_rs1_idx,
+    input   word_t      rf_rs1_val,
+    output  reg_idx_t   rf_rs2_idx,
+    input   word_t      rf_rs2_val,
 
     // CSR port
-    output csr_idx_t    csr_de_expl_idx,
-    input  word_t       csr_de_expl_rdata,
-    input  logic        csr_de_expl_rill,
-    input  logic        csr_de_expl_will,
-
-    // TODO signals for exceptions/cache flushing/etc
-    // TODO any needed implicitly read CSRs
+    output  csr_idx_t   d_csr_expl_idx,
+    input   word_t      d_csr_expl_rdata,
+    input   logic       d_csr_expl_rill,
+    input   logic       d_csr_expl_will,
+    // TODO: implicitly read CSRs
 
     // Datapath
     input   logic       f2_to_d_valid,
@@ -374,8 +372,8 @@ end
 
 word_t csr_old_val;
 always_comb begin
-    csr_de_expl_idx = csr_idx;
-    csr_old_val     = csr_de_expl_rdata;
+    d_csr_expl_idx = csr_idx;
+    csr_old_val = d_csr_expl_rdata;
 end
 
 /* ------------------------------------------------------------------------------------------------
@@ -397,8 +395,8 @@ logic illegal_instr_exception;
 
 assign illegal_instr_exception =
     ctrl.illegal_instr
-    || (csr_de_expl_rill && ctrl.csr_expl_ren)
-    || (csr_de_expl_will && ctrl.csr_expl_wen)
+    || (d_csr_expl_rill && ctrl.csr_expl_ren)
+    || (d_csr_expl_will && ctrl.csr_expl_wen)
     || instr[1:0] != 2'b11;
 
 /* ------------------------------------------------------------------------------------------------
@@ -473,7 +471,7 @@ assert property (@(posedge clk) disable iff (!rst_n) d_flush |-> !f2_to_d_valid)
 assert property (@(posedge clk) disable iff (!rst_n) d_stall |-> $stable(d_ready));
 assert property (@(posedge clk) disable iff (!rst_n) d_stall |-> $stable(rf_rs1_idx));
 assert property (@(posedge clk) disable iff (!rst_n) d_stall |-> $stable(rf_rs2_idx));
-assert property (@(posedge clk) disable iff (!rst_n) d_stall |-> $stable(csr_de_expl_idx));
+assert property (@(posedge clk) disable iff (!rst_n) d_stall |-> $stable(d_csr_expl_idx));
 //FIXME breaks with flushing for some reason
 //assert property (@(posedge clk) disable iff (!rst_n) d_stall |-> $stable(d_to_e));
 

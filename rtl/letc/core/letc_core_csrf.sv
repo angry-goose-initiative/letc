@@ -7,9 +7,10 @@
  *  Copyright (C) 2023-2024 John Jekel
  * See the LICENSE file at the root of the project for licensing info.
  *
- * TODO longer description
- *
 */
+
+// verilator lint_save
+// verilator lint_off UNUSEDSIGNAL
 
 /* ------------------------------------------------------------------------------------------------
  * Module Definition
@@ -27,25 +28,25 @@ module letc_core_csrf
     // Implicitly read CSRs by LETC Core logic, always valid
     output csr_implicit_rdata_s csr_implicit_rdata,
 
-    //Interface for CSRs whose state (at least partially) exists outside of this module
-    //TODO
+    // Interface for CSRs whose state (at least partially) exists outside of this module
+    // TODO
 
     // CSR explicit software interface with decode stage
-    input  logic        csr_explicit_ren,
-    input  csr_idx_t    csr_explicit_idx,
-    output word_t       csr_explicit_rdata,
-    input  logic        csr_explicit_wcheck,
-    output logic        csr_explicit_illegal,
+    input   csr_idx_t   d_csr_expl_idx,
+    output  word_t      d_csr_expl_rdata,
+    output  logic       d_csr_expl_rill,
+    output  logic       d_csr_expl_will,
 
     // CSR explicit software interface with writeback stage
-    input  logic        csr_explicit_wen,
-    input  csr_idx_t    csr_explicit_widx,
-    input  word_t       csr_explicit_wdata
+    input   csr_idx_t   w_csr_expl_idx,
+    input   logic       w_csr_expl_we,
+    input   word_t      w_csr_expl_wdata
 );
 
-assign csr_explicit_rdata = 32'hDEADBEEF;//TESTING
-
-//Detecting illegal CSR accesses for security/to catch SW bugs is a low priority
-assign csr_explicit_illegal = 1'b0;
+// TODO
+assign d_csr_expl_rdata = 32'hDEADBEEF;
+assign d_csr_expl_rill = 1'b0;
+assign d_csr_expl_will = 1'b0;
+assign csr_implicit_rdata = '0;
 
 endmodule : letc_core_csrf

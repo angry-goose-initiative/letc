@@ -29,6 +29,10 @@ module letc_core_stage_writeback
     output  word_t      rf_rd_val,
     output  logic       rf_rd_we,
 
+    output  csr_idx_t   w_csr_expl_idx,
+    output  logic       w_csr_expl_we,
+    output  word_t      w_csr_expl_wdata,
+
     input   logic       m2_to_w_valid,
     input   m2_to_w_s   m2_to_w,
 
@@ -76,10 +80,14 @@ always_comb begin
 end
 
 /* ------------------------------------------------------------------------------------------------
- * Register file port
+ * RF/CSRF port
  * --------------------------------------------------------------------------------------------- */
 
 always_comb begin
+    w_csr_expl_idx      = ff_in.csr_idx;
+    w_csr_expl_we       = ff_in.csr_expl_wen;
+    w_csr_expl_wdata    = ff_in.csr_new_val;
+
     rf_rd_val   = rd_val;
     rf_rd_idx   = ff_in.rd_idx;
     rf_rd_we    = ff_in.rd_we && out_valid;
