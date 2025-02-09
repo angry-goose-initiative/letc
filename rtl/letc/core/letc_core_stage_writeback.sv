@@ -28,7 +28,9 @@ module letc_core_stage_writeback
     input   logic       m2_to_w_valid,
     input   m2_to_w_s   m2_to_w,
 
-    letc_core_dmss_if.writeback dmss_if
+    letc_core_dmss_if.writeback dmss_if,
+
+    letc_core_forwarder_if.stage w_forwarder
 );
 
 logic ff_in_valid;
@@ -57,14 +59,14 @@ assign out_valid = ff_in_valid && !w_flush && !w_stall;
 
 // Forwarder
 always_comb begin
-    m1_forwarder.instr_produces_rd = ff_in.rd_we && ff_in_valid;
-    m1_forwarder.rd_idx = ff_in.rd_idx;
-    m1_forwarder.rd_val_avail = 1'b1;
+    w_forwarder.instr_produces_rd = ff_in.rd_we && ff_in_valid;
+    w_forwarder.rd_idx = ff_in.rd_idx;
+    w_forwarder.rd_val_avail = 1'b1;
     unique case (ff_in.rd_src)
-        RD_SRC_ALU: m1_forwarder.rd_val = ff_in.alu_result;
-        RD_SRC_CSR: m1_forwarder.rd_val = ff_in.csr_old_val;
-        RD_SRC_MEM: m1_forwarder.rd_val = ff_in.mem_rdata;
-        default:    m1_forwarder.rd_val = 32'hDEADBEEF;
+        RD_SRC_ALU: w_forwarder.rd_val = ff_in.alu_result;
+        RD_SRC_CSR: w_forwarder.rd_val = ff_in.csr_old_val;
+        RD_SRC_MEM: w_forwarder.rd_val = ff_in.mem_rdata;
+        default:    w_forwarder.rd_val = 32'hDEADBEEF;
     endcase
 end
 
