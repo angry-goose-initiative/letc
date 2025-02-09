@@ -15,4 +15,4 @@ ALL_SV_FILES=$(echo $ALL_FILELISTS | xargs -n 1 ${REPO_ROOT}/infra/scripts/resol
 echo "Linting: $ALL_SV_FILES"
 
 cd $REPO_ROOT
-svlint -D SIMULATION $ALL_SV_FILES
+verible-verilog-lint --rules_config .rules.verible_lint $ALL_SV_FILES

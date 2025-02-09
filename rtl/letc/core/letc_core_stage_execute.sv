@@ -204,7 +204,7 @@ always_comb begin
         rs2_val:        rs2_val,
 `ifdef SIMULATION
         sim_exit_req:   ff_in.sim_exit_req,
-`endif
+`endif //SIMULATION
         branch_taken:   branch_taken,
         branch_target:  branch_target
     };

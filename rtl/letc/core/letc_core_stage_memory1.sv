@@ -95,9 +95,9 @@ assign rs2_val = m1_forwardee_rs2.use_fwd ? m1_forwardee_rs2.fwd_val : ff_in.rs2
 always_comb begin
     m1_to_m2_valid = out_valid;
     m1_to_m2 = '{
-        `ifdef SIMULATION
+`ifdef SIMULATION
         sim_exit_req:   ff_in.sim_exit_req,
-        `endif
+`endif //SIMULATION
         pc:             ff_in.pc,
         rd_src:         ff_in.rd_src,
         rd_idx:         ff_in.rd_idx,

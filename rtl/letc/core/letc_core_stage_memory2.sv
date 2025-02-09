@@ -118,9 +118,9 @@ end
 always_comb begin
     m2_to_w_valid = out_valid;
     m2_to_w = '{
-        `ifdef SIMULATION
+`ifdef SIMULATION
         sim_exit_req:   ff_in.sim_exit_req,
-        `endif
+`endif //SIMULATION
         pc:             ff_in.pc,
         rd_src:         ff_in.rd_src,
         rd_idx:         ff_in.rd_idx,

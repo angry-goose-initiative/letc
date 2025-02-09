@@ -124,7 +124,7 @@ typedef struct packed {
 
 `ifdef SIMULATION
     logic           sim_exit_req;
-`endif
+`endif //SIMULATION
 } ctrl_s;
 
 /* ------------------------------------------------------------------------------------------------
@@ -356,7 +356,7 @@ always_comb begin
         OPCODE_CUSTOM_0: begin
             ctrl.sim_exit_req = 1'b1;
         end
-`endif
+`endif //SIMULATION
         default: ctrl.illegal_instr = 1'b1;
     endcase
 end
@@ -428,7 +428,7 @@ assign d_to_e = '{
     amo_alu_op:     ctrl.amo_alu_op,
 `ifdef SIMULATION
     sim_exit_req:   ctrl.sim_exit_req,
-`endif
+`endif //SIMULATION
     branch_type:    ctrl.branch,
     cmp_op:         ctrl.cond_branch_cmp_op
 };
@@ -475,6 +475,6 @@ assert property (@(posedge clk) disable iff (!rst_n) d_stall |-> $stable(d_csr_e
 //FIXME breaks with flushing for some reason
 //assert property (@(posedge clk) disable iff (!rst_n) d_stall |-> $stable(d_to_e));
 
-`endif // ifdef SIMULATION
+`endif // SIMULATION
 
 endmodule : letc_core_stage_decode

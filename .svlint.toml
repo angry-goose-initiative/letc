@@ -1,5 +1,5 @@
 # .svlint.toml
-# Copyright (C) 2024 John Jekel
+# Copyright (C) 2024-2025 John Jekel
 # See the LICENSE file at the root of the project for licensing info.
 #
 # svlint configuration file for LETC
@@ -45,6 +45,7 @@ procedural_continuous_assignment            = true
 #prefix_output                               = true
 prefix_input                                = false
 prefix_output                               = false
-#The space ones are too aggressive
-style_trailingwhitespace                    = true
+#Verible has less false positives than svlint, use that instead
+#style_trailingwhitespace                    = true
+style_trailingwhitespace                    = false
 tab_character                               = true

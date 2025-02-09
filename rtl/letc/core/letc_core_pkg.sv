@@ -196,7 +196,7 @@ typedef struct packed {
 
 `ifdef SIMULATION
     logic                   sim_exit_req;
-`endif
+`endif //SIMULATION
 
     //TODO add exception status signal
 } d_to_e_s;
@@ -227,7 +227,7 @@ typedef struct packed {
 
 `ifdef SIMULATION
     logic                   sim_exit_req;
-`endif
+`endif //SIMULATION
 
     //TODO add exception status signal
 } e_to_m1_s;
@@ -251,7 +251,7 @@ typedef struct packed {
 
 `ifdef SIMULATION
     logic                   sim_exit_req;
-`endif
+`endif //SIMULATION
 
     //TODO add exception status signal
 } m1_to_m2_s;
@@ -276,7 +276,7 @@ typedef struct packed {
 
 `ifdef SIMULATION
     logic                   sim_exit_req;
-`endif
+`endif //SIMULATION
 
     //TODO add exception status signal
 } m2_to_w_s;

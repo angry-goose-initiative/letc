@@ -40,7 +40,12 @@ word_t  rsp_data;
 //assign rsp_valid        = 1'b1;//imss_if.req_valid;
 //assign rsp_illegal      = 1'b0;
 //assign rsp_virtual_addr = dmss_if.load_addr;//imss_if.req_virtual_addr;
-assign rsp_data         = {dmem[dmss_if.load_addr + 3], dmem[dmss_if.load_addr + 2], dmem[dmss_if.load_addr + 1], dmem[dmss_if.load_addr]};
+assign rsp_data         = {//Little endian
+    dmem[dmss_if.load_addr + 3],
+    dmem[dmss_if.load_addr + 2],
+    dmem[dmss_if.load_addr + 1],
+    dmem[dmss_if.load_addr]
+};
 
 //Delay by two cycles to match hardware
 //logic  rsp_valid_ff;

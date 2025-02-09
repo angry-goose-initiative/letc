@@ -35,6 +35,7 @@ help:
 	@echo "    synth_regression       Run a synthesis regression (single-threaded)"
 	@echo "    synth_regression_par   Run a multi-threaded synthesis regression using GNU Parallel"
 	@echo "    svlint                 Run the svlint linting tool"
+	@echo "    verible                Run the verible linting tool"
 	@echo "    software               Build software to run on the core"
 	@echo "    irve                   Build IRVE with modifications for LETC, to serve as a reference model"
 	@echo "    stubmss_build          Build the stubmss testbench to run test programs on the core"

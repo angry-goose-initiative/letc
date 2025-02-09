@@ -47,7 +47,12 @@ word_t rsp_data;
 assign rsp_valid        = imss_if.req_valid;
 assign rsp_illegal      = 1'b0;
 assign rsp_virtual_addr = imss_if.req_virtual_addr;
-assign rsp_data         = {imem[rsp_virtual_addr + 3], imem[rsp_virtual_addr + 2], imem[rsp_virtual_addr + 1], imem[rsp_virtual_addr]};
+assign rsp_data         = {//Little endian
+    imem[rsp_virtual_addr + 3],
+    imem[rsp_virtual_addr + 2],
+    imem[rsp_virtual_addr + 1],
+    imem[rsp_virtual_addr]
+};
 
 //Delay by two cycles to match hardware
 logic  rsp_valid_ff;

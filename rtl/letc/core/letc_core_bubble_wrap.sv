@@ -103,12 +103,16 @@ assert property (@(posedge clk) disable iff (!rst_n) !$isunknown(direct_stage_st
 //Per-bit checks
 generate
     for (genvar ii = 0; ii < NUM_STAGES; ++ii) begin : gen_asserts
-        assert property (@(posedge clk) disable iff (!rst_n) !stage_ready[ii] |-> (stage_stall[ii] | stage_flush[ii]));//Loopback, or flush took priority
+        //Loopback, or flush took priority
+        assert property (@(posedge clk) disable iff (!rst_n) !stage_ready[ii] |-> (stage_stall[ii] | stage_flush[ii]));
+
+        //Backpressure
         if (ii != NUM_STAGES-1) begin : gen_bp_asserts
-            assert property (@(posedge clk) disable iff (!rst_n) stage_stall[ii+1] |-> stage_stall[ii]);//Backpressure
+            assert property (@(posedge clk) disable iff (!rst_n) stage_stall[ii+1] |-> stage_stall[ii]);
         end : gen_bp_asserts
 
-        assert property (@(posedge clk) disable iff (!rst_n) !(stage_flush[ii] & stage_stall[ii]));//No flushing and stalling at the same time
+        //No flushing and stalling at the same time
+        assert property (@(posedge clk) disable iff (!rst_n) !(stage_flush[ii] & stage_stall[ii]));
     end : gen_asserts
 endgenerate
 
