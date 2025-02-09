@@ -12,6 +12,12 @@ else
     USE_GNU_PARALLEL=$1
 fi
 
+if [ -z "$2" ]; then
+    GITHUB_RUNNER_MODE=0
+else
+    GITHUB_RUNNER_MODE=$2
+fi
+
 REPO_ROOT=`git rev-parse --show-toplevel`
 SCRIPTS_DIR=${REPO_ROOT}/infra/scripts
 
@@ -46,7 +52,10 @@ if [[ $USE_GNU_PARALLEL == "1" ]]; then
     echo $SYNTH_YOSYS_FILELIST | xargs -n 1 -P 1 echo $SYNTH_YOSYS >> $GNU_PARALLEL_COMMANDS_FILE
 
     #vivado_ooc
-    echo $SYNTH_VIVADO_OOC_FILELIST | xargs -n 1 -P 1 echo $SYNTH_VIVADO_OOC >> $GNU_PARALLEL_COMMANDS_FILE
+    if [[ $GITHUB_RUNNER_MODE == "0" ]]; then
+        #Only run yosys on the runner (at least for now)
+        echo $SYNTH_VIVADO_OOC_FILELIST | xargs -n 1 -P 1 echo $SYNTH_VIVADO_OOC >> $GNU_PARALLEL_COMMANDS_FILE
+    fi
 
     #Now run all the things!
     parallel --slf .. --bar < $GNU_PARALLEL_COMMANDS_FILE
@@ -55,5 +64,8 @@ else
     echo $SYNTH_YOSYS_FILELIST | xargs -n 1 -P 1 $SYNTH_YOSYS
 
     #vivado_ooc
-    echo $SYNTH_VIVADO_OOC_FILELIST | xargs -n 1 -P 1 $SYNTH_VIVADO_OOC
+    if [[ $GITHUB_RUNNER_MODE == "0" ]]; then
+        #Only run yosys on the runner (at least for now)
+        echo $SYNTH_VIVADO_OOC_FILELIST | xargs -n 1 -P 1 $SYNTH_VIVADO_OOC
+    fi
 fi

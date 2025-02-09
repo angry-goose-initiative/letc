@@ -1,0 +1,62 @@
+name: LETC Synth Regression
+
+#Thanks https://stackoverflow.com/questions/57699839/github-actions-how-to-target-all-branches-except-master
+on:
+  push:
+    branches: [ "**", "!legacy", "!old_main" ]
+  pull_request:
+    branches: [ "**", "!legacy", "!old_main" ]
+
+jobs:
+  synth_regression:
+    strategy:
+      fail-fast: false
+      matrix:
+        #We only support Linux
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Install yosys
+        shell: bash
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get -y install --no-install-recommends yosys
+
+      - name: Cache sv2v Installation
+        id: cache-sv2v
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-sv2v-installation
+        with:
+          path: ~/.sv2v
+          key: ${{runner.os}}-build-${{env.cache-name}}
+
+      - if: ${{ steps.cache-sv2v.outputs.cache-hit != 'true' }}
+        name: Install sv2v dependencies
+        shell: bash
+        run: |
+          sudo apt-get -y install --no-install-recommends wget unzip
+
+      - if: ${{ steps.cache-sv2v.outputs.cache-hit != 'true' }}
+        name: Install sv2v
+        shell: bash
+        run: |
+          mkdir -p ~/.sv2v
+          cd ~/.sv2v
+          wget https://github.com/zachjs/sv2v/releases/download/v0.0.12/sv2v-Linux.zip
+          unzip sv2v-Linux.zip
+          mv sv2v-Linux/sv2v .
+          rm -rf sv2v-Linux
+          rm sv2v-Linux.zip
+          chmod +x sv2v
+
+      - name: Add sv2v Directory To Path
+        run: echo "$HOME/.sv2v" >> $GITHUB_PATH
+
+      - name: Run Yosys
+        working-directory: ${{github.workspace}}
+        run: |
+          infra/scripts/synth_regression.sh 0 1
