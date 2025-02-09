@@ -1,6 +1,6 @@
 [submodule "filelists/verif/software/rvsw"]
 	path = verif/software/rvsw
-	url = git@github.com:angry-goose-initiative/rvsw.git
+	url = https://github.com/angry-goose-initiative/rvsw.git
 [submodule "verif/reference/irve"]
 	path = verif/reference/irve
-	url = git@github.com:angry-goose-initiative/irve.git
+	url = https://github.com/angry-goose-initiative/irve.git

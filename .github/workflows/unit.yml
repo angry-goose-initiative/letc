@@ -107,7 +107,7 @@ jobs:
           git switch stable
           autoconf
           ./configure
-          make -j2
+          make -j4
           ln -s ./bin/* ./
 
       - name: Add Verilator Directory To Path
