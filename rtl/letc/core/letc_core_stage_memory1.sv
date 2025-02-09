@@ -85,6 +85,9 @@ assign m1_forwardee_rs2.reg_idx = ff_in.rs2_idx;
 assign branch_taken     = ff_in_valid && ff_in.branch_taken;
 assign branch_target    = ff_in.branch_target;
 
+word_t rs2_val;
+assign rs2_val = m1_forwardee_rs2.use_fwd ? m1_forwardee_rs2.fwd_val : ff_in.rs2_val;
+
 /* ------------------------------------------------------------------------------------------------
  * Output Connections
  * --------------------------------------------------------------------------------------------- */
@@ -109,7 +112,7 @@ always_comb begin
         mem_signed:     ff_in.mem_signed,
         mem_size:       ff_in.mem_size,
         amo_alu_op:     ff_in.amo_alu_op,
-        rs2_val:        ff_in.rs2_val
+        rs2_val:        rs2_val
     };
 end
 

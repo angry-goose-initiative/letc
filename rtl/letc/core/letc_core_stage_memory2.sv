@@ -80,6 +80,9 @@ end
 assign m2_forwardee_rs2.stage_uses_reg = 1'b0;
 assign m2_forwardee_rs2.reg_idx = ff_in.rs2_idx;
 
+word_t rs2_val;
+assign rs2_val = m2_forwardee_rs2.use_fwd ? m2_forwardee_rs2.fwd_val : ff_in.rs2_val;
+
 /* ------------------------------------------------------------------------------------------------
  * AMO ALU
  * --------------------------------------------------------------------------------------------- */
@@ -90,22 +93,22 @@ word_t mem_rdata;
 always_comb begin
     mem_rdata = dmss_if.load_data;
     unique case (ff_in.amo_alu_op)
-        AMO_OP_SWAP:    amo_alu_result = ff_in.rs2_val;
-        AMO_OP_ADD:     amo_alu_result = mem_rdata + ff_in.rs2_val;
-        AMO_OP_AND:     amo_alu_result = mem_rdata & ff_in.rs2_val;
-        AMO_OP_OR:      amo_alu_result = mem_rdata | ff_in.rs2_val;
-        AMO_OP_XOR:     amo_alu_result = mem_rdata ^ ff_in.rs2_val;
-        AMO_OP_MIN:     amo_alu_result = (signed'(mem_rdata) < signed'(ff_in.rs2_val))
-                                            ? mem_rdata : ff_in.rs2_val;
-        AMO_OP_MAX:     amo_alu_result = (signed'(mem_rdata) > signed'(ff_in.rs2_val))
-                                            ? mem_rdata : ff_in.rs2_val;
-        AMO_OP_MINU:    amo_alu_result = (mem_rdata < ff_in.rs2_val)
-                                            ? mem_rdata : ff_in.rs2_val;
-        AMO_OP_MAXU:    amo_alu_result = (mem_rdata > ff_in.rs2_val)
-                                            ? mem_rdata : ff_in.rs2_val;
+        AMO_OP_SWAP:    amo_alu_result = rs2_val;
+        AMO_OP_ADD:     amo_alu_result = mem_rdata + rs2_val;
+        AMO_OP_AND:     amo_alu_result = mem_rdata & rs2_val;
+        AMO_OP_OR:      amo_alu_result = mem_rdata | rs2_val;
+        AMO_OP_XOR:     amo_alu_result = mem_rdata ^ rs2_val;
+        AMO_OP_MIN:     amo_alu_result = (signed'(mem_rdata) < signed'(rs2_val))
+                                            ? mem_rdata : rs2_val;
+        AMO_OP_MAX:     amo_alu_result = (signed'(mem_rdata) > signed'(rs2_val))
+                                            ? mem_rdata : rs2_val;
+        AMO_OP_MINU:    amo_alu_result = (mem_rdata < rs2_val)
+                                            ? mem_rdata : rs2_val;
+        AMO_OP_MAXU:    amo_alu_result = (mem_rdata > rs2_val)
+                                            ? mem_rdata : rs2_val;
         default:        amo_alu_result = 32'hDEADBEEF;
     endcase
-    mem_wdata = (ff_in.mem_op == MEM_OP_AMO) ? amo_alu_result : ff_in.rs2_val;
+    mem_wdata = (ff_in.mem_op == MEM_OP_AMO) ? amo_alu_result : rs2_val;
 end
 
 /* ------------------------------------------------------------------------------------------------

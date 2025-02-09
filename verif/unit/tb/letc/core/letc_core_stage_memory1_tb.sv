@@ -67,6 +67,21 @@ initial begin
     e_to_m1_valid <= 1'b0;
     e_to_m1 <= '0;
     e_to_m1.alu_result <= 32'd9;
+    m1_forwardee_rs2.use_fwd <= 1'b0;
+    m1_forwardee_rs2.fwd_val <= '0;
+
+    @(negedge clk);
+
+    rst_n <= 1'b1;
+
+    @(negedge clk);
+
+    assert(!$isunknown(m1_forwarder.instr_produces_rd));
+    assert(!$isunknown(m1_forwarder.rd_idx));
+    assert(!$isunknown(m1_forwarder.rd_val_avail));
+    assert(!$isunknown(m1_forwarder.rd_val));
+    assert(!$isunknown(m1_forwardee_rs2.stage_uses_reg));
+    assert(!$isunknown(m1_forwardee_rs2.reg_idx));
 
     $finish;
 end
