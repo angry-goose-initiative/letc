@@ -1,0 +1,119 @@
+name: LETC Unit Regression
+
+#Thanks https://stackoverflow.com/questions/57699839/github-actions-how-to-target-all-branches-except-master
+on:
+  push:
+    branches: [ "**", "!legacy", "!old_main" ]
+  pull_request:
+    branches: [ "**", "!legacy", "!old_main" ]
+
+jobs:
+  unit_regression_iverilog:
+    strategy:
+      fail-fast: false
+      matrix:
+        #We only support Linux
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Install iverilog
+        shell: bash
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get -y install --no-install-recommends iverilog
+
+      - name: Cache sv2v Installation
+        id: cache-sv2v
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-sv2v-installation
+        with:
+          path: ~/.sv2v
+          key: ${{runner.os}}-build-${{env.cache-name}}
+
+      - if: ${{ steps.cache-sv2v.outputs.cache-hit != 'true' }}
+        name: Install sv2v dependencies
+        shell: bash
+        run: |
+          sudo apt-get -y install --no-install-recommends wget unzip
+
+      - if: ${{ steps.cache-sv2v.outputs.cache-hit != 'true' }}
+        name: Install sv2v
+        shell: bash
+        run: |
+          mkdir -p ~/.sv2v
+          cd ~/.sv2v
+          wget https://github.com/zachjs/sv2v/releases/download/v0.0.12/sv2v-Linux.zip
+          unzip sv2v-Linux.zip
+          mv sv2v-Linux/sv2v .
+          rm -rf sv2v-Linux
+          rm sv2v-Linux.zip
+          chmod +x sv2v
+
+      - name: Add sv2v Directory To Path
+        run: echo "$HOME/.sv2v" >> $GITHUB_PATH
+
+      - name: Run iverilog
+        working-directory: ${{github.workspace}}
+        run: |
+          infra/scripts/unit_regression.sh 0 1
+
+  unit_regression_verilator:
+    strategy:
+      fail-fast: false
+      matrix:
+        #We only support Linux
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    timeout-minutes: 120
+
+    steps:
+      - uses: actions/checkout@v3
+
+      #Too old
+      #- name: Install Verilator
+      #  run: sudo apt-get install -y verilator
+
+      - name: Install Runtime Dependencies
+        run: sudo apt-get install ccache gtkwave
+
+      - name: Cache Verilator Installation
+        id: cache-verilator
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-verilator-installation
+        with:
+          path: ~/.verilator
+          key: ${{runner.os}}-build-${{env.cache-name}}
+
+      - if: ${{ steps.cache-verilator.outputs.cache-hit != 'true' }}
+        name: Install Verilator Compile Dependencies
+        run: sudo apt-get install git help2man perl python3 make autoconf g++ flex bison ccache libunwind-dev libgoogle-perftools-dev numactl perl-doc libfl2 libfl-dev zlib1g zlib1g-dev
+
+      - if: ${{ steps.cache-verilator.outputs.cache-hit != 'true' }}
+        name: Get Verilator Sources
+        run: git clone https://github.com/verilator/verilator ~/.verilator
+
+      - if: ${{ steps.cache-verilator.outputs.cache-hit != 'true' }}
+        name: Compile And Install Verilator
+        timeout-minutes: 120
+        run: |
+          export VERILATOR_ROOT="$HOME/.verilator"
+          cd ~/.verilator
+          git switch stable
+          autoconf
+          ./configure
+          make -j2
+          ln -s ./bin/* ./
+
+      - name: Add Verilator Directory To Path
+        run: echo "$HOME/.verilator/bin" >> $GITHUB_PATH
+
+      - name: Run Verilator
+        working-directory: ${{github.workspace}}
+        run: |
+          infra/scripts/unit_regression.sh 0 2

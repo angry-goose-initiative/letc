@@ -22,10 +22,16 @@ import letc_core_pkg::*;
 // - A stage must account for its flopped valid signal when producing
 //   `stage_uses_reg`.
 
+//FIXME remove these once testbenches actually use and test them
+//verilator lint_save
+//verilator lint_off UNUSEDSIGNAL
+
 logic       stage_uses_reg;
 reg_idx_t   reg_idx;
 logic       use_fwd;
 word_t      fwd_val;
+
+//verilator lint_restore
 
 modport fwd_factory (
     input   stage_uses_reg,
