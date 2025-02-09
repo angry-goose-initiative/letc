@@ -9,6 +9,10 @@
  *
 */
 
+/* ------------------------------------------------------------------------------------------------
+ * Module Definition
+ * --------------------------------------------------------------------------------------------- */
+
 module letc_core_stage_writeback
     import letc_pkg::*;
     import letc_core_pkg::*;
@@ -57,18 +61,9 @@ assign w_ready = 1'b1; // TODO: Would there ever be a cache write miss?
 logic out_valid;
 assign out_valid = ff_in_valid && !w_flush && !w_stall;
 
-// Forwarder
-always_comb begin
-    w_forwarder.instr_produces_rd = ff_in.rd_we && ff_in_valid;
-    w_forwarder.rd_idx = ff_in.rd_idx;
-    w_forwarder.rd_val_avail = 1'b1;
-    unique case (ff_in.rd_src)
-        RD_SRC_ALU: w_forwarder.rd_val = ff_in.alu_result;
-        RD_SRC_CSR: w_forwarder.rd_val = ff_in.csr_old_val;
-        RD_SRC_MEM: w_forwarder.rd_val = ff_in.mem_rdata;
-        default:    w_forwarder.rd_val = 32'hDEADBEEF;
-    endcase
-end
+/* ------------------------------------------------------------------------------------------------
+ * RD mux
+ * --------------------------------------------------------------------------------------------- */
 
 word_t rd_val;
 always_comb begin
@@ -78,10 +73,28 @@ always_comb begin
         RD_SRC_CSR: rd_val = ff_in.csr_old_val;
         default:    rd_val = 32'hDEADBEEF;
     endcase
+end
 
-    rf_rd_val = rd_val;
-    rf_rd_idx = ff_in.rd_idx;
-    rf_rd_we = ff_in.rd_we && out_valid;
+/* ------------------------------------------------------------------------------------------------
+ * Register file port
+ * --------------------------------------------------------------------------------------------- */
+
+always_comb begin
+    rf_rd_val   = rd_val;
+    rf_rd_idx   = ff_in.rd_idx;
+    rf_rd_we    = ff_in.rd_we && out_valid;
+end
+
+/* ------------------------------------------------------------------------------------------------
+ * Forwarding
+ * --------------------------------------------------------------------------------------------- */
+
+// Forwarder
+always_comb begin
+    w_forwarder.instr_produces_rd = ff_in.rd_we && ff_in_valid;
+    w_forwarder.rd_idx = ff_in.rd_idx;
+    w_forwarder.rd_val_avail = 1'b1;
+    w_forwarder.rd_val = rd_val;
 end
 
 `ifdef SIMULATION
