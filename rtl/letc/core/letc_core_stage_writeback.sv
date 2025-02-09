@@ -1,6 +1,6 @@
-/**
- * File    letc_core_stage_writeback.sv
- * Brief   LETC Core Memory 2 Stage
+/*
+ * File:    letc_core_stage_writeback.sv
+ * Brief:   LETC Core Writeback Stage
  *
  * Copyright:
  *  Copyright (C) 2025 Nick Chan
