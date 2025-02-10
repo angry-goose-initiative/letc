@@ -15,7 +15,7 @@ It is a 7-stage in-order pipelined RISC-V soft-core design, targeting the Cora Z
 
 It will have TLBs, caches, a hardware page table walker, and will accesses peripherals and memory over an AXI interconnect of our own making!
 
-If you're reading this, as of writing we're in a transition period between wrapping up IRVE, our C++ reference implementation, and beginning LETC. Exciting stuff!
+If you're reading this, as of writing IRVE is done, and LETC development is in full swing! Exciting stuff!
 
 **For more details, and an overarching view of LETC's Architecture, [visit this page](https://github.com/angry-goose-initiative/wiki/wiki/LETC-Architecture-Overview)**.
 
