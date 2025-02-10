@@ -12,6 +12,7 @@ filelists/rtl/example/example_top.f
 filelists/rtl/letc/core/letc_core_alu.f
 filelists/rtl/letc/core/letc_core_branch_comparator.f
 filelists/rtl/letc/core/letc_core_bubble_wrap.f
+//filelists/rtl/letc/core/letc_core_forwarding_factory.f
 filelists/rtl/letc/core/letc_core_csrf.f
 filelists/rtl/letc/core/letc_core_multiplier.f
 filelists/rtl/letc/core/letc_core_rf.f
