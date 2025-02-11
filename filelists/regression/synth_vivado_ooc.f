@@ -1,8 +1,11 @@
 /* vi: set filetype=c: */
 #pragma once
 //Non-LETC-specific
-filelists/rtl/common/fifo/fifo_0r1w.f
 filelists/rtl/common/axi/axi_buffer.f
+filelists/rtl/common/fifo/fifo_0r1w.f
+filelists/rtl/common/sram/amd_bram.f
+
+//Examples
 filelists/rtl/example/example_top.f
 
 //LETC-specific
