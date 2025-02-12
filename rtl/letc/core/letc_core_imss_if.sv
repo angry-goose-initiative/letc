@@ -37,8 +37,9 @@ word_t req_virtual_addr;
 //TODO also req_illegal in reverse
 
 //Fetch 2 <-> Memory Subsystem
+//TODO likely need a stall signal from f2 to the IMSS, haven't caught this bug before because we didn't have memory :(
 logic  rsp_valid;
-logic  rsp_illegal;
+logic  rsp_illegal;//TODO contain bad address info?
 word_t rsp_virtual_addr;
 word_t rsp_data;
 

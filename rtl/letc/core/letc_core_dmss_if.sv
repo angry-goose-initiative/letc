@@ -17,40 +17,50 @@ interface letc_core_dmss_if;
 import riscv_pkg::*;
 import letc_core_pkg::*;
 
-// logic   dmss1_flop_en;
-// logic   dmss1_ready;
-// logic   load_req;
-// logic   store_req;
-vaddr_t load_addr;
+//M1 <-> DMSS (technically combinationally from E but I digress)
+logic   dmss0_req_load;
+logic   dmss0_req_store;
+vaddr_t dmss0_req_addr;
+logic   dmss0_req_stall;//This one is ACTUALLY from m1 not E
 
-// logic   dmss2_flop_en;
-// logic   dmss2_ready;
-word_t  load_data;
+//M2 <-> DMSS (actually in M2)
+//Unlike the IMSS, no need for a stall signal TO the DMSS because nothing after M2 could possibly stall M2
+logic   dmss1_rsp_ready;
+word_t  dmss1_rsp_load_data;
+logic   dmss1_rsp_illegal;//TODO contain bad address info?
 
-word_t  store_data;
-vaddr_t store_addr;//TODO or should this be physical, with virtual translation having happened earlier?
-logic   store_en;
+//WB <-> DMSS (actually in M2)
+logic   dmss2_req_commit;
+word_t  dmss2_req_store_data;
 
 modport memory1 (
-    output  load_addr
+    output dmss0_req_load,
+    output dmss0_req_store,
+    output dmss0_req_addr,
+    output dmss0_req_stall
 );
 
 modport memory2 (
-    input   load_data
+    input dmss1_rsp_ready,
+    input dmss1_rsp_load_data,
+    input dmss1_rsp_illegal
 );
 
 modport writeback (
-    output  store_data,
-    output  store_addr,
-    output  store_en
+    output dmss2_req_commit,
+    output dmss2_req_store_data
 );
 
 modport subsystem (
-    input   load_addr,
-    output  load_data,
-    input   store_data,
-    input   store_addr,
-    input   store_en
+    input  dmss0_req_load,
+    input  dmss0_req_store,
+    input  dmss0_req_addr,
+    input  dmss0_req_stall,
+    output dmss1_rsp_ready,
+    output dmss1_rsp_load_data,
+    output dmss1_rsp_illegal,
+    input  dmss2_req_commit,
+    input  dmss2_req_store_data
 );
 
 endinterface : letc_core_dmss_if
