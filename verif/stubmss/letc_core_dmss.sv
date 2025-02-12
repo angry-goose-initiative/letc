@@ -24,6 +24,40 @@ module letc_core_dmss
 
 //TODO support virtual memory with this stubbed variant in the future
 //For now, just treat virtual and physical addresses the same
+byte_t dmem [SIZE_BYTES-1:0];
+
+logic dmss0_req_load_ff, dmss0_req_store_ff;
+vaddr_t dmss0_req_addr_ff;
+
+always_ff @(posedge clk) begin
+    if (!rst_n) begin
+        dmss0_req_load_ff  <= 1'b0;
+        dmss0_req_store_ff <= 1'b0;
+    end else begin
+        if (!dmss_if.dmss0_req_stall) begin
+            dmss0_req_load_ff  <= dmss_if.dmss0_req_load;
+            dmss0_req_store_ff <= dmss_if.dmss0_req_store;
+            dmss0_req_addr_ff  <= dmss_if.dmss0_req_addr;
+        end
+    end
+end
+
+assign dmss_if.dmss1_rsp_illegal        = 1'b0;
+
+always_ff @(posedge clk) begin
+    dmss_if.dmss1_rsp_load_data <= {//Little endian
+        dmem[dmss0_req_addr_ff + 3],
+        dmem[dmss0_req_addr_ff + 2],
+        dmem[dmss0_req_addr_ff + 1],
+        dmem[dmss0_req_addr_ff]
+    };
+end
+
+//logic dmss_if;
+
+assign dmss_if.dmss1_rsp_ready          = 1'b1;//FIXME need to model aliasing table...
+
+/*
 
 //It is expected the testbench will reach in and initialize this
 //verilator lint_save
@@ -70,5 +104,7 @@ always_ff @(posedge clk) begin
 end
 
 //assign imss_if.req_ready = 1'b1;
+
+*/
 
 endmodule : letc_core_dmss
