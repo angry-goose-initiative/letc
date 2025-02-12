@@ -60,7 +60,14 @@ assign m1_ready = 1'b1; // TODO: DMSS could cause stall
 logic out_valid;
 assign out_valid = ff_in_valid && !m1_flush && !m1_stall;
 
-assign dmss_if.load_addr = e_to_m1.alu_result;
+/* ------------------------------------------------------------------------------------------------
+ * DMSS
+ * --------------------------------------------------------------------------------------------- */
+
+assign dmss_if.dmss0_req_addr   = e_to_m1.alu_result;
+assign dmss_if.dmss0_req_load   = ff_in.mem_op != MEM_OP_NOP;
+assign dmss_if.dmss0_req_store  = ff_in.mem_op == MEM_OP_STORE;
+assign dmss_if.dmss0_req_stall  = m1_stall;
 
 /* ------------------------------------------------------------------------------------------------
  * Forwarding

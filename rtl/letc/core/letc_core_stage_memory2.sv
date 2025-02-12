@@ -91,7 +91,7 @@ word_t amo_alu_result;
 word_t mem_wdata;
 word_t mem_rdata;
 always_comb begin
-    mem_rdata = dmss_if.load_data;
+    mem_rdata = dmss_if.dmss1_rsp_load_data;
     unique case (ff_in.amo_alu_op)
         AMO_OP_SWAP:    amo_alu_result = rs2_val;
         AMO_OP_ADD:     amo_alu_result = mem_rdata + rs2_val;
@@ -130,7 +130,7 @@ always_comb begin
         csr_old_val:    ff_in.csr_old_val,
         csr_new_val:    ff_in.csr_new_val,
         alu_result:     ff_in.alu_result,
-        mem_rdata:      dmss_if.load_data,
+        mem_rdata:      dmss_if.dmss1_rsp_load_data,
         mem_op:         ff_in.mem_op,
         mem_size:       ff_in.mem_size,
         mem_wdata:      mem_wdata
