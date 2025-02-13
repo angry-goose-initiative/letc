@@ -55,7 +55,7 @@ always_ff @(posedge clk) begin
     end
 end
 
-assign m1_ready = 1'b1; // TODO: DMSS could cause stall
+assign m1_ready = 1'b1;
 
 logic out_valid;
 assign out_valid = ff_in_valid && !m1_flush && !m1_stall;
@@ -64,9 +64,11 @@ assign out_valid = ff_in_valid && !m1_flush && !m1_stall;
  * DMSS
  * --------------------------------------------------------------------------------------------- */
 
+// The DMSS has its own input flops that are at the same point in the pipeline
+// as memory 1's input flops, so the input values are passed to the DMSS.
 assign dmss_if.dmss0_req_addr   = e_to_m1.alu_result;
-assign dmss_if.dmss0_req_load   = ff_in.mem_op != MEM_OP_NOP;
-assign dmss_if.dmss0_req_store  = ff_in.mem_op == MEM_OP_STORE;
+assign dmss_if.dmss0_req_load   = e_to_m1.mem_op != MEM_OP_NOP;
+assign dmss_if.dmss0_req_store  = e_to_m1.mem_op == MEM_OP_STORE;
 assign dmss_if.dmss0_req_stall  = m1_stall;
 
 /* ------------------------------------------------------------------------------------------------
@@ -89,11 +91,15 @@ end
 assign m1_forwardee_rs2.stage_uses_reg = 1'b0;
 assign m1_forwardee_rs2.reg_idx = ff_in.rs2_idx;
 
-assign branch_taken     = ff_in_valid && ff_in.branch_taken;
-assign branch_target    = ff_in.branch_target;
-
 word_t rs2_val;
 assign rs2_val = m1_forwardee_rs2.use_fwd ? m1_forwardee_rs2.fwd_val : ff_in.rs2_val;
+
+/* ------------------------------------------------------------------------------------------------
+ * Branching
+ * --------------------------------------------------------------------------------------------- */
+
+assign branch_taken     = ff_in_valid && ff_in.branch_taken;
+assign branch_target    = ff_in.branch_target;
 
 /* ------------------------------------------------------------------------------------------------
  * Output Connections
@@ -104,7 +110,7 @@ always_comb begin
     m1_to_m2 = '{
 `ifdef SIMULATION
         sim_exit_req:   ff_in.sim_exit_req,
-`endif //SIMULATION
+`endif // SIMULATION
         pc:             ff_in.pc,
         rd_src:         ff_in.rd_src,
         rd_idx:         ff_in.rd_idx,
@@ -122,5 +128,15 @@ always_comb begin
         rs2_val:        rs2_val
     };
 end
+
+/* ------------------------------------------------------------------------------------------------
+ * Assertions
+ * --------------------------------------------------------------------------------------------- */
+
+`ifdef SIMULATION
+
+// TODO
+
+`endif // SIMULATION
 
 endmodule : letc_core_stage_memory1
