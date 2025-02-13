@@ -38,7 +38,6 @@ if [[ $USE_GNU_PARALLEL == "1" ]]; then
     rm -f $GNU_PARALLEL_COMMANDS_FILE
     touch $GNU_PARALLEL_COMMANDS_FILE
 
-    #iverilog
     echo $STUBMSS_TEST_PROGRAM_FILELIST | xargs -n 1 -P 1 echo $STUBMSS_CHECK >> $GNU_PARALLEL_COMMANDS_FILE
 
     #Now run all the things!

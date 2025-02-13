@@ -9,6 +9,10 @@
  *
 */
 
+/* ------------------------------------------------------------------------------------------------
+ * Module Definition
+ * --------------------------------------------------------------------------------------------- */
+
 module letc_core_dmss
     import riscv_pkg::*;
     import letc_pkg::*;
@@ -23,8 +27,13 @@ module letc_core_dmss
 );
 
 //TODO support virtual memory with this stubbed variant in the future
+
 //For now, just treat virtual and physical addresses the same
 byte_t dmem [SIZE_BYTES-1:0];
+
+/* ------------------------------------------------------------------------------------------------
+ * First Stage (In line with M1 kinda sorta)
+ * --------------------------------------------------------------------------------------------- */
 
 logic dmss0_req_load_ff, dmss0_req_store_ff;
 vaddr_t dmss0_req_addr_ff;
@@ -33,6 +42,7 @@ always_ff @(posedge clk) begin
     if (!rst_n) begin
         dmss0_req_load_ff  <= 1'b0;
         dmss0_req_store_ff <= 1'b0;
+        dmss1_req_addr_ff  <= 32'hDEADBEEF;
     end else begin
         if (!dmss_if.dmss0_req_stall) begin
             dmss0_req_load_ff  <= dmss_if.dmss0_req_load;
@@ -42,69 +52,78 @@ always_ff @(posedge clk) begin
     end
 end
 
-assign dmss_if.dmss1_rsp_illegal        = 1'b0;
+/* ------------------------------------------------------------------------------------------------
+ * Second Stage (In line with M2)
+ * --------------------------------------------------------------------------------------------- */
 
-always_ff @(posedge clk) begin
-    dmss_if.dmss1_rsp_load_data <= {//Little endian
-        dmem[dmss0_req_addr_ff + 3],
-        dmem[dmss0_req_addr_ff + 2],
-        dmem[dmss0_req_addr_ff + 1],
-        dmem[dmss0_req_addr_ff]
-    };
-end
+logic load_conflict_with_store;
 
-//logic dmss_if;
+logic dmss1_req_load_ff, dmss1_req_store_ff;
+paddr_t dmss1_req_addr_ff;
 
-assign dmss_if.dmss1_rsp_ready          = 1'b1;//FIXME need to model aliasing table...
-
-/*
-
-//It is expected the testbench will reach in and initialize this
-//verilator lint_save
-//verilator lint_off UNDRIVEN
-byte_t dmem [SIZE_BYTES-1:0];
-//verilator lint_restore
-
-//Service requests "combinationally"
-//logic   rsp_valid;
-//logic   rsp_illegal;
-//vaddr_t rsp_virtual_addr;
-word_t  rsp_data;
-
-//assign rsp_valid        = 1'b1;//imss_if.req_valid;
-//assign rsp_illegal      = 1'b0;
-//assign rsp_virtual_addr = dmss_if.load_addr;//imss_if.req_virtual_addr;
-assign rsp_data         = {//Little endian
-    dmem[dmss_if.load_addr + 3],
-    dmem[dmss_if.load_addr + 2],
-    dmem[dmss_if.load_addr + 1],
-    dmem[dmss_if.load_addr]
-};
-
-//Delay by two cycles to match hardware
-//logic  rsp_valid_ff;
-//logic  rsp_illegal_ff;
-//word_t rsp_virtual_addr_ff;
-word_t rsp_data_ff;
+//This stage cannot be stalled externally, only when a load conflicts with a store
 always_ff @(posedge clk) begin
     if (!rst_n) begin
-        //rsp_valid_ff        <= 1'b0;
-        //imss_if.rsp_valid   <= 1'b0;
+        dmss1_req_load_ff  <= 1'b0;
+        dmss1_req_store_ff <= 1'b0;
+        dmss1_req_addr_ff  <= 32'hDEADBEEF;
     end else begin
-        //rsp_valid_ff        <= rsp_valid;
-        //rsp_illegal_ff      <= rsp_illegal;
-        //rsp_virtual_addr_ff <= rsp_virtual_addr;
-        rsp_data_ff         <= rsp_data;
-
-        //imss_if.rsp_valid           <= rsp_valid_ff;
-        //imss_if.rsp_illegal         <= rsp_illegal_ff;
-        //imss_if.rsp_virtual_addr    <= rsp_virtual_addr_ff;
-        dmss_if.load_data <= rsp_data_ff;
+        if (!load_conflict_with_store) begin
+            dmss1_req_load_ff  <= dmss0_req_load_ff;
+            dmss1_req_store_ff <= dmss0_req_store_ff;
+            dmss1_req_addr_ff  <= dmss0_req_addr_ff;
+        end
     end
 end
 
-//assign imss_if.req_ready = 1'b1;
+always_comb begin
+    if (load_conflict_with_store) begin
+        dmss_if.dmss1_rsp_load_data = 32'hDEADBEEF;
+    end else begin
+        dmss_if.dmss1_rsp_load_data = {//Little endian
+            dmem[dmss1_req_addr_ff + 3],//Using dmss1_req_addr_ff so this stays in the same stage while still being
+            dmem[dmss1_req_addr_ff + 2],//combinational (we don't have to worry about timing since this doesn't
+            dmem[dmss1_req_addr_ff + 1],//synthesize)
+            dmem[dmss1_req_addr_ff]
+        };
+    end
+end
 
-*/
+//Stubmss doesn't actually implement a cache, so this is the only possible stall
+assign dmss_if.dmss1_rsp_ready = !load_conflict_with_store;
+
+/* ------------------------------------------------------------------------------------------------
+ * Third Stage (In line with WB)
+ * --------------------------------------------------------------------------------------------- */
+
+logic /*dmss2_req_load_ff, */ dmss2_req_store_ff;
+paddr_t dmss2_req_addr_ff;
+
+//No stalling this stage
+always_ff @(posedge clk) begin
+    if (!rst_n) begin
+        //dmss2_req_load_ff  <= 1'b0;
+        dmss2_req_store_ff <= 1'b0;
+        dmss2_req_addr_ff  <= 32'hDEADBEEF;
+    end else begin
+        //dmss2_req_load_ff  <= dmss1_req_load_ff;
+        dmss2_req_store_ff <= dmss1_req_store_ff;
+        dmss2_req_addr_ff  <= dmss1_req_addr_ff;
+    end
+end
+
+//Detecting store conflicts
+assign load_conflict_with_store = dmss1_req_load_ff && dmss2_req_store_ff && (dmss1_req_addr_ff == dmss2_req_addr_ff);
+
+//Actual storing
+always_ff @(posedge clk) begin
+    if (dmss2_req_store_ff & dmss_if.dmss2_req_commit) begin
+        //Little endian
+        dmem[dmss2_req_addr_ff]     <= dmss_if.dmss2_req_store_data[7:0];
+        dmem[dmss2_req_addr_ff + 1] <= dmss_if.dmss2_req_store_data[15:8];
+        dmem[dmss2_req_addr_ff + 2] <= dmss_if.dmss2_req_store_data[23:16];
+        dmem[dmss2_req_addr_ff + 3] <= dmss_if.dmss2_req_store_data[31:24];
+    end
+end
 
 endmodule : letc_core_dmss
