@@ -70,7 +70,7 @@ assign out_valid = ff_in_valid && !w_flush && !w_stall;
  * --------------------------------------------------------------------------------------------- */
 
 assign dmss_if.dmss2_req_commit = ff_in.mem_op == MEM_OP_STORE && out_valid;
-assign dmss_if.dmss2_req_store_data = ff_in.mem_wdata;
+assign dmss_if.dmss2_req_store_data = ff_in.mem_rdata;
 
 /* ------------------------------------------------------------------------------------------------
  * RD mux

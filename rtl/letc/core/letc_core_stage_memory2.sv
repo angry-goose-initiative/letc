@@ -55,7 +55,7 @@ always_ff @(posedge clk) begin
     end
 end
 
-assign m2_ready = 1'b1; // TODO: DMSS could cause stall
+assign m2_ready = dmss_if.dmss1_rsp_ready || ff_in.mem_op != MEM_OP_NOP;
 
 logic out_valid;
 assign out_valid = ff_in_valid && !m2_flush && !m2_stall;
@@ -84,9 +84,40 @@ word_t rs2_val;
 assign rs2_val = m2_forwardee_rs2.use_fwd ? m2_forwardee_rs2.fwd_val : ff_in.rs2_val;
 
 /* ------------------------------------------------------------------------------------------------
+ * DMSS
+ * --------------------------------------------------------------------------------------------- */
+
+word_t mem_rdata;
+
+word_t loaded_word;
+halfword_t loaded_hw;
+byte_t loaded_byte;
+logic extend_bit_hw;
+logic extend_bit_byte;
+
+always_comb begin
+    loaded_word = dmss_if.dmss1_rsp_load_data;
+    loaded_hw   = ff_in.alu_result[1] ? loaded_word[31:16] : loaded_word[15:0];
+    loaded_byte = ff_in.alu_result[0] ? loaded_hw[15:8] : loaded_hw[7:0];
+    extend_bit_hw = loaded_hw[15] & ff_in.mem_signed;
+    extend_bit_byte = loaded_byte[7] & ff_in.mem_signed;
+    if (ff_in.mem_op == MEM_OP_LOAD) begin
+        case (ff_in.mem_size)
+            MEM_SIZE_BYTE:      mem_rdata = {{24{extend_bit_byte}}, loaded_byte};
+            MEM_SIZE_HALFWORD:  mem_rdata = {{16{extend_bit_hw}}, loaded_hw};
+            default:            mem_rdata = loaded_word;
+        endcase
+    end else begin
+        mem_rdata = loaded_word;
+    end
+end
+
+/* ------------------------------------------------------------------------------------------------
  * AMO ALU
  * --------------------------------------------------------------------------------------------- */
 
+// TODO: This will live in writeback
+/*
 word_t amo_alu_result;
 word_t mem_wdata;
 word_t mem_rdata;
@@ -110,6 +141,7 @@ always_comb begin
     endcase
     mem_wdata = (ff_in.mem_op == MEM_OP_AMO) ? amo_alu_result : rs2_val;
 end
+*/
 
 /* ------------------------------------------------------------------------------------------------
  * Output Connections
@@ -120,7 +152,7 @@ always_comb begin
     m2_to_w = '{
 `ifdef SIMULATION
         sim_exit_req:   ff_in.sim_exit_req,
-`endif //SIMULATION
+`endif // SIMULATION
         pc:             ff_in.pc,
         rd_src:         ff_in.rd_src,
         rd_idx:         ff_in.rd_idx,
@@ -130,10 +162,10 @@ always_comb begin
         csr_old_val:    ff_in.csr_old_val,
         csr_new_val:    ff_in.csr_new_val,
         alu_result:     ff_in.alu_result,
-        mem_rdata:      dmss_if.dmss1_rsp_load_data,
+        mem_rdata:      mem_rdata,
         mem_op:         ff_in.mem_op,
         mem_size:       ff_in.mem_size,
-        mem_wdata:      mem_wdata
+        rs2_val:        rs2_val
     };
 end
 

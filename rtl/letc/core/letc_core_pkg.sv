@@ -272,7 +272,7 @@ typedef struct packed {
 
     mem_op_e                mem_op;
     mem_size_e              mem_size;
-    riscv_pkg::word_t       mem_wdata;
+    riscv_pkg::word_t       rs2_val;
 
 `ifdef SIMULATION
     logic                   sim_exit_req;
