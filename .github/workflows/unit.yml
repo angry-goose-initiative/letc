@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         #We only support Linux
-        os: [ubuntu-latest]
+        os: [ubuntu-24.04]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -73,7 +73,7 @@ jobs:
       fail-fast: false
       matrix:
         #We only support Linux
-        os: [ubuntu-latest]
+        os: [ubuntu-24.04]
     runs-on: ${{ matrix.os }}
 
     timeout-minutes: 120
@@ -81,44 +81,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      #Too old
-      #- name: Install Verilator
-      #  run: sudo apt-get install -y verilator
-
-      - name: Install Runtime Dependencies
-        run: sudo apt-get install ccache gtkwave
-
-      - name: Cache Verilator Installation
-        id: cache-verilator
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-verilator-installation
-        with:
-          path: ~/.verilator
-          key: ${{runner.os}}-build-${{env.cache-name}}
-
-      - if: ${{ steps.cache-verilator.outputs.cache-hit != 'true' }}
-        name: Install Verilator Compile Dependencies
-        run: sudo apt-get install git help2man perl python3 make autoconf g++ flex bison ccache libunwind-dev libgoogle-perftools-dev numactl perl-doc libfl2 libfl-dev zlib1g zlib1g-dev
-
-      - if: ${{ steps.cache-verilator.outputs.cache-hit != 'true' }}
-        name: Get Verilator Sources
-        run: git clone https://github.com/verilator/verilator ~/.verilator
-
-      - if: ${{ steps.cache-verilator.outputs.cache-hit != 'true' }}
-        name: Compile And Install Verilator
-        timeout-minutes: 120
-        run: |
-          export VERILATOR_ROOT="$HOME/.verilator"
-          cd ~/.verilator
-          git switch stable
-          autoconf
-          ./configure
-          make -j4
-          ln -s ./bin/* ./
-
-      - name: Add Verilator Directory To Path
-        run: echo "$HOME/.verilator/bin" >> $GITHUB_PATH
+      - name: Install Verilator
+        run: sudo apt-get install -y verilator
 
       - name: Run Verilator
         working-directory: ${{github.workspace}}
