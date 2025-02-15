@@ -69,8 +69,31 @@ assign out_valid = ff_in_valid && !w_flush && !w_stall;
  * DMSS
  * --------------------------------------------------------------------------------------------- */
 
+word_t store_data;
+word_t storing_byte;
+word_t storing_hw;
+word_t storing_word;
+
+always_comb begin
+    unique case (ff_in.alu_result[1:0])
+        2'b00:      storing_byte = {ff_in.mem_rdata[31:8], ff_in.rs2_val[7:0]};
+        2'b01:      storing_byte = {ff_in.mem_rdata[31:16], ff_in.rs2_val[7:0], ff_in.mem_rdata[7:0]};
+        2'b10:      storing_byte = {ff_in.mem_rdata[31:24], ff_in.rs2_val[7:0], ff_in.mem_rdata[15:0]};
+        default:    storing_byte = {ff_in.rs2_val[7:0], ff_in.mem_rdata[23:0]};
+    endcase
+    storing_hw = (ff_in.alu_result[1])
+        ? {ff_in.rs2_val[15:0], ff_in.mem_rdata[15:0]}
+        : {ff_in.mem_rdata[31:16], ff_in.rs2_val[15:0]};
+    storing_word = ff_in.rs2_val;
+    unique case (ff_in.mem_size)
+        MEM_SIZE_BYTE:      store_data = storing_byte;
+        MEM_SIZE_HALFWORD:  store_data = storing_hw;
+        default:            store_data = storing_word;
+    endcase
+end
+
 assign dmss_if.dmss2_req_commit = ff_in.mem_op == MEM_OP_STORE && out_valid;
-assign dmss_if.dmss2_req_store_data = ff_in.mem_rdata;
+assign dmss_if.dmss2_req_store_data = store_data;
 
 /* ------------------------------------------------------------------------------------------------
  * RD mux
