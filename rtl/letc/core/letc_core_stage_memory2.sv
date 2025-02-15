@@ -102,7 +102,7 @@ always_comb begin
     extend_bit_hw = loaded_hw[15] & ff_in.mem_signed;
     extend_bit_byte = loaded_byte[7] & ff_in.mem_signed;
     if (ff_in.mem_op == MEM_OP_LOAD) begin
-        case (ff_in.mem_size)
+        unique case (ff_in.mem_size)
             MEM_SIZE_BYTE:      mem_rdata = {{24{extend_bit_byte}}, loaded_byte};
             MEM_SIZE_HALFWORD:  mem_rdata = {{16{extend_bit_hw}}, loaded_hw};
             default:            mem_rdata = loaded_word;
