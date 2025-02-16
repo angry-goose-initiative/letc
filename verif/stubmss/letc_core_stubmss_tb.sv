@@ -3,9 +3,8 @@
  * Brief:   Testbench for letc_core_top with stubbed-out IMSS and DMSS
  *
  * Copyright (C) 2025 John Jekel
+ * Copyright (C) 2025 Nick Chan
  * See the LICENSE file at the root of the project for licensing info.
- *
- * TODO longer description
  *
 */
 
@@ -24,6 +23,8 @@ import letc_core_pkg::*;
  * --------------------------------------------------------------------------------------------- */
 
 localparam CLOCK_PERIOD = 10;
+
+localparam MAX_SIM_CYCLES = 1000000;
 
 /* ------------------------------------------------------------------------------------------------
  * DUT Connections
@@ -116,42 +117,46 @@ end
  * Tracing and Exit Logic
  * --------------------------------------------------------------------------------------------- */
 
-always_ff @(posedge clk) begin
-    if (rst_n) begin
-        //Tracing Logic
-        // if (dut.rf_rd_we & (dut.rf_rd_idx != '0)) begin
-        //     $fdisplay(trace_file_handle, "[letc_core_rf]: %h was written to register %d", dut.rf_rd_val, dut.rf_rd_idx);
-        // end
+initial begin
+    repeat (MAX_SIM_CYCLES) @(posedge clk) begin
+        if (rst_n) begin
+            //Tracing Logic
+            if (dut.stage_writeback.ff_in_valid & !dut.stage_writeback.sim_should_exit) begin
+                string msg = $sformatf(
+                    "R 0x%h",
+                    dut.stage_writeback.ff_in.pc
+                );
 
-        if (dut.rf_rd_we) begin
-            $fdisplay(
-                trace_file_handle,
-                "0x%h | 0x%h -> x%0d",
-                dut.stage_writeback.ff_in.pc,
-                dut.rf_rd_val,
-                dut.rf_rd_idx
-            );
-        end else if (dut.dmss.dmss2_req_store_ff & dut.dmss_if.dmss2_req_commit) begin
-            $fdisplay(
-                trace_file_handle,
-                "0x%h | 0x%h -> 0x%h",
-                dut.stage_writeback.ff_in.pc,
-                dut.stage_writeback.ff_in.rs2_val,
-                dut.dmss.dmss2_req_addr_ff,
-            );
-        end else if (dut.stage_writeback.ff_in_valid & !dut.stage_writeback.sim_should_exit) begin
-            $fdisplay(trace_file_handle, "0x%h", dut.stage_writeback.ff_in.pc);
-        end
+                if (dut.rf_rd_we) begin
+                    msg = {msg, $sformatf(
+                        " | RF: 0x%h -> x%0d",
+                        dut.rf_rd_val,
+                        dut.rf_rd_idx
+                    )};
+                end
+                if (dut.dmss.dmss2_req_store_ff & dut.dmss_if.dmss2_req_commit) begin
+                    msg = {msg, $sformatf(
+                        " | Mem: 0x%h -> 0x%h",
+                        dut.stage_writeback.ff_in.rs2_val,
+                        dut.dmss.dmss2_req_addr_ff
+                    )};
+                end
 
-        //TODO perhaps more tracing in the future?
+                $fdisplay(trace_file_handle, msg);
+            end
 
-        //Exit Logic
-        if (dut.stage_writeback.sim_should_exit) begin
-            $display("Got IRVE.EXIT instruction, exiting simulation...");
-            $fclose(trace_file_handle);
-            $finish;
+            //Exit Logic
+            if (dut.stage_writeback.sim_should_exit) begin
+                $display("Got IRVE.EXIT instruction, exiting simulation...");
+                $fclose(trace_file_handle);
+                $finish;
+            end
         end
     end
+
+    $display("Simulation timed out after %d cycles", MAX_SIM_CYCLES);
+    $fclose(trace_file_handle);
+    $finish;
 end
 
 endmodule : letc_core_stubmss_tb
