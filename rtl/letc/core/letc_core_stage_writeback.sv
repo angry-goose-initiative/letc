@@ -136,12 +136,10 @@ always_comb begin
 end
 
 /* ------------------------------------------------------------------------------------------------
- * Assertions
+ * Simulation Exit Logic
  * --------------------------------------------------------------------------------------------- */
 
 `ifdef SIMULATION
-
-//TODO
 
 //The testbench uses this
 //verilator lint_save
@@ -151,5 +149,15 @@ assign sim_should_exit = ff_in_valid && ff_in.sim_exit_req;
 //verilator lint_restore
 
 `endif //SIMULATION
+
+/* ------------------------------------------------------------------------------------------------
+ * Assertions
+ * --------------------------------------------------------------------------------------------- */
+
+`ifdef SIMULATION
+
+assert property (@(posedge clk) disable iff (!rst_n) (w_stall || w_flush) |-> !m2_to_w_valid);
+
+`endif // SIMULATION
 
 endmodule : letc_core_stage_writeback

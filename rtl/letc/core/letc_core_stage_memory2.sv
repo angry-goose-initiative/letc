@@ -169,4 +169,14 @@ always_comb begin
     };
 end
 
+/* ------------------------------------------------------------------------------------------------
+ * Assertions
+ * --------------------------------------------------------------------------------------------- */
+
+`ifdef SIMULATION
+
+assert property (@(posedge clk) disable iff (!rst_n) (m2_stall || m2_flush) |-> !m1_to_m2_valid);
+
+`endif // SIMULATION
+
 endmodule : letc_core_stage_memory2

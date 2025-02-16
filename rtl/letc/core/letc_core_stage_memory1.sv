@@ -135,7 +135,7 @@ end
 
 `ifdef SIMULATION
 
-// TODO
+assert property (@(posedge clk) disable iff (!rst_n) (m1_stall || m1_flush) |-> !e_to_m1_valid);
 
 `endif // SIMULATION
 
