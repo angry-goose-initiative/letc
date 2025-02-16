@@ -123,16 +123,24 @@ always_ff @(posedge clk) begin
         //     $fdisplay(trace_file_handle, "[letc_core_rf]: %h was written to register %d", dut.rf_rd_val, dut.rf_rd_idx);
         // end
 
-        if (dut.stage_writeback.ff_in_valid && !dut.stage_writeback.sim_should_exit) begin
-            if (dut.rf_rd_we) begin
-                $fdisplay(trace_file_handle,
-                          "0x%h | 0x%h -> x%0d",
-                          dut.stage_writeback.ff_in.pc,
-                          dut.rf_rd_val,
-                          dut.rf_rd_idx);
-            end else begin
-                $fdisplay(trace_file_handle, "0x%h", dut.stage_writeback.ff_in.pc);
-            end
+        if (dut.rf_rd_we) begin
+            $fdisplay(
+                trace_file_handle,
+                "0x%h | 0x%h -> x%0d",
+                dut.stage_writeback.ff_in.pc,
+                dut.rf_rd_val,
+                dut.rf_rd_idx
+            );
+        end else if (dut.dmss.dmss2_req_store_ff & dut.dmss_if.dmss2_req_commit) begin
+            $fdisplay(
+                trace_file_handle,
+                "0x%h | 0x%h -> 0x%h",
+                dut.stage_writeback.ff_in.pc,
+                dut.stage_writeback.ff_in.rs2_val,
+                dut.dmss.dmss2_req_addr_ff,
+            );
+        end else if (dut.stage_writeback.ff_in_valid & !dut.stage_writeback.sim_should_exit) begin
+            $fdisplay(trace_file_handle, "0x%h", dut.stage_writeback.ff_in.pc);
         end
 
         //TODO perhaps more tracing in the future?
