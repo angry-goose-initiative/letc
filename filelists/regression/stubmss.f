@@ -15,11 +15,11 @@ build/software/rvsw/src/single_file/asm/jzjcoresoftware/callrettest.vhex8
 //build/software/rvsw/src/single_file/asm/jzjcoresoftware/loadbytetest.vhex8//Infinite loop
 build/software/rvsw/src/single_file/asm/jzjcoresoftware/luitest.vhex8
 build/software/rvsw/src/single_file/asm/jzjcoresoftware/memoryreadtest.vhex8
-//build/software/rvsw/src/single_file/asm/jzjcoresoftware/memorywritetest.vhex8//Not yet supported
+build/software/rvsw/src/single_file/asm/jzjcoresoftware/memorywritetest.vhex8
 build/software/rvsw/src/single_file/asm/jzjcoresoftware/nop.vhex8
-//build/software/rvsw/src/single_file/asm/jzjcoresoftware/sbtest.vhex8//Not yet supported
-//build/software/rvsw/src/single_file/asm/jzjcoresoftware/sbtest2.vhex8//Not yet supported
-//build/software/rvsw/src/single_file/asm/jzjcoresoftware/shtest.vhex8//Not yet supported
+build/software/rvsw/src/single_file/asm/jzjcoresoftware/sbtest.vhex8
+build/software/rvsw/src/single_file/asm/jzjcoresoftware/sbtest2.vhex8
+build/software/rvsw/src/single_file/asm/jzjcoresoftware/shtest.vhex8
 //build/software/rvsw/src/single_file/asm/jzjcoresoftware/sllisrliblttest.vhex8//Infinite loop
 //build/software/rvsw/src/single_file/asm/jzjcoresoftware/sllsrlblttest.vhex8//Infinite loop
 build/software/rvsw/src/single_file/asm/jzjcoresoftware/testingfunctions.vhex8
