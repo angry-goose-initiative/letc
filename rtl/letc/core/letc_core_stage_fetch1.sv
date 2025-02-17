@@ -105,9 +105,10 @@ end
  * IMSS Communication
  * --------------------------------------------------------------------------------------------- */
 
-//NOT & !f1_flush because we WANT the value in the imss addr register to be
-//clobbered with the new fetch_addr BECAUSE we're flushing!
-assign imss_if.req_valid        = !f1_stall;//TODO or should this just be constant 1?
+//Constant 1, not based on f1_flush or f1_stall because otherwise that can lead
+//to deadlock in the case of f1_stall, and when we want to flush, we want to
+//clobber the old request!
+assign imss_if.req_valid        = 1'b1;
 assign imss_if.req_virtual_addr = fetch_addr;
 
 /* ------------------------------------------------------------------------------------------------

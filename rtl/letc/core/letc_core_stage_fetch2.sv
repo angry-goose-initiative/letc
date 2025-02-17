@@ -74,6 +74,9 @@ assign f2_to_d_valid    = ff_in_valid & !f2_flush & !f2_stall;
 //and the imss is ready to provide the actual instruction
 assign f2_ready         = !ff_in_valid | (ff_in_valid & imss_if.rsp_valid);
 
+//Stall the IMSS when we are stalled
+assign imss_if.req_stall2 = f2_stall;
+
 assign f2_to_d.pc       = ff_in.pc;
 assign f2_to_d.instr    = imss_if.rsp_data[31:0];
 

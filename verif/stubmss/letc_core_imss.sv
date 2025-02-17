@@ -69,10 +69,12 @@ always_ff @(posedge clk) begin
         rsp_virtual_addr_ff <= rsp_virtual_addr;
         rsp_data_ff         <= rsp_data;
 
-        imss_if.rsp_valid           <= rsp_valid_ff;
-        imss_if.rsp_illegal         <= rsp_illegal_ff;
-        imss_if.rsp_virtual_addr    <= rsp_virtual_addr_ff;
-        imss_if.rsp_data            <= rsp_data_ff;
+        if (!imss_if.req_stall2) begin
+            imss_if.rsp_valid           <= rsp_valid_ff;
+            imss_if.rsp_illegal         <= rsp_illegal_ff;
+            imss_if.rsp_virtual_addr    <= rsp_virtual_addr_ff;
+            imss_if.rsp_data            <= rsp_data_ff;
+        end
     end
 end
 

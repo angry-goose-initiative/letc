@@ -35,9 +35,11 @@ interface letc_core_imss_if
 logic  req_valid;
 word_t req_virtual_addr;
 //TODO also req_illegal in reverse
+//TODO take advantage of BRAM and have a req_stall1 as planned in our block diagrams
 
 //Fetch 2 <-> Memory Subsystem
 //TODO likely need a stall signal from f2 to the IMSS, haven't caught this bug before because we didn't have memory :(
+logic  req_stall2;//Stalls the SECOND stage of the imss
 logic  rsp_valid;
 logic  rsp_illegal;//TODO contain bad address info?
 word_t rsp_virtual_addr;
@@ -57,6 +59,7 @@ modport fetch1 (
 );
 
 modport fetch2 (
+    output req_stall2,
     input  rsp_valid,
     input  rsp_illegal,
     input  rsp_virtual_addr,
@@ -67,6 +70,7 @@ modport subsystem (
     input  req_valid,
     input  req_virtual_addr,
 
+    input  req_stall2,
     output rsp_valid,
     output rsp_illegal,
     output rsp_virtual_addr,
