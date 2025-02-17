@@ -76,15 +76,18 @@ always_ff @(posedge clk) begin
     end
 end
 
+word_t dmss1_req_word_addr;
+assign dmss1_req_word_addr = {dmss1_req_addr_ff[31:2], 2'b00};
+
 always_comb begin
     if (load_conflict_with_store) begin
         dmss_if.dmss1_rsp_load_data = 32'hDEADBEEF;
     end else begin
         dmss_if.dmss1_rsp_load_data = {//Little endian
-            dmem[dmss1_req_addr_ff + 3],//Using dmss1_req_addr_ff so this stays in the same stage while still being
-            dmem[dmss1_req_addr_ff + 2],//combinational (we don't have to worry about timing since this doesn't
-            dmem[dmss1_req_addr_ff + 1],//synthesize)
-            dmem[dmss1_req_addr_ff]
+            dmem[dmss1_req_word_addr + 3],//Using dmss1_req_word_addr so this stays in the same stage while still being
+            dmem[dmss1_req_word_addr + 2],//combinational (we don't have to worry about timing since this doesn't
+            dmem[dmss1_req_word_addr + 1],//synthesize)
+            dmem[dmss1_req_word_addr]
         };
     end
 end
@@ -112,17 +115,21 @@ always_ff @(posedge clk) begin
     end
 end
 
+word_t dmss2_req_word_addr;
+assign dmss2_req_word_addr = {dmss2_req_addr_ff[31:2], 2'b00};
+
 //Detecting store conflicts
-assign load_conflict_with_store = dmss1_req_load_ff && dmss2_req_store_ff && (dmss1_req_addr_ff == dmss2_req_addr_ff);
+assign load_conflict_with_store =
+    dmss1_req_load_ff && dmss2_req_store_ff && (dmss1_req_word_addr == dmss2_req_word_addr);
 
 //Actual storing
 always_ff @(posedge clk) begin
     if (dmss2_req_store_ff & dmss_if.dmss2_req_commit) begin
         //Little endian
-        dmem[dmss2_req_addr_ff]     <= dmss_if.dmss2_req_store_data[7:0];
-        dmem[dmss2_req_addr_ff + 1] <= dmss_if.dmss2_req_store_data[15:8];
-        dmem[dmss2_req_addr_ff + 2] <= dmss_if.dmss2_req_store_data[23:16];
-        dmem[dmss2_req_addr_ff + 3] <= dmss_if.dmss2_req_store_data[31:24];
+        dmem[dmss2_req_word_addr]     <= dmss_if.dmss2_req_store_data[7:0];
+        dmem[dmss2_req_word_addr + 1] <= dmss_if.dmss2_req_store_data[15:8];
+        dmem[dmss2_req_word_addr + 2] <= dmss_if.dmss2_req_store_data[23:16];
+        dmem[dmss2_req_word_addr + 3] <= dmss_if.dmss2_req_store_data[31:24];
     end
 end
 
