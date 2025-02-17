@@ -39,4 +39,4 @@ build/software/rvsw/src/single_file/asm/letc_pre_hazard/first_branch_test.vhex8
 build/software/rvsw/src/single_file/asm/letc_pre_hazard/forwarding_sweep.vhex8
 build/software/rvsw/src/single_file/asm/letc_pre_hazard/increment.vhex8
 build/software/rvsw/src/single_file/asm/letc_pre_hazard/jumping_around.vhex8
-//build/software/rvsw/src/single_file/asm/letc_pre_hazard/store_to_load.vhex8//Not yet supported
+build/software/rvsw/src/single_file/asm/letc_pre_hazard/store_to_load.vhex8
