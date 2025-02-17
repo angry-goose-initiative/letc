@@ -125,11 +125,13 @@ assign load_conflict_with_store =
 //Actual storing
 always_ff @(posedge clk) begin
     if (dmss2_req_store_ff & dmss_if.dmss2_req_commit) begin
-        //Little endian
-        dmem[dmss2_req_word_addr]     <= dmss_if.dmss2_req_store_data[7:0];
-        dmem[dmss2_req_word_addr + 1] <= dmss_if.dmss2_req_store_data[15:8];
-        dmem[dmss2_req_word_addr + 2] <= dmss_if.dmss2_req_store_data[23:16];
-        dmem[dmss2_req_word_addr + 3] <= dmss_if.dmss2_req_store_data[31:24];
+        if (dmss2_req_addr_ff != 32'hFFFFFFFF) begin
+            //Little endian
+            dmem[dmss2_req_word_addr]     <= dmss_if.dmss2_req_store_data[7:0];
+            dmem[dmss2_req_word_addr + 1] <= dmss_if.dmss2_req_store_data[15:8];
+            dmem[dmss2_req_word_addr + 2] <= dmss_if.dmss2_req_store_data[23:16];
+            dmem[dmss2_req_word_addr + 3] <= dmss_if.dmss2_req_store_data[31:24];
+        end
     end
 end
 

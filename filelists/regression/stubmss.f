@@ -41,3 +41,9 @@ build/software/rvsw/src/single_file/asm/letc_pre_hazard/increment.vhex8
 build/software/rvsw/src/single_file/asm/letc_pre_hazard/jumping_around.vhex8
 build/software/rvsw/src/single_file/asm/letc_pre_hazard/store_to_load.vhex8
 build/software/rvsw/src/single_file/asm/letc_pre_hazard/store_to_load_aftermath.vhex8
+
+//Misc ASM test programs
+//build/software/rvsw/src/single_file/asm/letc_pre_hazard/atomics.vhex8//Not yet supported
+//build/software/rvsw/src/single_file/asm/letc_pre_hazard/privilege_levels.vhex8//Not yet supported
+build/software/rvsw/src/single_file/asm/letc_pre_hazard/rv32esim.vhex8
+//build/software/rvsw/src/single_file/asm/letc_pre_hazard/user_and_back_in_time_for_dinner.vhex8//Not yet supported

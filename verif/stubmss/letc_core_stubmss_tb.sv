@@ -140,6 +140,11 @@ initial begin
                         dut.stage_writeback.ff_in.rs2_val,
                         dut.dmss.dmss2_req_addr_ff
                     )};
+
+                    if (dut.dmss.dmss2_req_addr_ff == 32'hFFFFFFFF) begin
+                        //TODO also log to a file perhaps?
+                        $write("\x1b[1m\x1b[96m%s\x1b[0m", string'(dut.stage_writeback.ff_in.rs2_val));
+                    end
                 end
 
                 $fdisplay(trace_file_handle, msg);
