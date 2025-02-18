@@ -84,8 +84,8 @@ int _close(int) {
 __attribute__((noreturn))
 void _exit(int) {
     //TODO flush stdout and stderr here
-    //irve_mmode_exit();
-    while (1);//TODO
+    __asm__ volatile (".insn r CUSTOM_0, 0, 0, zero, zero, zero");
+    while (true);
 }
 
 int _fstat(int, struct stat* the_stats) {
@@ -123,14 +123,11 @@ int _read(int, char*, int) {
 
 int _write(int, char* str, int len) {
     //NOTE: file is ignored since we only support stdout
-    /*
     for (int i = 0; i < len; ++i) {
-        IRVE_MMODE_DEBUG_ADDR = str[i];
+        (*((volatile uint8_t*)0xFFFFFFFF)) = str[i];
     }
 
     return len;
-    */
-    return 0;//TODO
 }
 
 int _open(const char*, int, int) {

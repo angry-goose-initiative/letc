@@ -48,8 +48,7 @@ set(RVSW_MABI "ilp32")#Your -mabi=[...] here
 set(RVSW_EXIT_METHOD "CUSTOM_INSTRUCTION")
 set(RVSW_CUSTOM_EXIT_INSTR ".insn r CUSTOM_0, 0, 0, zero, zero, zero")#Same as IRVE.EXIT
 
-#set(RVSW_MMODE_NEWLIB_SYSCALLS_STATICLIB_CMAKE_TARGET "my_newlib_syscalls_staticlib")#The cmake target for your newlib syscalls static library
-set(RVSW_MMODE_NEWLIB_SYSCALLS_STATICLIB_CMAKE_TARGET "c")#Just use "c" here if you don't want to supply syscalls
+set(RVSW_MMODE_NEWLIB_SYSCALLS_STATICLIB_CMAKE_TARGET "letc_rvsw_newlib_syscalls")
 
 #Your own firmware must link against the SBI static library that is built
 set(RVSW_BUILD_SBI "ogsbi")#Uncomment if you want to build an SBI (and specify the name of the one you want to build)
