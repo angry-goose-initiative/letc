@@ -39,7 +39,7 @@ build/software/rvsw/src/single_file/asm/letc_base_spec/lh.vhex8
 
 //letc_pre_hazard test programs
 build/software/rvsw/src/single_file/asm/letc_pre_hazard/all_loads.vhex8
-//build/software/rvsw/src/single_file/asm/letc_pre_hazard/c_deadlock.vhex8//Mismatch unrelated to deadlock still present
+//build/software/rvsw/src/single_file/asm/letc_pre_hazard/c_deadlock.vhex8//FIXME Mismatch unrelated to deadlock still present
 build/software/rvsw/src/single_file/asm/letc_pre_hazard/c_deadlock_simplified.vhex8
 build/software/rvsw/src/single_file/asm/letc_pre_hazard/dependency_problem_0.vhex8
 build/software/rvsw/src/single_file/asm/letc_pre_hazard/first_branch_test.vhex8
@@ -60,7 +60,23 @@ build/software/rvsw/src/single_file/asm/rv32esim.vhex8
 // C Test Programs
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-//TODO
+//build/software/rvsw/src/single_file/c/hello_exceptions.vhex8//Not yet supported
+build/software/rvsw/src/single_file/c/hello_world.vhex8
+//build/software/rvsw/src/single_file/c/illegal_instruction_experiments.vhex8//Not yet supported
+//build/software/rvsw/src/single_file/c/irve_csr_bringup.vhex8//Not yet supported
+build/software/rvsw/src/single_file/c/irve_debugging_puts_weirdness.vhex8
+//build/software/rvsw/src/single_file/c/irve_exception_bringup.vhex8//Not yet supported
+build/software/rvsw/src/single_file/c/irve_stress_test.vhex8
+//build/software/rvsw/src/single_file/c/nommulinux.vhex8//Does not fit into the regression well since it depends on a kernel
+//build/software/rvsw/src/single_file/c/nouveau_stress_test.vhex8//WAY too slow
+//build/software/rvsw/src/single_file/c/poll_timer.vhex8//Not yet supported
+//build/software/rvsw/src/single_file/c/poll_timer_interrupt_mmode.vhex8//Not yet supported
+//build/software/rvsw/src/single_file/c/poll_timer_interrupt_smode.vhex8//Not yet supported
+build/software/rvsw/src/single_file/c/rv32esim.vhex8
+build/software/rvsw/src/single_file/c/rv32im_sanity.vhex8
+//build/software/rvsw/src/single_file/c/software_floating_point_fun.vhex8//WAY too slow
+//build/software/rvsw/src/single_file/c/timer_interrupt_mmode.vhex8
+//build/software/rvsw/src/single_file/c/timer_interrupt_smode.vhex8
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // C Test Programs

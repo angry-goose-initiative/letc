@@ -108,7 +108,9 @@ generate
 
         //Backpressure
         if (ii != NUM_STAGES-1) begin : gen_bp_asserts
-            assert property (@(posedge clk) disable iff (!rst_n) stage_stall[ii+1] |-> (stage_stall[ii] | stage_flush[ii]));
+            assert property (@(posedge clk) disable iff (!rst_n)
+                stage_stall[ii+1] |-> (stage_stall[ii] | stage_flush[ii])
+            );
         end : gen_bp_asserts
 
         //No flushing and stalling at the same time

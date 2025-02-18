@@ -48,7 +48,8 @@ jobs:
       - if: ${{ steps.cache-riscv.outputs.cache-hit != 'true' }}
         name: Configure RISC-V Toolchain Sources
         working-directory: ${{github.workspace}}/riscv-gnu-toolchain/
-        run: ./configure --prefix=$HOME/.riscv --with-arch=rv32ima --with-abi=ilp32
+        run: ./configure --prefix=$HOME/.riscv --with-arch=rv32i --with-abi=ilp32
+        #run: ./configure --prefix=$HOME/.riscv --with-arch=rv32ima --with-abi=ilp32#TODO switch to this once these instructions are supported
 
       - if: ${{ steps.cache-riscv.outputs.cache-hit != 'true' }}
         name: Compile RISC-V Toolchain
