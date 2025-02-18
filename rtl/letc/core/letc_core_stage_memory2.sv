@@ -65,7 +65,7 @@ always_ff @(posedge clk) begin
     end
 end
 
-assign m2_ready = dmss_if.dmss1_rsp_ready || ff_in.mem_op == MEM_OP_NOP;
+assign m2_ready = dmss_if.dmss1_rsp_ready || ff_in.mem_op == MEM_OP_NOP || !ff_in_valid;
 
 logic out_valid;
 assign out_valid = ff_in_valid && !m2_flush && !m2_stall;
