@@ -36,6 +36,10 @@ module letc_core_stage_memory2
     letc_core_forwardee_if.stage m2_forwardee_rs2
 );
 
+/* ------------------------------------------------------------------------------------------------
+ * Input Flop Stage
+ * --------------------------------------------------------------------------------------------- */
+
 logic ff_in_valid;
 always_ff @(posedge clk) begin
     if (!rst_n) begin
@@ -52,6 +56,12 @@ m1_to_m2_s ff_in;
 always_ff @(posedge clk) begin
     if (!m2_stall) begin
         ff_in <= m1_to_m2;
+    end else begin//We are stalled...
+        //But we're currently the recpient of forwarded data, so save it for
+        //later in case we lose access as the rest of the pipeline continues onwards
+        if (m2_forwardee_rs2.use_fwd) begin
+            ff_in.rs2_val <= m2_forwardee_rs2.fwd_val;
+        end
     end
 end
 

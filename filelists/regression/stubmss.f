@@ -1,6 +1,10 @@
 /* vi: set filetype=c: */
 #pragma once
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Assembly Test Programs
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
 //JZJCoreSoftware test programs
 build/software/rvsw/src/single_file/asm/jzjcoresoftware/adding2.vhex8
 build/software/rvsw/src/single_file/asm/jzjcoresoftware/auipctest.vhex8
@@ -34,6 +38,7 @@ build/software/rvsw/src/single_file/asm/letc_base_spec/lw.vhex8
 build/software/rvsw/src/single_file/asm/letc_base_spec/lh.vhex8
 
 //letc_pre_hazard test programs
+build/software/rvsw/src/single_file/asm/letc_pre_hazard/all_loads.vhex8
 build/software/rvsw/src/single_file/asm/letc_pre_hazard/dependency_problem_0.vhex8
 build/software/rvsw/src/single_file/asm/letc_pre_hazard/first_branch_test.vhex8
 build/software/rvsw/src/single_file/asm/letc_pre_hazard/forwarding_sweep.vhex8
@@ -41,9 +46,22 @@ build/software/rvsw/src/single_file/asm/letc_pre_hazard/increment.vhex8
 build/software/rvsw/src/single_file/asm/letc_pre_hazard/jumping_around.vhex8
 build/software/rvsw/src/single_file/asm/letc_pre_hazard/store_to_load.vhex8
 build/software/rvsw/src/single_file/asm/letc_pre_hazard/store_to_load_aftermath.vhex8
+build/software/rvsw/src/single_file/asm/letc_pre_hazard/use_after_load.vhex8
 
 //Misc ASM test programs
-//build/software/rvsw/src/single_file/asm/letc_pre_hazard/atomics.vhex8//Not yet supported
-//build/software/rvsw/src/single_file/asm/letc_pre_hazard/privilege_levels.vhex8//Not yet supported
-build/software/rvsw/src/single_file/asm/letc_pre_hazard/rv32esim.vhex8
-//build/software/rvsw/src/single_file/asm/letc_pre_hazard/user_and_back_in_time_for_dinner.vhex8//Not yet supported
+//build/software/rvsw/src/single_file/asm/atomics.vhex8//Not yet supported
+//build/software/rvsw/src/single_file/asm/privilege_levels.vhex8//Not yet supported
+build/software/rvsw/src/single_file/asm/rv32esim.vhex8
+//build/software/rvsw/src/single_file/asm/user_and_back_in_time_for_dinner.vhex8//Not yet supported
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// C Test Programs
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+//TODO
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// C Test Programs
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+//TODO

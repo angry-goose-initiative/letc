@@ -63,6 +63,15 @@ end
 always_ff @(posedge clk) begin
     if (!e_stall) begin
         ff_in <= d_to_e;
+    end else begin//We are stalled...
+        //But we're currently the recpient of forwarded data, so save it for
+        //later in case we lose access as the rest of the pipeline continues onwards
+        if (e_forwardee_rs1.use_fwd) begin
+            ff_in.rs1_val <= e_forwardee_rs1.fwd_val;
+        end
+        if (e_forwardee_rs2.use_fwd) begin
+            ff_in.rs2_val <= e_forwardee_rs2.fwd_val;
+        end
     end
 end
 
