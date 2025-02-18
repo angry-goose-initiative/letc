@@ -110,8 +110,14 @@ always_ff @(posedge clk) begin
         dmss2_req_addr_ff  <= 32'hDEADBEEF;
     end else begin
         //dmss2_req_load_ff  <= dmss1_req_load_ff;
-        dmss2_req_store_ff <= dmss1_req_store_ff;
+        dmss2_req_store_ff <= dmss1_req_store_ff & !load_conflict_with_store;
         dmss2_req_addr_ff  <= dmss1_req_addr_ff;
+
+        //Note: We and the dmss2_req_store_ff with !load_conflict_with_store
+        //because stores in writeback are guaranteed to clear immediately.
+        //This is necessary to avoid deadlock with consecutive aliasing stores because stores also perform
+        //"loads" for the read modify write sequence, which wrecks havoc with the fact that
+        //we unconditionally flop values from dmss stage 1 into stage 2
     end
 end
 

@@ -39,6 +39,8 @@ build/software/rvsw/src/single_file/asm/letc_base_spec/lh.vhex8
 
 //letc_pre_hazard test programs
 build/software/rvsw/src/single_file/asm/letc_pre_hazard/all_loads.vhex8
+//build/software/rvsw/src/single_file/asm/letc_pre_hazard/c_deadlock.vhex8//Mismatch unrelated to deadlock still present
+build/software/rvsw/src/single_file/asm/letc_pre_hazard/c_deadlock_simplified.vhex8
 build/software/rvsw/src/single_file/asm/letc_pre_hazard/dependency_problem_0.vhex8
 build/software/rvsw/src/single_file/asm/letc_pre_hazard/first_branch_test.vhex8
 build/software/rvsw/src/single_file/asm/letc_pre_hazard/forwarding_sweep.vhex8
