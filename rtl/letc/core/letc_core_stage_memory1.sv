@@ -78,8 +78,8 @@ assign out_valid = ff_in_valid && !m1_flush && !m1_stall;
 // as memory 1's input flops, so the input values are passed to the DMSS
 // directly (no using ff_in).
 assign dmss_if.dmss0_req_addr   = e_to_m1.alu_result;
-assign dmss_if.dmss0_req_load   = e_to_m1.mem_op != MEM_OP_NOP;
-assign dmss_if.dmss0_req_store  = e_to_m1.mem_op == MEM_OP_STORE;
+assign dmss_if.dmss0_req_load   = e_to_m1_valid && (e_to_m1.mem_op != MEM_OP_NOP);
+assign dmss_if.dmss0_req_store  = e_to_m1_valid && (e_to_m1.mem_op == MEM_OP_STORE);
 assign dmss_if.dmss0_req_stall  = m1_stall;
 
 /* ------------------------------------------------------------------------------------------------
