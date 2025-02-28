@@ -39,6 +39,7 @@ help:
 	@echo "    svlint                         Run the svlint linting tool"
 	@echo "    verible                        Run the verible linting tool"
 	@echo "    software                       Build software to run on the core"
+	@echo "    optimized_software             Build software to run on the core, with compiler optmizations enabled (helps expose more LETC bugs)"
 	@echo "    irve                           Build IRVE with modifications for LETC, to serve as a reference model"
 	@echo "    stubmss_build                  Build the stubmss testbench to run test programs on the core"
 	@echo "    stubmss_run                    Run a test program in stubmss mode (requires PROGRAM option, optionally WAVES option)"

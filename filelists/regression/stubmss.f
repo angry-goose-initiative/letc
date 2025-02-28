@@ -59,7 +59,7 @@ build/software/rvsw/src/single_file/asm/rv32esim.vhex8
 //build/software/rvsw/src/single_file/asm/user_and_back_in_time_for_dinner.vhex8//Not yet supported
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// C Test Programs
+// Unoptimized C Test Programs
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 //build/software/rvsw/src/single_file/c/hello_exceptions.vhex8//Not yet supported
@@ -81,7 +81,35 @@ build/software/rvsw/src/single_file/c/rv32im_sanity.vhex8
 //build/software/rvsw/src/single_file/c/timer_interrupt_smode.vhex8
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// C Test Programs
+// Optimized C++ Test Programs
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+//TODO
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Optimized C Test Programs
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+//build/optimized_software/rvsw/src/single_file/c/hello_exceptions.vhex8//Not yet supported
+build/optimized_software/rvsw/src/single_file/c/hello_world.vhex8
+//build/optimized_software/rvsw/src/single_file/c/illegal_instruction_experiments.vhex8//Not yet supported
+//build/optimized_software/rvsw/src/single_file/c/irve_csr_bringup.vhex8//Not yet supported
+build/optimized_software/rvsw/src/single_file/c/irve_debugging_puts_weirdness.vhex8
+//build/optimized_software/rvsw/src/single_file/c/irve_exception_bringup.vhex8//Not yet supported
+//build/optimized_software/rvsw/src/single_file/c/irve_stress_test.vhex8//FIXME BROKEN
+//build/optimized_software/rvsw/src/single_file/c/nommulinux.vhex8//Does not fit into the regression well since it depends on a kernel
+//build/optimized_software/rvsw/src/single_file/c/nouveau_stress_test.vhex8//FIXME BROKEN
+//build/optimized_software/rvsw/src/single_file/c/poll_timer.vhex8//Not yet supported
+//build/optimized_software/rvsw/src/single_file/c/poll_timer_interrupt_mmode.vhex8//Not yet supported
+//build/optimized_software/rvsw/src/single_file/c/poll_timer_interrupt_smode.vhex8//Not yet supported
+build/optimized_software/rvsw/src/single_file/c/rv32esim.vhex8
+build/optimized_software/rvsw/src/single_file/c/rv32im_sanity.vhex8
+//build/optimized_software/rvsw/src/single_file/c/software_floating_point_fun.vhex8//FIXME BROKEN
+//build/optimized_software/rvsw/src/single_file/c/timer_interrupt_mmode.vhex8
+//build/optimized_software/rvsw/src/single_file/c/timer_interrupt_smode.vhex8
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Optimized C++ Test Programs
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 //TODO

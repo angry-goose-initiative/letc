@@ -19,8 +19,11 @@ TB_FILELIST_PATH="filelists/verif/stubmss/letc_core_stubmss_tb.f"
 TB=letc_core_stubmss_tb
 
 BUILD_THREADS=`nproc`
-SIM_THREADS=`nproc`
-TRACE_THREADS=2
+#More than one sim thread just slows things down due to synchronization overhead, at least for this small testbench
+#SIM_THREADS=`nproc`
+SIM_THREADS=1
+TRACE_THREADS=1
+#TRACE_THREADS=2
 
 REPO_ROOT=`git rev-parse --show-toplevel`
 
